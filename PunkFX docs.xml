@@ -1,0 +1,79 @@
+<project name="AsDocTest" default="main" basedir=".">
+
+    <!-- The location of your FlexSDK directory -->
+        <property name="FlexSDK.dir" location="c:/Progra~2/FlashDevelop/Tools/flexsdk"/>
+
+        <!-- The location of the ASDoc executable -->
+        <property name="bin.dir" location="${FlexSDK.dir}/bin"/>        
+
+        <!-- The output directory for your documentation -->
+        <property name="output.dir" location="${basedir}/asdoc-output"/>
+
+        <!-- SWC file library path -->
+        <property name="swcLibraryPaths" value="${basedir}/lib"/>
+
+        <!-- The root to your class package directory -->
+        <property name="classesRoot" value="${basedir}/src"/>
+
+        <!-- the directory/package that you'd like to document, all others will be excluded -->
+        <property name="includedDirectory" value="/punk/fx/" />
+
+        <!-- the ant description of this script -->
+        <target name="main" depends="clean,manifest,asdoc" description="Full build of asdocs"/>
+
+        <!-- erase all previous asdoc output -->
+        <target name="clean" description="Delete docs folder" >
+                <delete dir="${output.dir}" failOnError="false" includeEmptyDirs="true"/>
+                <mkdir dir="${output.dir}"/>
+        </target>
+
+        <target name="manifest">
+
+                <!-- Get the list of all files, exclude those that we wish to document (not a typo) -->
+                <fileset id="sources" dir="${basedir}/src">
+                        <exclude name="**${includedDirectory}**"/>
+                </fileset>
+
+				<!--<echo message="sources = ${toString:sources}"/>-->
+				
+               <!-- convert the names of excldued classes to packages with class names -->
+                <pathconvert property="classes" pathsep=" " dirsep="/" refid="sources">
+                        <chainedmapper>
+                                <globmapper handledirsep="true" from="${basedir}/src/*.as" to="*.as"/>
+                                <mapper type="package" from="*.as" to="*"/>
+                        </chainedmapper>
+                </pathconvert>
+
+                <!-- echo the exlcusions for debugging purposes -->
+                <echo message="manifest (excluded classes) = ${classes}"/>
+
+        </target>
+
+        <!-- Run asdoc -->
+        <target name="asdoc">
+								
+                <exec executable="${bin.dir}/asdoc.exe" failonerror="false" outputproperty="cmdoutput">
+
+                        <!-- define the src path of the package directory -->
+                        <arg line="-source-path '${basedir}/src'"/>
+
+                        <!-- tell asdoc to include all sources under the root -->
+                        <arg line="-doc-sources '${classesRoot}'"/>     
+
+                        <!-- define the output directory -->
+                        <arg line="-output '${output.dir}'"/>
+
+                        <!-- define the location of any swcs we're using (comment this out if you don't have any swc) -->   
+                        <!--<arg line="-external-library-path='${swcLibraryPaths}'"/>-->
+
+                        <!-- define the excluded classes (all of them outside our included directory) -->
+                        <arg line="-exclude-classes ${classes}"/>
+
+                </exec>
+				
+				<property name="cmdline" value="${bin.dir}/asdoc.exe -source-path '${basedir}/src' -doc-sources '${classesRoot}' -output '${output.dir}' -external-library-path=${swcLibraryPaths} -exclude-classes ${classes}"/>
+				
+				<echo message="cmd line: ${line.separator}${cmdline}"/>
+				<echo message="${line.separator}output: ${line.separator}${cmdoutput}"/>
+        </target>
+</project>

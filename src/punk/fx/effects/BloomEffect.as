@@ -1,0 +1,83 @@
+package punk.fx.effects
+{
+	import flash.display.BitmapData;
+	import flash.display.BlendMode;
+	import flash.filters.BlurFilter;
+	import flash.geom.Rectangle;
+	import net.flashpunk.FP;
+	import punk.fx.ImageFX;
+
+	/**
+	 * Blooming Effect.
+	 * 
+	 * @see http://philippseifried.com/blog/2011/07/30/real-time-bloom-effects-in-as3/
+	 * 
+	 * @author azrafe7
+	 */
+	public class BloomEffect extends Effect
+	{
+		
+		/** @private filter used for the blur effect */
+		protected var _filter:BlurFilter = new BlurFilter();
+
+		/** @private BitmapData used for thresholding */
+		protected var _thresholdBMD:BitmapData;
+
+		
+		/** Blur factor of the effect */
+		public var blur:Number;
+
+		/** Threshold level to use before the blur */
+		public var threshold:uint;
+
+		/** Quality of the blur effect (in the range [1, 3] where 3 means highest quality) */
+		public var quality:Number = 1;
+		
+		
+		/**
+		 * Creates a new BloomEffect with the specified values.
+		 * You can use <code>setProps()</code> to assign values to specific properties.
+		 * 
+		 * @see #setProps()
+		 * 
+		 * @param	blur		blur factor of the effect.
+		 * @param	threshold	threshold level to use before the blur (in the range [0, 255]).
+		 * @param	quality		quality of the blur effect (in the range [1, 3] where 3 means highest quality).
+		 */
+		public function BloomEffect(blur:Number = 0, threshold:uint = 255, quality:Number = 1) 
+		{
+			super();
+			
+			this.blur = blur;
+			this.threshold = threshold;
+			this.quality = quality;
+		}
+		
+		/** @inheritDoc */
+		override public function applyTo(bitmapData:BitmapData, clipRect:Rectangle = null):void
+		{
+			if (!clipRect) clipRect = bitmapData.rect;
+
+			var _threshold:uint = 0xFF << 24 | threshold << 16 | threshold << 8 | threshold;
+			
+			_filter.blurX = blur;
+			_filter.blurY = blur;
+			_filter.quality = quality;
+
+			// apply blur to thresholded data
+			_thresholdBMD = new BitmapData(clipRect.width, clipRect.height, true, 0xFF000000);
+			_thresholdBMD.threshold(bitmapData, clipRect, FP.zero, "<=", _threshold, 0x00000000, 0x00FFFFFF, true);
+			_thresholdBMD.applyFilter(_thresholdBMD, _thresholdBMD.rect, FP.zero, _filter);
+			
+			// update matrix to draw to proper position
+			_mat.identity();
+			_mat.translate(clipRect.x, clipRect.y);
+			
+			bitmapData.draw(_thresholdBMD, _mat, null, BlendMode.ADD);
+			
+			super.applyTo(bitmapData, clipRect);
+		}
+		
+	}
+
+}
