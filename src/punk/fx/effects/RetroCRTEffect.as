@@ -10,7 +10,7 @@ package punk.fx.effects
 	import flash.geom.Rectangle;
 	import net.flashpunk.FP;
 	import net.flashpunk.utils.Data;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 
 	/**
 	 * Retro CRT Effect.
@@ -72,37 +72,37 @@ package punk.fx.effects
 		/** Y offset of the blue channel. */
 		public var blueOffsetY:Number;
 
-		/** Whether to draw the scan lines */
+		/** Whether to draw the scan lines. */
 		public var scanLines:Boolean;
 
-		/** Distance between scan lines */
+		/** Distance between scan lines. */
 		public var scanLinesGap:Number = 2;
 		
-		/** Thickness of each scan line */
+		/** Thickness of each scan line. */
 		public var scanLinesThickness:Number = 1;
 		
-		/** Scan lines color */
+		/** Scan lines color. */
 		public var scanLinesColor:uint = 0x333333;
 
-		/** Scan lines alpha */
+		/** Scan lines alpha. */
 		public var scanLinesAlpha:Number = .2;
 		
-		/** Scan lines blend mode */
+		/** Scan lines blend mode. */
 		public var scanLinesBlendMode:String = BlendMode.ADD;
 		
-		/** Amount of noise to draw (0..255). Set this to 0 for no noise */
+		/** Amount of noise to draw (0..255). Set this to 0 for no noise. */
 		public var noiseAmount:uint;
 
-		/** Noise blend mode */
+		/** Noise blend mode. */
 		public var noiseBlendMode:String = BlendMode.ADD;
 		
-		/** Wheter the red channel should be visible */
+		/** Wheter the red channel should be visible. */
 		public var showRedChannel:Boolean = true;
 		
-		/** Wheter the red channel should be visible */
+		/** Wheter the red channel should be visible. */
 		public var showGreenChannel:Boolean = true;
 		
-		/** Wheter the red channel should be visible */
+		/** Wheter the red channel should be visible. */
 		public var showBlueChannel:Boolean = true;
 
 		
@@ -153,7 +153,7 @@ package punk.fx.effects
 				_rect.width = clipRect.width;
 				_rect.height = clipRect.height;
 
-				//trace("new Data", bitmapData.rect)
+				trace("new Data", bitmapData.rect)
 			}
 			
 			// draw scan lines

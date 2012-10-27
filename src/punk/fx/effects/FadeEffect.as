@@ -3,7 +3,7 @@ package punk.fx.effects
 	import flash.display.BitmapData;
 	import flash.geom.ColorTransform;
 	import flash.geom.Rectangle;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 
 	/**
 	 * Fading Effect.

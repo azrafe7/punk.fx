@@ -11,6 +11,10 @@ package
 	import flash.display.BlendMode;
 	import flash.display.GradientType;
 	import flash.display.Graphics;
+	import flash.display.Shader;
+	import flash.filters.BevelFilter;
+	import flash.filters.DropShadowFilter;
+	import flash.filters.ShaderFilter;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -33,11 +37,16 @@ package
 	import punk.fx.effects.AdjustEffect;
 	import punk.fx.effects.Effect;
 	import punk.fx.effects.FadeEffect;
+	import punk.fx.effects.FilterEffect;
 	import punk.fx.effects.GlowEffect;
+	import punk.fx.effects.PBHalfToneEffect;
+	import punk.fx.effects.PBPixelateEffect;
 	import punk.fx.effects.PixelateEffect;
+	import punk.fx.effects.PixelBenderEffect;
 	import punk.fx.effects.RetroCRTEffect;
+	import punk.fx.FXImage;
 	import punk.fx.FXMan;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 	
 	/**
 	 * ...
@@ -45,13 +54,24 @@ package
 	 */
 	public class TestWorld extends World 
 	{
-		private var wholeScreenImage:ImageFX;
+		private var wholeScreenImage:FXImage;
 		private var tween:TweenMax;
 		private var swordguy:Spritemap;
-		private var spriteFX:ImageFX;
+		private var spriteFX:FXImage;
 		private var maskPixelate:PixelateEffect;
-		private var clone:ImageFX;
+		private var clone:FXImage;
+		private var shadowFilter:DropShadowFilter;
+		private var filtersFX:FilterEffect;
+		private var bevelFilter:BevelFilter;
 
+
+		[Embed("../bin/zoomBlurFocus.pbj", mimeType="application/octet-stream")]
+		private var ZOOMBLURFOCUS:Class;		
+		private var PBEffect:PixelBenderEffect;
+		private var halfToneFX:PBHalfToneEffect;
+		private var pbPixelFX:PBPixelateEffect;
+
+		
 		[Embed(source = "assets/longBackground.png")]
 		protected var BACKGROUND:Class;
 		
@@ -61,7 +81,7 @@ package
 		[Embed(source = "assets/alien2.png")]
 		protected var ALIEN:Class;
 		
-		protected var imageFX:ImageFX;
+		protected var imageFX:FXImage;
 		protected var background:Backdrop;
 		
 		protected var fadeFX:FadeEffect;
@@ -90,7 +110,7 @@ package
 			background = new Backdrop(BACKGROUND, false, false);
 			addGraphic(background);
 			
-			imageFX = new ImageFX(null);
+			imageFX = new FXImage(null);
 			imageFX.name = "imageFX";
 			//imageFX.alpha = .4;
 			addGraphic(imageFX, -4, 200, 100);
@@ -110,13 +130,13 @@ package
 			var circle:Object = {r:0};
 			TweenMax.to(circle, 1, {r:100, yoyo:true, repeat:-1, ease:Linear.ease});
 			var maskBMD:BitmapData = new BitmapData(imageFX.width, imageFX.height, true, 0xFF000000);
-			var maskImg:ImageFX = new ImageFX(maskBMD);
+			var maskImg:FXImage = new FXImage(maskBMD);
 			maskPixelate = new PixelateEffect(10);
 			
 			//addGraphic(maskImg, -2, -200);
 			//FXMan.add(maskImg, [maskPixelate]);
 			
-			maskImg.onPreRender = function(imgFX:ImageFX):void {
+			maskImg.onPreRender = function(imgFX:FXImage):void {
 				/*var g:Graphics = FP.sprite.graphics;
 				var mtx:Matrix = FP.matrix;
 				mtx.createGradientBox(circle.r * 2, circle.r * 2, 0, -circle.r + player.x-200, -circle.r +player.y-100);
@@ -129,7 +149,7 @@ package
 				maskImg.setSource(maskBMD, maskBMD.rect, false);*/
 			}
 				
-			imageFX.onPreRender = function(imgFX:ImageFX):void {
+			imageFX.onPreRender = function(imgFX:FXImage):void {
 				var g:Graphics = FP.sprite.graphics;
 				var mtx:Matrix = FP.matrix;
 				mtx.createGradientBox(circle.r * 2, circle.r * 2, 0, -circle.r + player.x-200, -circle.r +player.y-100);
@@ -155,7 +175,7 @@ package
 				//blurFX.setProps({blur:1, blurX:3}).applyTo(bmd);
 			}
 			
-			FXMan.add(imageFX, [bloomFX, pixelateFX, retroCRTFX.setProps({scanLinesColor:0x00ff00, noiseAmount:60})/*, bloomFX/*adjustFX, maskPixelate.setProps({scale:5})/*, pixelateFX*/]);
+			FXMan.add(imageFX, [bloomFX, pixelateFX/*, retroCRTFX.setProps({scanLinesColor:0x00ff00, noiseAmount:60})/*, bloomFX/*adjustFX, maskPixelate.setProps({scale:5})/*, pixelateFX*/]);
 			imageFX.centerOO();
 			imageFX.x += imageFX.width>>1;
 			imageFX.y += imageFX.height>>1;
@@ -186,7 +206,7 @@ package
 			// side size of the BitmapData that will contain the rotated image
 			var size:Number = Math.sqrt(swordguy.scaledWidth * swordguy.scaledWidth + swordguy.scaledHeight * swordguy.scaledHeight);
 			
-			spriteFX = ImageFX.createRect(size, size);
+			spriteFX = FXImage.createRect(size, size);
 
 			//spriteFX.color = 0xff00ffff;
 			spriteFX.centerOO();
@@ -198,7 +218,7 @@ package
 			addGraphic(spriteFX, -1, 40, 140);
 			FXMan.add(spriteFX, [bloomFX, pixelateFX/*retroCRTFX/*, glowFX, pixelateFX, fx/**/]);
 
-			spriteFX.onPreRender = function(imgFX:ImageFX):void {
+			spriteFX.onPreRender = function(imgFX:FXImage):void {
 				var bmd:BitmapData = spriteFX.getSource();
 				bmd.fillRect(bmd.rect, 0);
 				
@@ -240,17 +260,32 @@ package
 				
 				
 				if (key(Key.Q)) swordguy.angle += .9;
+				
 			}
 				
+			shadowFilter = new DropShadowFilter;
+			bevelFilter = new BevelFilter;
+			filtersFX = new FilterEffect([shadowFilter, bevelFilter]);
+			
+			FXMan.removeTargets(imageFX);
+
+			
+			halfToneFX = new PBHalfToneEffect();
+			//FXMan.add(imageFX, halfToneFX);
+
+			pbPixelFX = new PBPixelateEffect;
+			FXMan.add(imageFX, pbPixelFX);
+			
 			for (var i:int = 0; i < 10; i++) {
-				//var imgFX:ImageFX = ImageFX.createCircle(40, 0xff0000);
-				var imgFX:ImageFX = new ImageFX(ALIEN);
+				//var imgFX:FXImage = FXImage.createCircle(40, 0xff0000);
+				var imgFX:FXImage = new FXImage(ALIEN);
 				imgFX.scale = 4;
 				addGraphic(imgFX, -1, Math.random() * FP.width, Math.random() * FP.height);
 				//imgFX.drawMask = imgFX.getSource();
-				FXMan.add(imgFX, [pixelateFX, bloomFX/*retroCRTFX/*, fx, pixelateFX*/]);
+				FXMan.add(imgFX, [filtersFX/*pixelateFX, bloomFX/*retroCRTFX/*, fx, pixelateFX*/]);
 			}
 		
+			
 			trace(FXMan);
 		}
 		
@@ -267,7 +302,7 @@ package
 			}
 			if (key(Key.B, true)) {
 				if (!clone) {
-					clone = new ImageFX();
+					clone = new FXImage();
 					addGraphic(clone, -4, 400, 100);
 					clone.scale = .5;
 				}
@@ -275,7 +310,7 @@ package
 				FXMan.add(clone, adjustFX);
 			}
 			if (key(Key.X, false)) {
-				wholeScreenImage = new ImageFX();
+				wholeScreenImage = new FXImage();
 				addGraphic(wholeScreenImage, -2);
 				FXMan.add(wholeScreenImage, adjustFX);
 			}
@@ -302,14 +337,17 @@ package
 				//TweenMax.fromTo(fx, 4, {to:0}, { to:1 } );
 				//imageFX.scale = 1.4;
 				TweenMax.to(glowFX.setProps({active:true, color:0xff4499, blur:0, strength:0}, false), 4, { blur:6, strength:4, immediateRender:true, overwrite:"all" } );
-				TweenMax.to(pixelateFX.setProps({scale:1, f:2}, false), 4, { scale:8, immediateRender:true, overwrite:"all" } );
+				TweenMax.to(pixelateFX.setProps({scale:1, f:2}, false), 4, { scale:40, yoyo:true, repeat:-1, immediateRender:true, overwrite:"all" } );
 				TweenMax.to(fx.setProps({active:true, alpha:0, f:2}, false), 4, { alpha:1, immediateRender:true, overwrite:"all" } );
 				tween = TweenMax.to(blurFX.setProps( { active:true, blur:1, blurX:1}), 4, { blur:2, blurX:4, immediateRender:true, overwrite:"all" } );
 				tween = TweenMax.to(bloomFX.setProps( { active:true, quality:1, blur:2, threshold:255}), 2, { blur:12, threshold:190, immediateRender:true, overwrite:"all" } );
 				TweenMax.to(adjustFX.setProps({saturation:0, contrast:0, hue:0}), 4, { saturation:-.8, contrast:0, hue:0, brightness:-.4, immediateRender:true, overwrite:"all" } );
-				//tweenRetro();
+				tweenRetro();
 				imageFX.angle = 0;
-				//TweenMax.to(imageFX, 4, { angle: 460 } );
+				TweenMax.to(shadowFilter, 4, { strength:10 } );
+				TweenMax.to(halfToneFX.setProps({ angle:90, maxDotSize:8}), 3, { maxDotSize:8, repeat:-1, yoyo:true } );
+				TweenMax.to(pbPixelFX, 3, { scale:40, repeat:-1, yoyo:true } );
+				//TweenMax.to(PBEffect.params.edgeHardness.value, 2, { "0":[1], yoyo:true, repeat:-1 } );
 				//imageFX.color = 0xFFFFFF;
 				//TweenMax.to(spriteFX, 4, { hexColors:{color:0x222222 }} );
 				//imageFX.alpha = 0;

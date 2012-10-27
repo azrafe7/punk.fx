@@ -5,7 +5,7 @@ package punk.fx.effects
 	import flash.filters.BlurFilter;
 	import flash.geom.Rectangle;
 	import net.flashpunk.FP;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 
 	/**
 	 * Blooming Effect.
@@ -74,6 +74,9 @@ package punk.fx.effects
 			_mat.translate(clipRect.x, clipRect.y);
 			
 			bitmapData.draw(_thresholdBMD, _mat, null, BlendMode.ADD);
+			
+			_thresholdBMD.dispose();
+			_thresholdBMD = null;
 			
 			super.applyTo(bitmapData, clipRect);
 		}

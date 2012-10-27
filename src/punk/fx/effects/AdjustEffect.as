@@ -6,7 +6,7 @@ package punk.fx.effects
 	import flash.filters.ColorMatrixFilter;
 	import flash.geom.Rectangle;
 	import net.flashpunk.FP;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 
 	/**
 	 * Color adjustments' Effect.

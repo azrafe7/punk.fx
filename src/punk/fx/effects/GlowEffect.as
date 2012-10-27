@@ -5,7 +5,7 @@ package punk.fx.effects
 	import flash.filters.GlowFilter;
 	import flash.geom.Rectangle;
 	import net.flashpunk.FP;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 
 	/**
 	 * Glowing Effect.

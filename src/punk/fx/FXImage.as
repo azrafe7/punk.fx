@@ -16,7 +16,7 @@ package punk.fx
 	 * 
 	 * @author azrafe7
 	 */
-	public class ImageFX extends Image 
+	public class FXImage extends Image 
 	{
 		
 		/** Whether the source is the entire screen. @see #getSource() */ 
@@ -28,7 +28,7 @@ package punk.fx
 		/** Auto-incremented counter for id. */
 		protected static var _idAutoCounter:int = 0;
 		
-		/** Id of the ImageFX. */ 
+		/** Id of the FXImage. */ 
 		protected var _id:int = 0;
 		
 		/** Number of Effects associated with this instance. */
@@ -38,29 +38,29 @@ package punk.fx
 		/** You can add custom data to this dictionary. */
 		public var data:Dictionary = new Dictionary(false);
 		
-		/** Name of the ImageFX instance (useful for debugging if the id is not enough). */
+		/** Name of the FXImage instance (useful for debugging if the id is not enough). */
 		public var name:String = "";
 		
-		/** Callback function called just before rendering (signature: <code>function(imgFX:ImageFX</code>)). */
+		/** Callback function called just before rendering (signature: <code>function(imgFX:FXImage</code>)). */
 		public var onPreRender:Function = null;
 
 		/**
-		 * Creates a new ImageFX using source and clipRect, and assigns an id to it.
+		 * Creates a new FXImage using source and clipRect, and assigns an id to it.
 		 * 
-		 * @param	source			the source to be used for the ImageFX (can be a BitmapData, a Class or null if you want to use the whole screen).
+		 * @param	source			the source to be used for the FXImage (can be a BitmapData, a Class or null if you want to use the whole screen).
 		 * @param	clipRect		a Rectangle representing the area of the source that you want to use (defaults to the whole source rect).
 		 */
-		public function ImageFX(source:Object = null, clipRect:Rectangle = null) 
+		public function FXImage(source:Object = null, clipRect:Rectangle = null) 
 		{
 			super(new BitmapData(10, 10));		// dummy call to super constructor
 			setSource(source, clipRect);
-			active = true;						// set the ImageFX to active (set this to false if you don't want the ImageFX to update)
+			active = true;						// set the FXImage to active (set this to false if you don't want the FXImage to update)
 			_id = _idAutoCounter++;
 		}
 		
 		
 		/**
-		 * Updates the ImageFX.
+		 * Updates the FXImage.
 		 */
 		override public function update():void 
 		{
@@ -68,9 +68,9 @@ package punk.fx
 		}
 		
 		/**
-		 * Renders the ImageFX.
+		 * Renders the FXImage.
 		 * 
-		 * @param	target		where to draw the ImageFX
+		 * @param	target		where to draw the FXImage
 		 * @param	point		at which position (in target coords) to draw
 		 * @param	camera		offset position
 		 */
@@ -88,19 +88,23 @@ package punk.fx
 				_originalSource = getSource();
 				var clonedSource:BitmapData = _originalSource.clone();
 				
+				//clonedSource.lock();
+				
 				// apply each associated effect if active
 				for (i = 0; i < _nEffects; i++) {
 					fx = _effects[i];
 					if (fx.active) fx.applyTo(clonedSource, clipRect);
 				}
 				
+				//clonedSource.unlock();
+				
 				_source = clonedSource;
 				updateBuffer(true);
 				
-				// render the ImageFX
+				// render the FXImage
 				super.render(target, point, camera);
 			}
-			else {		// no effects... so just render the ImageFX
+			else {		// no effects... so just render the FXImage
 				_source = _originalSource = getSource();
 				if (_sourceIsScreen) updateBuffer();
 				super.render(target, point, camera);
@@ -170,7 +174,7 @@ package punk.fx
 		 * 
 		 * @param	props			an Object containing key/value pairs to be set on the Effect instance.
 		 * @param	strictMode		if true (default) an Excpetion will be thrown when trying to assign to properties/vars that don't exist in the Effect instance.
-		 * @return the ImageFX itself for chaining.
+		 * @return the FXImage itself for chaining.
 		 */
 		public function setProps(props:*, strictMode:Boolean=true):* 
 		{
@@ -183,19 +187,19 @@ package punk.fx
 		}
 		
 		/**
-		 * Creates a new rectangle ImageFX.
+		 * Creates a new rectangle FXImage.
 		 * 
 		 * @param	width		width of the rectangle.
 		 * @param	height		height of the rectangle.
 		 * @param	color		color of the rectangle.
 		 * 
-		 * @return	a new ImageFX object.
+		 * @return	a new FXImage object.
 		 */
-		public static function createRect(width:uint, height:uint, color:uint = 0xFFFFFF, alpha:Number = 1):ImageFX
+		public static function createRect(width:uint, height:uint, color:uint = 0xFFFFFF, alpha:Number = 1):FXImage
 		{
 			var source:BitmapData = new BitmapData(width, height, true, 0xFFFFFFFF);
 			
-			var image:ImageFX = new ImageFX(source);
+			var image:FXImage = new FXImage(source);
 			
 			image.color = color;
 			image.alpha = alpha;
@@ -204,15 +208,15 @@ package punk.fx
 		}
 		
 		/**
-		 * Creates a new circle ImageFX.
+		 * Creates a new circle FXImage.
 		 * 
 		 * @param	radius		radius of the circle.
 		 * @param	color		color of the circle.
 		 * @param	alpha		alpha of the circle.
 		 * 
-		 * @return	a new ImageFX object.
+		 * @return	a new FXImage object.
 		 */
-		public static function createCircle(radius:uint, color:uint = 0xFFFFFF, alpha:Number = 1):ImageFX
+		public static function createCircle(radius:uint, color:uint = 0xFFFFFF, alpha:Number = 1):FXImage
 		{
 			FP.sprite.graphics.clear();
 			FP.sprite.graphics.beginFill(0xFFFFFF);
@@ -220,7 +224,7 @@ package punk.fx
 			var data:BitmapData = new BitmapData(radius * 2, radius * 2, true, 0);
 			data.draw(FP.sprite);
 			
-			var image:ImageFX = new ImageFX(data);
+			var image:FXImage = new FXImage(data);
 			
 			image.color = color;
 			image.alpha = alpha;
@@ -241,7 +245,7 @@ package punk.fx
 		 */
 		public function set effects(value:EffectList):void 
 		{
-			throw new Error("You must set the effects through FXMan (e.g.: FXMan.add(imageFx, effects)).");
+			throw new Error("You must set the effects through FXMan (e.g.: FXMan.add(fxImage, effects)).");
 		}
 		
 		/**
@@ -289,6 +293,7 @@ package punk.fx
 				var bmd:BitmapData;
 				
 				if (_bufferRect.width != maxSize || _bufferRect.height != maxSize) {
+					trace(_bufferRect.width, maxSize);
 					bmd = new BitmapData(maxSize, maxSize, true, 0);
 					setSource(bmd);
 				} else {
@@ -330,14 +335,14 @@ package punk.fx
 								
 				setSource(bmd, bmd.rect);
 			} else {
-				setSource(ImageFX.getBitmapData(targetObj));
+				setSource(FXImage.getBitmapData(targetObj));
 			}
 		}
 		
 		/**
-		 * String representation of the ImageFX (useful for debugging).
+		 * String representation of the FXImage (useful for debugging).
 		 * 
-		 * @return a string representation of the ImageFX.
+		 * @return a string representation of the FXImage.
 		 */
 		public function toString():String 
 		{

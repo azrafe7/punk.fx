@@ -4,24 +4,27 @@ package punk.fx
 	import punk.fx.effects.Effect;
 	
 	/**
-	 * Manager of ImageFXs and the Effects associated to them.
+	 * Manager of FXImages and the Effects associated to them.
 	 * 
 	 * @author azrafe7
 	 */
 	public class FXMan 
 	{
+		
+		/** Library version. */
+		public static var VERSION:String = "0.1";
 
 		/** @private */
-		protected static var _effects:Dictionary = new Dictionary(false); 		// (weak) Dictionary(ImageFX, EffectList)
+		protected static var _effects:Dictionary = new Dictionary(false); 		// (weak) Dictionary(FXImage, EffectList)
 		
 		/**
-		 * Used internally to bind/add Effects to an ImageFX.
+		 * Used internally to bind/add Effects to an FXImage.
 		 * 
 		 * @private
 		 */
-		protected static function _add(target:ImageFX, effects:*):void 
+		protected static function _add(target:FXImage, effects:*):void 
 		{
-			if (target == null) throw new Error("ImageFX target cannot be null.");
+			if (target == null) throw new Error("FXImage target cannot be null.");
 			if (!_effects[target]) _effects[target] = new EffectList(effects);
 			else EffectList(_effects[target]).add(effects);
 		}
@@ -29,12 +32,12 @@ package punk.fx
 		/**
 		 * Adds Effects to one or multiple targets.
 		 * 
-		 * @param	targets		can be a Vector, an Array or a single ImageFX.
+		 * @param	targets		can be a Vector, an Array or a single FXImage.
 		 * @param	effects		effects to be applied to targets (a Vector/Array of Effects or a single Effect).
 		 */
 		public static function add(targets:*, effects:*=null):void
 		{
-			var target:ImageFX;
+			var target:FXImage;
 			var targetArray:*;
 
 			if (targets is Array || targets is Vector.<*>) targetArray = targets;
@@ -56,13 +59,13 @@ package punk.fx
 		/**
 		 * Removes targets from the manager.
 		 * 
-		 * @param	targets		targets to be removed (a Vector/Array of ImageFXs or a single ImageFX). Pass null to remove all.
+		 * @param	targets		targets to be removed (a Vector/Array of FXImages or a single FXImage). Pass null to remove all.
 		 */
 		public static function removeTargets(targets:*=null):void 
 		{
 			if (targets == null) return clear();
 			
-			var target:ImageFX;
+			var target:FXImage;
 			var targetArray:*;
 
 			if (targets is Array || targets is Vector.<*>) targetArray = targets;
@@ -82,11 +85,11 @@ package punk.fx
 		/**
 		 * Returns the list of effects associated with target.
 		 * 
-		 * @param	target	the target ImageFX.
+		 * @param	target	the target FXImage.
 		 * 
 		 * @return the EffectList associated with target.
 		 */
-		public static function getEffectsOf(target:ImageFX):EffectList
+		public static function getEffectsOf(target:FXImage):EffectList
 		{
 			return _effects[target];
 		}
@@ -98,7 +101,7 @@ package punk.fx
 		 */
 		public static function getAllEffects():Vector.<Effect> 
 		{
-			var targets:Vector.<ImageFX> = new Vector.<ImageFX>;
+			var targets:Vector.<FXImage> = new Vector.<FXImage>;
 			var fxList:EffectList = new EffectList;
 			
 			for (var target:* in _effects) fxList.add(_effects[target]);
@@ -111,27 +114,27 @@ package punk.fx
 		 * 
 		 * @return all the targets in the manager.
 		 */
-		public static function getAllTargets():Vector.<ImageFX> 
+		public static function getAllTargets():Vector.<FXImage> 
 		{
-			var targets:Vector.<ImageFX> = new Vector.<ImageFX>;
+			var targets:Vector.<FXImage> = new Vector.<FXImage>;
 			
-			for (var target:* in _effects) targets.push(target as ImageFX);
+			for (var target:* in _effects) targets.push(target as FXImage);
 			
 			return targets;
 		}
 		
 		/**
-		 * Returns a Vector of all the ImageFXs that are using the effects specified.
+		 * Returns a Vector of all the FXImages that are using the effects specified.
 		 * 
 		 * @param	effects		effects to check against (a Vector/Array of Effects or a single Effect).
 		 * 
-		 * @return all the ImageFXs that are using the effects specified.
+		 * @return all the FXImages that are using the effects specified.
 		 */
-		public static function getTargetsWith(effects:*):Vector.<ImageFX> 
+		public static function getTargetsWith(effects:*):Vector.<FXImage> 
 		{
-			var targets:Vector.<ImageFX> = new Vector.<ImageFX>;
+			var targets:Vector.<FXImage> = new Vector.<FXImage>;
 			
-			for (var target:* in _effects) if (_effects[target].contains(effects)) targets.push(target as ImageFX);
+			for (var target:* in _effects) if (_effects[target].contains(effects)) targets.push(target as FXImage);
 			
 			return targets;
 		}

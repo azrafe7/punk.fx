@@ -5,7 +5,7 @@ package punk.fx.effects
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import net.flashpunk.FP;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 
 	/**
 	 * Pixelate Effect.
@@ -46,29 +46,37 @@ package punk.fx.effects
 		{
 			if (!clipRect) clipRect = bitmapData.rect;
 
-			var invScale:Number = 1 / scale;
-			
-			var tempW:Number = Math.ceil(clipRect.width * invScale);
-			//tempW = tempW < 1 ? 1 : tempW;
-			var tempH:Number = Math.ceil(clipRect.height * invScale);
-			//tempH = tempH < 1 ? 1 : tempH;
-			var tempBMD:BitmapData = new BitmapData(tempW, tempH, true, 0);
-			
-			// scale down (and translate using clipRect position)
-			_scaleMatrix.identity();
-			_scaleMatrix.translate(-clipRect.x, -clipRect.y);
-			_scaleMatrix.scale(invScale, invScale);
-			
-			tempBMD.draw(bitmapData, _scaleMatrix);
-			
-			// scale back (and translate back)
-			_scaleMatrix.identity();
-			_scaleMatrix.scale(clipRect.width/tempW, clipRect.height/tempH);
-			_scaleMatrix.translate(clipRect.x, clipRect.y);
+			// exit early if scale == 1
+			if (scale != 1.0) {
+				
+				// only the inverse of scale is needed
+				var invScale:Number = 1 / scale;
+				
+				var tempW:Number = Math.ceil(clipRect.width * invScale);
+				//tempW = tempW < 1 ? 1 : tempW;
+				var tempH:Number = Math.ceil(clipRect.height * invScale);
+				//tempH = tempH < 1 ? 1 : tempH;
+				var tempBMD:BitmapData = new BitmapData(tempW, tempH, true, 0);
+				
+				// scale down (and translate using clipRect position)
+				_scaleMatrix.identity();
+				_scaleMatrix.translate(-clipRect.x, -clipRect.y);
+				_scaleMatrix.scale(invScale, invScale);
+				
+				tempBMD.draw(bitmapData, _scaleMatrix);
+				
+				// scale back (and translate back)
+				_scaleMatrix.identity();
+				_scaleMatrix.scale(clipRect.width/tempW, clipRect.height/tempH);
+				_scaleMatrix.translate(clipRect.x, clipRect.y);
 
-			bitmapData.fillRect(clipRect, 0);
-			bitmapData.draw(tempBMD, _scaleMatrix, null, null, null, smooth);
-
+				bitmapData.fillRect(clipRect, 0);
+				bitmapData.draw(tempBMD, _scaleMatrix, null, null, null, smooth);
+				
+				tempBMD.dispose();
+				tempBMD = null;
+			}
+			
 			super.applyTo(bitmapData, clipRect);
 		}
 	}

@@ -4,7 +4,7 @@ package punk.fx.effects
 	import flash.filters.BlurFilter;
 	import flash.geom.Rectangle;
 	import net.flashpunk.FP;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 
 	/**
 	 * Blurring Effect.

@@ -4,7 +4,7 @@ package punk.fx.effects
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import flash.utils.getQualifiedClassName;
-	import punk.fx.ImageFX;
+	import punk.fx.FXImage;
 
 	/**
 	 * Effect base class.
@@ -91,7 +91,7 @@ package punk.fx.effects
 		/**
 		 * Applies the effect to bitmapData (override this to implement the logic for the Effect).
 		 * 
-		 * @see punk.fx.ImageFX#render()
+		 * @see punk.fx.FXImage#render()
 		 * 
 		 * @param	bitmapData		target of the Effect.
 		 * @param	clipRect		Rectangle within bitmapData to which apply the effect.

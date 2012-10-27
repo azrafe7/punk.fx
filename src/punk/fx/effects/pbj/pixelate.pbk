@@ -1,0 +1,37 @@
+<languageVersion : 1.0;>
+
+kernel Pixelate
+<
+   namespace : "net.riastar.shader";
+   vendor : "RIAstar";
+   version : 1;
+   description : "pixelates an image";
+>
+{
+   input image4 src;
+   output pixel4 dst;
+
+   parameter float size
+   <
+      minValue: 1.0;
+      maxValue: 20.0;
+      defaultValue: 4.0;
+   >;
+
+   void evaluatePixel() {
+      float2 pos = outCoord();
+      float center = (size + 1.0) / 2.0;
+
+      dst = sampleNearest(src, float2(
+         pos.x - mod(pos.x, size) + center,
+         pos.y - mod(pos.y, size) + center
+      ));
+
+      //make sure not to sample outside the borders
+      if (dst.a <= 0.0)
+         dst = sampleNearest(src, float2(
+            pos.x - mod(pos.x, size),
+            pos.y - mod(pos.y, size)
+         ));
+   }
+}
