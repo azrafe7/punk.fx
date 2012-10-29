@@ -31,7 +31,7 @@ You may also want to take a look at these:
  * [PBJ2ShaderFilter](http://xperiments.es/blog/en/pbj2shaderfilter-air-tool-to-generate-a-shaderfilter-class-from-pixel-bender-files/) - tool to generate ShaderFilter classes from pbj files
  * [TweenMax](https://www.greensock.com/tweenmax/) - awesome tweening library 
 
- 
+
 List of currently supported effects
 -----------------------------------
 
@@ -47,7 +47,7 @@ List of currently supported effects
 		10 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
 		11 • PBWaterFallFX      - Pixel Bender waterfall effect
 		12 • PixelateFX         - pixelate effect
-		13 • RetroCRTFX          - retro CRT monitor effect (with scanlines, noise and RGB channel displacement)
+		13 • RetroCRTFX         - retro CRT monitor effect (with scanlines, noise and RGB channel displacement)
 
 
 ChangeLog
