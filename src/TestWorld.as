@@ -1,11 +1,6 @@
 package  
 {
 	import com.greensock.easing.Linear;
-	import com.greensock.easing.RoughEase;
-	import com.greensock.loading.data.ImageLoaderVars;
-	import com.greensock.motionPaths.RectanglePath2D;
-	import com.greensock.plugins.AutoAlphaPlugin;
-	import com.greensock.plugins.TweenPlugin;
 	import com.greensock.TweenMax;
 	import flash.display.BitmapData;
 	import flash.display.BlendMode;
@@ -14,39 +9,34 @@ package
 	import flash.display.Shader;
 	import flash.filters.BevelFilter;
 	import flash.filters.DropShadowFilter;
-	import flash.filters.ShaderFilter;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.utils.getDefinitionByName;
-	import flash.utils.getQualifiedClassName;
-	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Backdrop;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
-	import net.flashpunk.Tween;
 	import net.flashpunk.utils.Draw;
-	import net.flashpunk.utils.Ease;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	import net.flashpunk.World;
-	import punk.fx.EffectList;
-	import punk.fx.effects.BloomEffect;
-	import punk.fx.effects.BlurEffect;
-	import punk.fx.effects.AdjustEffect;
-	import punk.fx.effects.Effect;
-	import punk.fx.effects.FadeEffect;
-	import punk.fx.effects.FilterEffect;
-	import punk.fx.effects.GlowEffect;
-	import punk.fx.effects.PBHalfToneEffect;
-	import punk.fx.effects.PBPixelateEffect;
-	import punk.fx.effects.PixelateEffect;
-	import punk.fx.effects.PixelBenderEffect;
-	import punk.fx.effects.RetroCRTEffect;
+	import punk.fx.effects.AdjustFX;
+	import punk.fx.effects.BloomFX;
+	import punk.fx.effects.BlurFX;
+	import punk.fx.effects.FadeFX;
+	import punk.fx.effects.FilterFX;
+	import punk.fx.effects.FX;
+	import punk.fx.effects.GlowFX;
+	import punk.fx.effects.PBBaseFX;
+	import punk.fx.effects.PBHalfToneFX;
+	import punk.fx.effects.PBPixelateFX;
+	import punk.fx.effects.PBShaderFilterFX;
+	import punk.fx.effects.PBWaterFallFX;
+	import punk.fx.effects.PixelateFX;
+	import punk.fx.effects.RetroCRTFX;
 	import punk.fx.FXImage;
+	import punk.fx.FXList;
 	import punk.fx.FXMan;
-	import punk.fx.FXImage;
 	
 	/**
 	 * ...
@@ -58,18 +48,19 @@ package
 		private var tween:TweenMax;
 		private var swordguy:Spritemap;
 		private var spriteFX:FXImage;
-		private var maskPixelate:PixelateEffect;
+		private var maskPixelate:PixelateFX;
 		private var clone:FXImage;
 		private var shadowFilter:DropShadowFilter;
-		private var filtersFX:FilterEffect;
+		private var filtersFX:FilterFX;
 		private var bevelFilter:BevelFilter;
 
+		[Embed(source="punk/fx/effects/pbj/HexCells.pbj", mimeType="application/octet-stream")]
+		public var DATA:Class;
+			
 
-		[Embed("../bin/zoomBlurFocus.pbj", mimeType="application/octet-stream")]
-		private var ZOOMBLURFOCUS:Class;		
-		private var PBEffect:PixelBenderEffect;
-		private var halfToneFX:PBHalfToneEffect;
-		private var pbPixelFX:PBPixelateEffect;
+		private var pxbFX:PBShaderFilterFX;
+		private var halfToneFX:PBHalfToneFX;
+		private var benderFX:PBBaseFX;
 
 		
 		[Embed(source = "assets/longBackground.png")]
@@ -84,19 +75,19 @@ package
 		protected var imageFX:FXImage;
 		protected var background:Backdrop;
 		
-		protected var fadeFX:FadeEffect;
+		protected var fadeFX:FadeFX;
 		
-		protected var fx:Effect;
-		protected var blurFX:Effect;
-		protected var pixelateFX:Effect;
-		protected var glowFX:Effect;
-		protected var adjustFX:Effect;
-		protected var retroCRTFX:Effect;
-		protected var bloomFX:Effect;
+		protected var fx:FX;
+		protected var blurFX:FX;
+		protected var pixelateFX:FX;
+		protected var glowFX:FX;
+		protected var adjustFX:FX;
+		protected var retroCRTFX:FX;
+		protected var bloomFX:FX;
 		
 		public static var player:Player;
 		
-		protected var fxList:EffectList = new EffectList;
+		protected var fxList:FXList = new FXList;
 		
 		public function TestWorld() 
 		{
@@ -115,15 +106,15 @@ package
 			//imageFX.alpha = .4;
 			addGraphic(imageFX, -4, 200, 100);
 			
-			fadeFX = new FadeEffect();
+			fadeFX = new FadeFX();
 			fx = fadeFX;
 			fx.setProps( { opaque:false, color:0xfffffff0 } );
-			blurFX = new BlurEffect;
-			pixelateFX = new PixelateEffect;
-			glowFX = new GlowEffect;
-			adjustFX = new AdjustEffect;
-			retroCRTFX = new RetroCRTEffect().setOffsets(0);
-			bloomFX = new BloomEffect(4, 255);
+			blurFX = new BlurFX;
+			pixelateFX = new PixelateFX;
+			glowFX = new GlowFX;
+			adjustFX = new AdjustFX;
+			retroCRTFX = new RetroCRTFX().setProps({noiseSeed:0, scanLinesDir:RetroCRTFX.VERTICAL});
+			bloomFX = new BloomFX(4, 255);
 			
 			FXMan.clear();
 			
@@ -131,7 +122,7 @@ package
 			TweenMax.to(circle, 1, {r:100, yoyo:true, repeat:-1, ease:Linear.ease});
 			var maskBMD:BitmapData = new BitmapData(imageFX.width, imageFX.height, true, 0xFF000000);
 			var maskImg:FXImage = new FXImage(maskBMD);
-			maskPixelate = new PixelateEffect(10);
+			maskPixelate = new PixelateFX(10);
 			
 			//addGraphic(maskImg, -2, -200);
 			//FXMan.add(maskImg, [maskPixelate]);
@@ -265,16 +256,22 @@ package
 				
 			shadowFilter = new DropShadowFilter;
 			bevelFilter = new BevelFilter;
-			filtersFX = new FilterEffect([shadowFilter, bevelFilter]);
+			
+			halfToneFX = new PBHalfToneFX();
+			//FXMan.add(imageFX, halfToneFX);
+			
+			filtersFX = new FilterFX([shadowFilter, bevelFilter/*, halfToneFX.filter*/]);
 			
 			FXMan.removeTargets(imageFX);
 
 			
-			halfToneFX = new PBHalfToneEffect();
-			//FXMan.add(imageFX, halfToneFX);
-
-			pbPixelFX = new PBPixelateEffect;
-			FXMan.add(imageFX, pbPixelFX);
+			
+			benderFX = new PBWaterFallFX;
+			FXMan.add(imageFX, [benderFX]);
+			
+			imageFX.effects.add([retroCRTFX, new PBPixelateFX(2.5)]);
+			
+			trace(PBShaderFilterFX.getInfo(new Shader(new DATA)));
 			
 			for (var i:int = 0; i < 10; i++) {
 				//var imgFX:FXImage = FXImage.createCircle(40, 0xff0000);
@@ -346,8 +343,13 @@ package
 				imageFX.angle = 0;
 				TweenMax.to(shadowFilter, 4, { strength:10 } );
 				TweenMax.to(halfToneFX.setProps({ angle:90, maxDotSize:8}), 3, { maxDotSize:8, repeat:-1, yoyo:true } );
-				TweenMax.to(pbPixelFX, 3, { scale:40, repeat:-1, yoyo:true } );
-				//TweenMax.to(PBEffect.params.edgeHardness.value, 2, { "0":[1], yoyo:true, repeat:-1 } );
+				TweenMax.to(benderFX.setProps({direction:PBWaterFallFX.BOTTOM, percent:0}), 2, { percent:1, repeat:-1, yoyo:true, overwrite:"all" } );
+				trace(FXMan);
+				//imageFX.clipRect.width = imageFX.clipRect.height = 200;
+				//imageFX.clipRect.x = imageFX.clipRect.y = 100;
+				//TweenMax.to(benderFX.setProps({centerX:40, centerY:40, radius:1}), 3, { radius:50, repeat:-1, yoyo:true, immediateRender:true, overwrite:"all" } );
+				//TweenMax.to(benderFX.setProps({scale:1}), 3, { scale:10, repeat:-1, yoyo:true, immediateRender:true, overwrite:"all" } );
+				//TweenMax.to(PBFX.params.edgeHardness.value, 2, { "0":[1], yoyo:true, repeat:-1 } );
 				//imageFX.color = 0xFFFFFF;
 				//TweenMax.to(spriteFX, 4, { hexColors:{color:0x222222 }} );
 				//imageFX.alpha = 0;

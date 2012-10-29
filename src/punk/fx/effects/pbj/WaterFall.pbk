@@ -1,0 +1,130 @@
+<languageVersion : 1.0;>
+
+kernel Waterfall
+<   namespace : "net.ghostradio.pb";
+    vendor : "ghostRadio.net";
+    version : 1;
+    description : "Waterfall effect.";
+>
+{
+    parameter int imageW
+    <
+    minValue : 0;
+    maxValue : 1024;
+    defaultValue : 800;
+    description : "Image Width";
+    >;
+    
+    parameter int imageH
+    <
+    minValue : 0;
+    maxValue : 1024;
+    defaultValue : 500;
+    description : "Image Height";
+    >;
+    
+    parameter float percent
+    <
+    minValue : 0.0;
+    maxValue : 1.0;
+    defaultValue : 0.0;
+    description : "percent";
+    >;
+    
+    parameter int direction
+    <
+    minValue : 0;
+    maxValue : 3;
+    defaultValue : 0;
+    description : "Direction of the waterfall - 0 = top>bottom, 1 = bottom>top, 2 = left>right, 3 = right > left. (Default is 0)";
+    >;
+
+    input image4 src;
+    output pixel4 outputPx;
+
+    void
+    evaluatePixel()
+    {
+        float2 cPos = outCoord();
+        
+        float2 startPos = cPos;
+        float2 endPos = cPos;
+        
+                 
+        // top > bottom
+        if (direction == 0)
+        {
+            startPos = cPos;
+            startPos.y = 0.0;
+                        
+            // how far should the effect be applied, based on the percentage?
+            endPos.y = (percent * float(imageH));
+            
+            if (cPos.y <= endPos.y)
+            {
+                outputPx = sampleLinear (src, endPos);
+            }
+            else
+            {
+                outputPx = sampleLinear (src, cPos);
+            }
+        }
+        
+        // bottom > top
+        if (direction == 1)
+        {
+            startPos = cPos;
+            startPos.y = float(imageH);
+            
+            // how far should the effect be applied, based on the percentage?
+            endPos.y = float(imageH) - (percent * float(imageH));
+            
+            if (cPos.y >= endPos.y)
+            {
+                outputPx = sampleLinear (src, endPos);
+            }
+            else
+            {
+                outputPx = sampleLinear (src, cPos);
+            }
+        }
+        
+        // left > right
+        if (direction == 2)
+        {
+            startPos = cPos;
+            startPos.x = 0.0;
+            
+            // how far should the effect be applied, based on the percentage?
+            endPos.x = (percent * float(imageW));
+            
+            if (cPos.x <= endPos.x)
+            {
+                outputPx = sampleLinear (src, endPos);
+            }
+            else
+            {
+                outputPx = sampleLinear (src, cPos);
+            }
+        }
+        
+        // right > left
+        if (direction == 3)
+        {
+            startPos = cPos;
+            startPos.x = float(imageW);
+                        
+            // how far should the effect be applied, based on the percentage?
+            endPos.x = float(imageW) - (percent * float(imageW));
+            
+            if (cPos.x >= endPos.x)
+            {
+                outputPx = sampleLinear (src, endPos);
+            }
+            else
+            {
+                outputPx = sampleLinear (src, cPos);
+            }
+        }
+    }
+}

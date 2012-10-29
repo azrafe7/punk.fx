@@ -7,7 +7,7 @@
         <property name="bin.dir" location="${FlexSDK.dir}/bin"/>        
 
         <!-- The output directory for your documentation -->
-        <property name="output.dir" location="${basedir}/asdoc-output"/>
+        <property name="output.dir" location="${basedir}/doc"/>
 
         <!-- SWC file library path -->
         <property name="swcLibraryPaths" value="${basedir}/lib"/>

@@ -1,6 +1,8 @@
 # Build and Release Folders
 obj/
 bin/
+obj/*
+bin/*
 
 # Project property files
 .actionScriptProperties

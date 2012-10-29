@@ -1,14 +1,12 @@
 package 
 {
-	import net.flashpunk.utils.Key;
-	import net.flashpunk.utils.Input;
 	import flash.system.System;
 	import net.flashpunk.Engine;
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
-	import net.flashpunk.World;
-	import net.flashpunk.utils.Key;
 	import net.flashpunk.graphics.Text;
+	import net.flashpunk.utils.Input;
+	import net.flashpunk.utils.Key;
 	
 	/**
 	 * ...
@@ -22,7 +20,7 @@ package
 		public function Main():void 
 		{
 			trace("FP started!");
-			super(640, 480, 60, false);
+			super(640, 480, 30, false);
 			
 			//FP.console.toggleKey = Key.TAB;
 			//FP.console.log("TAB - toggle console");

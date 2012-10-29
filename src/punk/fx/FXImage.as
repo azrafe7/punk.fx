@@ -9,10 +9,11 @@ package punk.fx
 	import flash.utils.getQualifiedClassName;
 	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Image;
-	import punk.fx.effects.Effect;
+	import punk.fx.effects.FX;
+	import punk.fx.FXImage;
 	
 	/**
-	 * An extended Image class to which Effects can be applied.
+	 * An extended Image class to which FXs can be applied.
 	 * 
 	 * @author azrafe7
 	 */
@@ -31,7 +32,7 @@ package punk.fx
 		/** Id of the FXImage. */ 
 		protected var _id:int = 0;
 		
-		/** Number of Effects associated with this instance. */
+		/** Number of FXs associated with this instance. */
 		protected var _nEffects:int;
 		
 		
@@ -54,7 +55,7 @@ package punk.fx
 		{
 			super(new BitmapData(10, 10));		// dummy call to super constructor
 			setSource(source, clipRect);
-			active = true;						// set the FXImage to active (set this to false if you don't want the FXImage to update)
+			active = true;						// sets the FXImage to active (set this to false if you don't want the FXImage to update)
 			_id = _idAutoCounter++;
 		}
 		
@@ -76,8 +77,8 @@ package punk.fx
 		 */
 		override public function render(target:BitmapData, point:Point, camera:Point):void 
 		{
-			var fx:Effect;
-			var _effects:Vector.<Effect> = (effects ? effects.getAll() : null);
+			var fx:FX;
+			var _effects:Vector.<FX> = (effects ? effects.getAll() : null);
 			
 			// run onPreRender callback if exists (passing this instance as first parameter)
 			if (onPreRender != null && onPreRender is Function) onPreRender(this);
@@ -91,7 +92,7 @@ package punk.fx
 				//clonedSource.lock();
 				
 				// apply each associated effect if active
-				for (i = 0; i < _nEffects; i++) {
+				for (i = 0; i < _nEffects; ++i) {
 					fx = _effects[i];
 					if (fx.active) fx.applyTo(clonedSource, clipRect);
 				}
@@ -172,8 +173,8 @@ package punk.fx
 		 * effect.setProps({color:0xff0000, quality:2, foobar:"dsjghkjdgh"}, false);
 		 * </listing>
 		 * 
-		 * @param	props			an Object containing key/value pairs to be set on the Effect instance.
-		 * @param	strictMode		if true (default) an Excpetion will be thrown when trying to assign to properties/vars that don't exist in the Effect instance.
+		 * @param	props			an Object containing key/value pairs to be set on the FX instance.
+		 * @param	strictMode		if true (default) an Excpetion will be thrown when trying to assign to properties/vars that don't exist in the FX instance.
 		 * @return the FXImage itself for chaining.
 		 */
 		public function setProps(props:*, strictMode:Boolean=true):* 
@@ -233,9 +234,9 @@ package punk.fx
 		}
 
 		/**
-		 * The EffectList associated with this instance.
+		 * The FXList associated with this instance.
 		 */
-		public function get effects():EffectList 
+		public function get effects():FXList 
 		{
 			return FXMan.getEffectsOf(this);
 		}
@@ -243,7 +244,7 @@ package punk.fx
 		/**
 		 * @private
 		 */
-		public function set effects(value:EffectList):void 
+		public function set effects(value:FXList):void 
 		{
 			throw new Error("You must set the effects through FXMan (e.g.: FXMan.add(fxImage, effects)).");
 		}

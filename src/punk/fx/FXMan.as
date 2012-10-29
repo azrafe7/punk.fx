@@ -1,10 +1,10 @@
 package punk.fx
 {
 	import flash.utils.Dictionary;
-	import punk.fx.effects.Effect;
+	import punk.fx.effects.FX;
 	
 	/**
-	 * Manager of FXImages and the Effects associated to them.
+	 * Manager of FXImages and the FXs associated to them.
 	 * 
 	 * @author azrafe7
 	 */
@@ -12,28 +12,28 @@ package punk.fx
 	{
 		
 		/** Library version. */
-		public static var VERSION:String = "0.1";
+		public static var VERSION:String = "0.1.009";
 
 		/** @private */
-		protected static var _effects:Dictionary = new Dictionary(false); 		// (weak) Dictionary(FXImage, EffectList)
+		protected static var _effects:Dictionary = new Dictionary(false); 		// (weak) Dictionary(FXImage, FXList)
 		
 		/**
-		 * Used internally to bind/add Effects to an FXImage.
+		 * Used internally to bind/add FXs to an FXImage.
 		 * 
 		 * @private
 		 */
 		protected static function _add(target:FXImage, effects:*):void 
 		{
 			if (target == null) throw new Error("FXImage target cannot be null.");
-			if (!_effects[target]) _effects[target] = new EffectList(effects);
-			else EffectList(_effects[target]).add(effects);
+			if (!_effects[target]) _effects[target] = new FXList(effects);
+			else FXList(_effects[target]).add(effects);
 		}
 		
 		/**
-		 * Adds Effects to one or multiple targets.
+		 * Adds FXs to one or multiple targets.
 		 * 
 		 * @param	targets		can be a Vector, an Array or a single FXImage.
-		 * @param	effects		effects to be applied to targets (a Vector/Array of Effects or a single Effect).
+		 * @param	effects		effects to be applied to targets (a Vector/Array of FXs or a single FX).
 		 */
 		public static function add(targets:*, effects:*=null):void
 		{
@@ -49,7 +49,7 @@ package punk.fx
 		/**
 		 * Removes effects from the manager.
 		 * 
-		 * @param	effects		effects to be removed (a Vector/Array of Effects or a single Effect).
+		 * @param	effects		effects to be removed (a Vector/Array of FXs or a single FX).
 		 */
 		public static function removeEffects(effects:*):void
 		{
@@ -87,9 +87,9 @@ package punk.fx
 		 * 
 		 * @param	target	the target FXImage.
 		 * 
-		 * @return the EffectList associated with target.
+		 * @return the FXList associated with target.
 		 */
-		public static function getEffectsOf(target:FXImage):EffectList
+		public static function getEffectsOf(target:FXImage):FXList
 		{
 			return _effects[target];
 		}
@@ -99,10 +99,10 @@ package punk.fx
 		 * 
 		 * @return all the effects in the manager.
 		 */
-		public static function getAllEffects():Vector.<Effect> 
+		public static function getAllEffects():Vector.<FX> 
 		{
 			var targets:Vector.<FXImage> = new Vector.<FXImage>;
-			var fxList:EffectList = new EffectList;
+			var fxList:FXList = new FXList;
 			
 			for (var target:* in _effects) fxList.add(_effects[target]);
 			
@@ -118,23 +118,23 @@ package punk.fx
 		{
 			var targets:Vector.<FXImage> = new Vector.<FXImage>;
 			
-			for (var target:* in _effects) targets.push(target as FXImage);
+			for (var target:* in _effects) targets[targets.length] = target as FXImage;
 			
 			return targets;
 		}
 		
 		/**
-		 * Returns a Vector of all the FXImages that are using the effects specified.
+		 * Returns a Vector of all the FXImages that are using the specified effects.
 		 * 
-		 * @param	effects		effects to check against (a Vector/Array of Effects or a single Effect).
+		 * @param	effects		effects to check against (a Vector/Array of FXs or a single FX).
 		 * 
-		 * @return all the FXImages that are using the effects specified.
+		 * @return all the FXImages that are using the specified effects.
 		 */
 		public static function getTargetsWith(effects:*):Vector.<FXImage> 
 		{
 			var targets:Vector.<FXImage> = new Vector.<FXImage>;
 			
-			for (var target:* in _effects) if (_effects[target].contains(effects)) targets.push(target as FXImage);
+			for (var target:* in _effects) if (_effects[target].contains(effects)) targets[targets.length] = target as FXImage;
 			
 			return targets;
 		}
