@@ -3,6 +3,10 @@ obj/
 bin/
 obj/*
 bin/*
+obj
+bin
+/obj/
+/bin/
 
 # Project property files
 .actionScriptProperties
