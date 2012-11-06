@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<list>
+	<effect className="AdjustFX">
+		<param name="brightness" type="Number" min="-1.0" max="1.0" default="0.0" tweenTo="-0.4" />
+		<param name="contrast" type="Number" min="-1.0" max="1.0" default="0.0" tweenTo=".7" />
+		<param name="saturation" type="Number" min="-1.0" max="1.0" default="0.0" tweenTo="-0.8" />
+		<param name="hue" type="Number" min="-180.0" max="180.0" default="0.0" />
+	</effect>
+	<effect className="BloomFX">
+		<param name="blur" type="Number" min="0.0" max="64.0" default="2.0" tweenTo="32" />
+		<param name="threshold" type="int" min="0" max="255" default="255" tweenTo="180" />
+		<param name="quality" type="int" min="1" max="3" default="1" />
+	</effect>
+	<effect className="BlurFX">
+		<param name="blur" type="Number" min="0.0" max="128.0" default="0.0" />
+		<param name="blurX" type="Number" min="0.0" max="128.0" default="0.0" tweenTo="16" />
+		<param name="blurY" type="Number" min="0.0" max="128.0" default="0.0" tweenTo="20" />
+		<param name="quality" type="int" min="1" max="3" default="1" />
+	</effect>
+	<effect className="FadeFX">
+		<param name="alpha" type="Number" min="0.0" max="1.0" default="1.0" tweenTo="0.4" />
+		<param name="color" type="uint" min="0" max="0xFFFFFF" default="0xFFFFFF" tweenTo="0x3333FF" />
+		<param name="opaque" type="Boolean" default="false" />
+	</effect>
+	<effect className="GlowFX">
+		<param name="blur" type="Number" min="0.0" max="128.0" default="0.0" />
+		<param name="color" type="uint" min="0" max="0xFFFFFF" default="0xFFFFFF" />
+		<param name="strength" type="Number" min="0.0" max="256.0" default="2.0" />
+		<param name="quality" type="int" min="1" max="3" default="1" />
+		<param name="inner" type="Boolean" default="false" />
+		<param name="knockout" type="Boolean" default="false" />
+	</effect>
+	<effect className="PixelateFX">
+		<param name="scale" type="Number" min="1.0" max="128.0" default="1.0" tweenTo="40" />
+	</effect>
+	<effect className="RetroCRTFX">
+		<param name="scanLines" type="Boolean" default="true" />
+		<param name="scanLinesGap" type="Number" min="1.0" max="128.0" default="2.0" tweenTo="12" />
+		<param name="scanLinesThickness" type="Number" min="1.0" max="40.0" default="1.0" tweenTo="5" />
+		<param name="scanLinesColor" type="uint" min="0" max="0xFFFFFF" default="0x333333" />
+		<param name="scanLinesAlpha" type="Number" min="0.0" max="1.0" default="0.2" />
+		<param name="scanLinesDir" type="int" min="0" max="1" default="0" />
+		<param name="noiseAmount" type="uint" min="0" max="255" default="25" tweenTo="180" />
+		<param name="redOffsetX" type="Number" min="-40.0" max="40.0" default="0.0" />
+		<param name="redOffsetY" type="Number" min="-40.0" max="40.0" default="0.0" />
+		<param name="greenOffsetX" type="Number" min="-40.0" max="40.0" default="0.0" />
+		<param name="greenOffsetY" type="Number" min="-40.0" max="40.0" default="0.0" />
+		<param name="blueOffsetX" type="Number" min="-40.0" max="40.0" default="0.0" />
+		<param name="blueOffsetY" type="Number" min="-40.0" max="40.0" default="0.0" />
+	</effect>
+	<effect className="PBCircleSplashFX">
+		<param name="radius" type="Number" min="0.0" max="640.0" default="500.0" tweenTo="0.0" />
+		<param name="centerX" type="Number" min="0.0" max="640.0" default="256.0" />
+		<param name="centerY" type="Number" min="0.0" max="640.0" default="256.0" />
+	</effect>
+	<effect className="PBHalfToneFX">
+		<param name="dotSpacing" type="Number" min="0.0" max="40.0" default="5.0" tweenTo="10" />
+		<param name="angle" type="Number" min="0.0" max="360.0" default="45.0" tweenTo="135" />
+		<param name="maxDotSize" type="Number" min="0.0" max="25.0" default="4.0" tweenTo="8" />
+		<param name="gamma" type="Number" min="0.0" max="5" default=".8" />
+	</effect>
+	<effect className="PBPixelateFX">
+		<param name="scale" type="Number" min="1.0" max="128.0" default="1.0" tweenTo="40" />
+	</effect>
+	<effect className="PBWaterFallFX">
+		<param name="percent" type="Number" min="0.0" max="1.0" default="0.0" tweenTo="1" />
+		<param name="direction" type="int" min="0" max="3" default="0" />
+	</effect>
+</list>

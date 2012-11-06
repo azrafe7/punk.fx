@@ -12,7 +12,7 @@ package punk.fx
 	{
 		
 		/** Library version. */
-		public static var VERSION:String = "0.1.009";
+		public static var VERSION:String = "0.1.015";
 
 		/** @private */
 		protected static var _effects:Dictionary = new Dictionary(false); 		// (weak) Dictionary(FXImage, FXList)

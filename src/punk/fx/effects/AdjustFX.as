@@ -65,7 +65,7 @@ package punk.fx.effects
 
 			_filter.matrix = _colorMatrix;
 
-			bitmapData.applyFilter(bitmapData, clipRect, FP.zero, _filter);
+			bitmapData.applyFilter(bitmapData, clipRect, clipRect.topLeft, _filter);
 			
 			super.applyTo(bitmapData, clipRect);
 		}

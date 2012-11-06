@@ -169,6 +169,10 @@ package punk.fx.effects
 				_updateScanLines = false;
 			}
 			
+			// update matrix to draw to proper position
+			_mat.identity();
+			_mat.translate(clipRect.x, clipRect.y);
+			
 			if (redOffsetX == 0 && redOffsetY == 0 && greenOffsetX == 0 && greenOffsetY == 0 && blueOffsetX == 0 && blueOffsetY == 0) {
 				// no offsets => do nothing
 				//trace("no offsets")
@@ -190,10 +194,6 @@ package punk.fx.effects
 				
 				// clear target
 				bitmapData.fillRect(clipRect, 0);
-				
-				// update matrix to draw to proper position
-				_mat.identity();
-				_mat.translate(clipRect.x, clipRect.y);
 				
 				// draw channels to target
 				if (showRedChannel) bitmapData.draw(_redBMD, _mat);
@@ -260,6 +260,7 @@ package punk.fx.effects
 					g.lineTo(x, _scanLinesBMD.rect.height);
 				}
 			}
+			_scanLinesBMD.fillRect(_scanLinesBMD.rect, 0);
 			_scanLinesBMD.draw(FP.sprite);
 		}
 		

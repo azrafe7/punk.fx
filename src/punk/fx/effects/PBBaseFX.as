@@ -29,7 +29,7 @@ package punk.fx.effects
 		override public function applyTo(bitmapData:BitmapData, clipRect:Rectangle = null):void
 		{
 			if (!clipRect) clipRect = bitmapData.rect;
-			
+
 			PBShaderFilterFX.applyShaderFilter(bitmapData, clipRect, bitmapData, clipRect.topLeft, filter);
 			
 			super.applyTo(bitmapData, clipRect);

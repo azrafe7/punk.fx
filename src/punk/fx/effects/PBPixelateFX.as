@@ -1,7 +1,9 @@
 package punk.fx.effects 
 {
+	import flash.display.BitmapData;
 	import flash.display.Shader;
 	import flash.filters.ShaderFilter;
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Wrapper for Pixel Bender Pixelate effect by RIAstar.

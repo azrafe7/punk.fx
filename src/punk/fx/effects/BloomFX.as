@@ -30,7 +30,7 @@ package punk.fx.effects
 		public var threshold:uint;
 
 		/** Quality of the blur effect (in the range [1, 3] where 3 means highest quality) */
-		public var quality:Number = 1;
+		public var quality:int = 1;
 		
 		
 		/**
@@ -43,7 +43,7 @@ package punk.fx.effects
 		 * @param	threshold	threshold level to use before the blur (in the range [0, 255]).
 		 * @param	quality		quality of the blur effect (in the range [1, 3] where 3 means highest quality).
 		 */
-		public function BloomFX(blur:Number = 0, threshold:uint = 255, quality:Number = 1) 
+		public function BloomFX(blur:Number = 0, threshold:uint = 255, quality:int = 1) 
 		{
 			super();
 			
@@ -63,19 +63,22 @@ package punk.fx.effects
 			_filter.blurY = blur;
 			_filter.quality = quality;
 
-			// apply blur to thresholded data
-			_thresholdBMD = new BitmapData(clipRect.width, clipRect.height, true, 0xFF000000);
-			_thresholdBMD.threshold(bitmapData, clipRect, FP.zero, "<=", _threshold, 0x00000000, 0x00FFFFFF, true);
-			_thresholdBMD.applyFilter(_thresholdBMD, _thresholdBMD.rect, FP.zero, _filter);
-			
-			// update matrix to draw to proper position
-			_mat.identity();
-			_mat.translate(clipRect.x, clipRect.y);
-			
-			bitmapData.draw(_thresholdBMD, _mat, null, BlendMode.ADD);
-			
-			_thresholdBMD.dispose();
-			_thresholdBMD = null;
+			// apply filter only if threshold is < 255
+			if (threshold < 255) {
+				// apply blur to thresholded data
+				_thresholdBMD = new BitmapData(clipRect.width, clipRect.height, true, 0xFF000000);
+				_thresholdBMD.threshold(bitmapData, clipRect, FP.zero, "<=", _threshold, 0x00000000, 0x00FFFFFF, true);
+				_thresholdBMD.applyFilter(_thresholdBMD, _thresholdBMD.rect, FP.zero, _filter);
+				
+				// update matrix to draw to proper position
+				_mat.identity();
+				_mat.translate(clipRect.x, clipRect.y);
+				
+				bitmapData.draw(_thresholdBMD, _mat, null, BlendMode.ADD);
+				
+				_thresholdBMD.dispose();
+				_thresholdBMD = null;
+			}
 			
 			super.applyTo(bitmapData, clipRect);
 		}

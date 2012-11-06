@@ -330,7 +330,7 @@ package punk.fx
 								
 				targetImage.render(bmd, new Point(origin.x - left, origin.y - top), FP.zero);
 								
-				// align spriteFX with source image position
+				// align with target image position
 				this.x = this.originX - origin.x + left;
 				this.y = this.originY - origin.y + top;
 								

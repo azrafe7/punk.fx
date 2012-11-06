@@ -79,8 +79,11 @@ package punk.fx.effects
 			_filter.inner = inner;
 			_filter.knockout = knockout;
 
-			if (!bitmapData.transparent) throw new Error("Cannot apply this effect to a non-transparent BitmapData.");
-			bitmapData.applyFilter(bitmapData, clipRect, clipRect.topLeft, _filter);
+			if (bitmapData.transparent) {
+				bitmapData.applyFilter(bitmapData, clipRect, clipRect.topLeft, _filter);
+			} else {
+				//throw new Error("Cannot apply this effect to a non-transparent BitmapData.");
+			}
 
 			super.applyTo(bitmapData, clipRect);
 		}

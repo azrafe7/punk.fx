@@ -26,21 +26,22 @@ package
 			sprSwordguy.centerOO();
 		}
 		
-		private var dx:Number = 2;
+		private var dx:Number = 120;
 		override public function update():void
 		{
-			moveBy(dx, 0);
+			moveBy(dx*FP.elapsed*.5, 0);
 			
 			if(x > 500) 
 			{
-				dx = -100*FP.elapsed;
+				dx *= -1;
 				sprSwordguy.flipped = true;
 			}
 			else if(x < 200)
 			{
-				dx = 100*FP.elapsed;
+				dx *= -1;
 				sprSwordguy.flipped = false;
 			}
+			moveBy(dx*FP.elapsed*.5, 0);
 		}
 	}
 }

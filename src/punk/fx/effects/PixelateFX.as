@@ -43,8 +43,8 @@ package punk.fx.effects
 		{
 			if (!clipRect) clipRect = bitmapData.rect;
 
-			// exit early if scale == 1
-			if (scale != 1.0) {
+			// exit early if scale <= 1
+			if (scale > 1.0) {
 				
 				// only the inverse of scale is needed
 				var invScale:Number = 1 / scale;

@@ -20,7 +20,7 @@ package
 		public function Main():void 
 		{
 			trace("FP started!");
-			super(640, 480, 30, false);
+			super(640, 480, 60, false);
 			
 			//FP.console.toggleKey = Key.TAB;
 			//FP.console.log("TAB - toggle console");
