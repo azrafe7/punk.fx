@@ -50,9 +50,7 @@ package punk.fx.effects
 				var invScale:Number = 1 / scale;
 				
 				var tempW:Number = Math.ceil(clipRect.width * invScale);
-				//tempW = tempW < 1 ? 1 : tempW;
 				var tempH:Number = Math.ceil(clipRect.height * invScale);
-				//tempH = tempH < 1 ? 1 : tempH;
 				var tempBMD:BitmapData = new BitmapData(tempW, tempH, true, 0);
 				
 				// scale down (and translate using clipRect position)

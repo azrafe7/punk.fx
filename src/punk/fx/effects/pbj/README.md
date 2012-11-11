@@ -1,3 +1,3 @@
-Pixel Bender pbj files found on the net.
+Pixel Bender pbj files found on the net (typically on [Pixel Bender Exchange](http://www.adobe.com/cfusion/exchange/index.cfm?s=5&from=1&o=desc&cat=-1&l=-1&event=productHome&exc=26)).
 
-Where possible the source pbk file is included.
+Where possible credits and source pbk files are included.

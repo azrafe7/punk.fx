@@ -1,0 +1,156 @@
+<languageVersion : 1.0;>
+
+kernel Dot
+<   namespace : "Dot";
+    vendor : "Shogo Kimura";
+    version : 1;
+    description : "";
+>
+#define PI 3.1415926535897932384626433832795
+{
+    input image4 src;
+    output pixel4 dst;
+
+    parameter float2 size
+    <
+        defaultValue : float2( 13.0, 13.0);     
+        minValue :   float2( 1.0, 1.0);     
+        maxValue :  float2( 500.0, 500.0);
+        description : "size of circle + space (x,y)";
+    >;
+
+    parameter float circle_size
+    <
+        defaultValue : float( 10.0);     
+        minValue :   float( 1.0);     
+        maxValue :  float( 700.0);     
+        description : "size of circle";
+    >;
+
+    parameter float rotate
+    <
+        defaultValue : float( 0.0);     
+        minValue :   float( 0.0);     
+        maxValue :  float( PI);     
+        description : "rotation (radian)";
+    >;
+
+    parameter float2 start
+    <
+        defaultValue : float2( 0.0, 0.0);     
+        minValue :   float2( -200.0, -200.0);     
+        maxValue :  float2( 200.0, 200.0);
+        description : "start position";
+    >;
+
+    parameter float gradation
+    <
+        defaultValue : float( 0.0);     
+        minValue :   float( 0.0);     
+        maxValue :  float( 1.0);
+        description : "gradation of circle";
+    >;
+
+    void
+    evaluatePixel()
+    {
+        float2 srcpos = outCoord();
+        
+        float2 outpos = float2(srcpos.x * cos(rotate) + srcpos.y * sin(rotate) - start.x,
+                              srcpos.y * cos(-rotate) + srcpos.x * sin(-rotate) - start.y);
+        
+        float2 box1 = - mod(outpos, size);
+        float2 box2 = float2(size.x, 0.0) - mod(outpos, size);
+        float2 box3 = float2(0.0, size.y) - mod(outpos, size);
+        float2 box4 = float2(size.x, size.y) - mod(outpos, size);
+        
+        box1 = float2(box1.x * cos(-rotate) + box1.y * sin(-rotate),
+                              box1.y * cos(rotate) + box1.x * sin(rotate));
+        box2 = float2(box2.x * cos(-rotate) +box2.y * sin(-rotate),
+                              box2.y * cos(rotate) +box2.x * sin(rotate));
+        box3 = float2(box3 .x * cos(-rotate) +box3 .y * sin(-rotate),
+                              box3 .y * cos(rotate) + box3 .x * sin(rotate));
+        box4 = float2(box4.x * cos(-rotate) + box4.y * sin(-rotate),
+                              box4.y * cos(rotate) + box4.x * sin(rotate));
+        
+        float2 center1 = srcpos + box1;
+        float2 center2 = srcpos + box2;
+        float2 center3 = srcpos + box3;
+        float2 center4 = srcpos + box4;
+
+        pixel4 center_color1 = sampleNearest(src, center1);
+        pixel4 center_color2 = sampleNearest(src, center2);
+        pixel4 center_color3 = sampleNearest(src, center3);
+        pixel4 center_color4 = sampleNearest(src, center4);
+
+        pixel3 dstcolor_tmp1 = pixel3(0.0, 0.0, 0.0);
+        pixel3 dstcolor_tmp2 = pixel3(0.0, 0.0, 0.0);
+        pixel3 dstcolor_tmp3 = pixel3(0.0, 0.0, 0.0);
+        pixel3 dstcolor_tmp4 = pixel3(0.0, 0.0, 0.0);
+        float dst_a_tmp1 = 0.0;
+        float dst_a_tmp2 = 0.0;
+        float dst_a_tmp3 = 0.0;
+        float dst_a_tmp4 = 0.0;
+        float count = 0.0;
+
+        pixel3 center_color_tmp = pixel3(center_color1.r, center_color1.g, center_color1.b);
+        float distance_tmp = distance(center1, srcpos);
+        float circle_size_tmp = circle_size / 2.0;
+        if (distance_tmp < circle_size_tmp && center_color1.a != 0.0){
+            count += 1.0;
+            dstcolor_tmp1 = center_color_tmp;
+            dst_a_tmp1 = 1.0;
+            float gradation_start = circle_size_tmp * (1.0 - gradation);
+            if (distance_tmp >= gradation_start) {
+                dst_a_tmp1 -= (distance_tmp - gradation_start) / (circle_size_tmp - gradation_start);
+            }
+        }
+        //----------------------------------------------------------------------------------------------
+        center_color_tmp = pixel3(center_color2.r, center_color2.g, center_color2.b);
+        distance_tmp = distance(center2, srcpos);
+        circle_size_tmp = circle_size / 2.0;
+        if (distance_tmp < circle_size_tmp && center_color2.a != 0.0){
+            count += 1.0;
+            dstcolor_tmp2 = center_color_tmp;
+            dst_a_tmp2 = 1.0;
+            float gradation_start = circle_size_tmp * (1.0 - gradation);
+            if (distance_tmp >= gradation_start) {
+                dst_a_tmp2 -= (distance_tmp - gradation_start) / (circle_size_tmp - gradation_start);
+            }
+        }
+        //----------------------------------------------------------------------------------------------
+        center_color_tmp = pixel3(center_color3.r, center_color3.g, center_color3.b);
+        distance_tmp = distance(center3, srcpos);
+        circle_size_tmp = circle_size / 2.0;
+        if (distance_tmp < circle_size_tmp && center_color3.a != 0.0){
+            count += 1.0;
+            dstcolor_tmp3 = center_color_tmp;
+            dst_a_tmp3 = 1.0;
+            float gradation_start = circle_size_tmp * (1.0 - gradation);
+            if (distance_tmp >= gradation_start) {
+                dst_a_tmp3 -= (distance_tmp - gradation_start) / (circle_size_tmp - gradation_start);
+            }
+        }
+        //----------------------------------------------------------------------------------------------
+        center_color_tmp = pixel3(center_color4.r, center_color4.g, center_color4.b);
+        distance_tmp = distance(center4, srcpos);
+        circle_size_tmp = circle_size / 2.0;
+        if (distance_tmp < circle_size_tmp && center_color4.a != 0.0){
+            count += 1.0;
+            dstcolor_tmp4 = center_color_tmp;
+            dst_a_tmp4 = 1.0;
+            float gradation_start = circle_size_tmp * (1.0 - gradation);
+            if (distance_tmp >= gradation_start) {
+                dst_a_tmp4 -= (distance_tmp - gradation_start) / (circle_size_tmp - gradation_start);
+            }
+        }
+        if (count > 0.0) {
+            dst = pixel4((dstcolor_tmp1.r + dstcolor_tmp2.r + dstcolor_tmp3.r + dstcolor_tmp4.r) / count,
+                        (dstcolor_tmp1.g + dstcolor_tmp2.g + dstcolor_tmp3.g + dstcolor_tmp4.g) / count,
+                        (dstcolor_tmp1.b + dstcolor_tmp2.b + dstcolor_tmp3.b + dstcolor_tmp4.b) / count,
+                        dst_a_tmp1 + dst_a_tmp2 + dst_a_tmp3 + dst_a_tmp4);
+        } else {
+            dst = pixel4(0.0, 0.0, 0.0, 0.0);
+        }
+    }
+}

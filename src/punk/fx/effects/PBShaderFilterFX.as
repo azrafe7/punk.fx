@@ -28,7 +28,7 @@ package punk.fx.effects
 	 * @see #params
 	 * @see PBWaterFallFX
 	 * @see FilterFX
-	 * @see http://xperiments.es/blog/en/pbj2shaderfilter-air-tool-to-generate-a-shaderfilter-class-from-pixel-bender-files/ PBJ2ShaderFilter AIR tool
+		* @see http://xperiments.es/blog/en/pbj2shaderfilter-air-tool-to-generate-a-shaderfilter-class-from-pixel-bender-files/ PBJ2ShaderFilter AIR tool
 	 * 
 	 * @author azrafe7
 	 */

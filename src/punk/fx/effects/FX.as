@@ -29,7 +29,8 @@ package punk.fx.effects
 		/** Name of the FX instance (useful for debugging if the id is not enough). */
 		public var name:String = "";
 		
-		/** Callback function called just after the effect has been applied (signature: <code>function(bitmapData:BitmapData, clipRect:Rectangle = null</code>)). */
+		/** Callback function called just after the effect has been applied 
+		 * (signature: <code>function(bitmapData:BitmapData, clipRect:Rectangle = null</code>)). */
 		public var onPostProcess:Function = null;
 
 		

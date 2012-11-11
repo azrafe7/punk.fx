@@ -56,7 +56,7 @@ package punk.fx.effects
 			// set imageW and imageH on the shader
 			shader.data.imageW.value[0] = clipRect ? clipRect.width : bitmapData.rect.width;
 			shader.data.imageH.value[0] = clipRect ? clipRect.height : bitmapData.rect.height;
-
+			
 			super.applyTo(bitmapData, clipRect);
 		}
 		

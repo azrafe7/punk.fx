@@ -24,7 +24,10 @@ package
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filters.BevelFilter;
+	import flash.filters.BitmapFilter;
+	import flash.filters.BlurFilter;
 	import flash.filters.DropShadowFilter;
+	import flash.filters.ShaderFilter;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -35,6 +38,7 @@ package
 	import net.flashpunk.graphics.Backdrop;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
+	import net.flashpunk.Tween;
 	import net.flashpunk.utils.Draw;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
@@ -45,15 +49,19 @@ package
 	import punk.fx.effects.FadeFX;
 	import punk.fx.effects.FilterFX;
 	import punk.fx.effects.FX;
+	import punk.fx.effects.GlitchFX;
 	import punk.fx.effects.GlowFX;
 	import punk.fx.effects.PBBaseFX;
+	import punk.fx.effects.PBDotFX;
 	import punk.fx.effects.PBHalfToneFX;
 	import punk.fx.effects.PBCircleSplashFX;
+	import punk.fx.effects.PBLineSlideFX;
 	import punk.fx.effects.PBPixelateFX;
 	import punk.fx.effects.PBShaderFilterFX;
 	import punk.fx.effects.PBWaterFallFX;
 	import punk.fx.effects.PixelateFX;
-	import punk.fx.effects.RetroCRTFX;
+	import punk.fx.effects.RGBDisplacementFX;
+	import punk.fx.effects.ScanLinesFX;
 	import punk.fx.FXImage;
 	import punk.fx.FXList;
 	import punk.fx.FXMan;
@@ -70,16 +78,25 @@ package
 		BloomFX;
 		BlurFX;
 		FadeFX;
+		GlitchFX;
 		GlowFX;
 		PBCircleSplashFX;
+		PBDotFX;
 		PBHalfToneFX;
+		PBLineSlideFX;
 		PBPixelateFX;
 		PBWaterFallFX;
 		PixelateFX;
-		RetroCRTFX;
+		RGBDisplacementFX;
+		ScanLinesFX;
 		
 		private var xml:XML;
 		private var effectsWin:Window;
+		private var hideAccordion:Tween;
+		private var maskBMD:BitmapData;
+		private var maskImg:FXImage;
+		private var circle:Object;
+		private var blurFilter:BlurFilter;
 		
 		public var tweens:Vector.<TweenMax> = new Vector.<TweenMax>;
 		
@@ -95,9 +112,6 @@ package
 		public var filtersFX:FilterFX;
 		public var bevelFilter:BevelFilter;
 
-		[Embed(source="punk/fx/effects/pbj/HexCells.pbj", mimeType="application/octet-stream")]
-		public var DATA:Class;
-			
 
 		public var pxbFX:PBShaderFilterFX;
 		public var halfToneFX:PBHalfToneFX;
@@ -149,26 +163,11 @@ package
 			//imageFX.alpha = .4;
 			addGraphic(imageFX, -4, 200, 100);
 			
-			fadeFX = new FadeFX();
-			fx = fadeFX;
-			fx.setProps( { opaque:false, color:0xfffffff0 } );
-			blurFX = new BlurFX;
-			pixelateFX = new PixelateFX;
-			glowFX = new GlowFX;
-			adjustFX = new AdjustFX;
-			retroCRTFX = new RetroCRTFX().setProps({noiseSeed:0, scanLinesDir:RetroCRTFX.VERTICAL});
-			bloomFX = new BloomFX(4, 250);
-			
-			FXMan.clear();
-			
-			var circle:Object = {r:0};
+			circle = {r:0};
 			TweenMax.to(circle, 1, {r:100, yoyo:true, repeat:-1, ease:Linear.ease});
-			var maskBMD:BitmapData = new BitmapData(imageFX.width, imageFX.height, true, 0xFF000000);
-			var maskImg:FXImage = new FXImage(maskBMD);
+			maskBMD = new BitmapData(imageFX.width, imageFX.height, true, 0xFF000000);
+			maskImg = new FXImage(maskBMD);
 			maskPixelate = new PixelateFX(6);
-			
-			//addGraphic(maskImg, -2, -200);
-			//FXMan.add(maskImg, [maskPixelate]);
 			
 			maskImg.onPreRender = function(imgFX:FXImage):void {
 				/*var g:Graphics = FP.sprite.graphics;
@@ -183,139 +182,17 @@ package
 				maskImg.setSource(maskBMD, maskBMD.rect, false);*/
 			}
 				
-			imageFX.onPreRender = function(imgFX:FXImage):void {
-				var g:Graphics = FP.sprite.graphics;
-				var mtx:Matrix = FP.matrix;
-				mtx.createGradientBox(circle.r * 2, circle.r * 2, 0, -circle.r + player.x-200, -circle.r +player.y-100);
-				g.clear();
-				g.beginGradientFill(GradientType.RADIAL, [0xFF000000, 0xFFFFFFFF], [0, 1], [200, 244], mtx);
-				g.drawRect(0, 0, imgFX.width, imgFX.height);
-				g.endFill();
-				maskBMD.fillRect(maskBMD.rect, 0x0);
-				maskBMD.draw(FP.sprite, null, null, BlendMode.NORMAL);
-				//maskPixelate.update(maskImg);
-				//maskPixelate.preRender(maskImg);
-				//imgFX.setSource(maskImg.getSource(), maskBMD.rect, false);
-				//imgFX.drawMask = maskImg.getSource();
-				maskPixelate.applyTo(maskBMD);
-				//Draw.graphic(new Image(maskBMD));
-				imgFX.drawMask = maskBMD;
-				//maskPixelate.postRender(maskImg);
-			}
 			
-			retroCRTFX.onPostProcess = function (bmd:BitmapData, clipRect:Rectangle = null):void 
-			{
-				//maskPixelate.applyTo(bmd);
-				//blurFX.setProps({blur:1, blurX:3}).applyTo(bmd);
-			}
-			
-			FXMan.add(imageFX, [bloomFX, pixelateFX/*, retroCRTFX.setProps({scanLinesColor:0x00ff00, noiseAmount:60})/*, bloomFX/*adjustFX, maskPixelate.setProps({scale:5})/*, pixelateFX*/]);
 			imageFX.centerOO();
 			imageFX.x += imageFX.width>>1;
 			imageFX.y += imageFX.height>>1;
-			//imageFX.blend = BlendMode.HARDLIGHT;
-			trace(FXMan);
 
 			add(player = new Player(400, 240));
 			player.layer = -2;
 			
-			var rectImg:Image = Image.createRect(48, 26, 0xff0000);
-			rectImg.scale = 2;
-			rectImg.angle = 0;
-			//rectImg.centerOO();
-			//rectImg.originX -= 10;
-			//addGraphic(rectImg, 0, 40, 140);
-			
-			
 
 			swordguy = player.sprSwordguy;
-			
-			
 			swordguy.centerOO();
-			//swordguy.visible = false;
-			//addGraphic(swordguy, 0, 40, 140);
-			
-			//swordguy.color = 0xff0000;
-
-			// side size of the BitmapData that will contain the rotated image
-			var size:Number = Math.sqrt(swordguy.scaledWidth * swordguy.scaledWidth + swordguy.scaledHeight * swordguy.scaledHeight);
-			
-			spriteFX = FXImage.createRect(size, size);
-
-			//spriteFX.color = 0xff00ffff;
-			spriteFX.centerOO();
-			//spriteFX.originX = 12;
-			//spriteFX.originY *=2;
-			spriteFX.alpha = 1;
-			spriteFX.scale = 2;
-			//spriteFX.smooth = true;
-			addGraphic(spriteFX, -1, 40, 140);
-			FXMan.add(spriteFX, [bloomFX, pixelateFX/*retroCRTFX/*, glowFX, pixelateFX, fx/**/]);
-
-			spriteFX.onPreRender = function(imgFX:FXImage):void {
-				var bmd:BitmapData = spriteFX.getSource();
-				bmd.fillRect(bmd.rect, 0);
-				
-				// set up transformation matrix
-				var m:Matrix = new Matrix();
-				m.translate(-swordguy.originX, -swordguy.originY);
-				m.rotate(swordguy.angle * FP.RAD);
-				m.translate(swordguy.originX, swordguy.originY);
-				m.scale(swordguy.scaleX * swordguy.scale, swordguy.scaleY * swordguy.scale);
-
-				// four corners of the bounding box after transformation
-				var topLeft:Point = m.transformPoint(new Point(0, 0));
-				var topRight:Point = m.transformPoint(new Point(swordguy.width, 0));
-				var bottomLeft:Point = m.transformPoint(new Point(0, swordguy.height));
-				var bottomRight:Point = m.transformPoint(new Point(swordguy.width, swordguy.height));
-				
-				// origin point after transformation
-				var origin:Point = m.transformPoint(new Point(swordguy.originX, swordguy.originY));
-
-				// bounding box distances
-				var top:Number = Math.min(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y);
-				var bottom:Number = Math.max(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y);
-				var left:Number = Math.min(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x);
-				var right:Number = Math.max(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x);
-
-				// size of the new BitmapData
-				var height:Number = bottom - top;
-				var width:Number = right - left;
-								
-				swordguy.render(bmd, new Point(origin.x - left, origin.y - top), FP.zero);
-								
-				// align spriteFX with source image position
-				imgFX.x = imgFX.originX - origin.x + left;
-				imgFX.y = imgFX.originY - origin.y + top;
-								
-				//maskPixelate.applyTo(bmd);
-
-				spriteFX.setSource(bmd, bmd.rect);
-				
-				
-				if (key(Key.Q)) swordguy.angle += .9;
-				
-			}
-				
-			shadowFilter = new DropShadowFilter;
-			bevelFilter = new BevelFilter;
-			
-			halfToneFX = new PBHalfToneFX();
-			//FXMan.add(imageFX, halfToneFX);
-			
-			filtersFX = new FilterFX([shadowFilter, bevelFilter/*, halfToneFX.filter*/]);
-			
-			FXMan.removeTargets(imageFX);
-
-			
-			
-			benderFX = new PBWaterFallFX;
-			//FXMan.clear();
-			FXMan.add(imageFX);
-			
-			imageFX.effects.add([adjustFX, bloomFX]);
-			
-			trace(PBShaderFilterFX.getInfo(new Shader(new DATA)));
 			
 			for (var i:int = 0; i < 12; i++) {
 				//var imgFX:FXImage = FXImage.createCircle(40, 0xff0000);
@@ -323,25 +200,11 @@ package
 				imgFX.scale = 4;
 				addGraphic(imgFX, -1, Math.random() * FP.width, Math.random() * FP.height);
 				//imgFX.drawMask = imgFX.getSource();
-				FXMan.add(imgFX, [filtersFX/*pixelateFX, bloomFX/*retroCRTFX/*, fx, pixelateFX*/]);
+				//FXMan.add(imgFX, [filtersFX/*pixelateFX, bloomFX/*retroCRTFX/*, fx, pixelateFX*/]);
 			}
 		
 			
 			trace(FXMan);
-			/*
-			var gui:SimpleGUI = new SimpleGUI(this, FP.engine, null, "z");
-			//gui.addColumn("\t\t\t");
-			gui.addColumn("col2");
-			gui.addButton("btn");
-			gui.addButton("btn");
-			gui.addSlider("pixelateFX.scale", 1, 40);
-			gui.addSlider("shadowFilter.strength", 1, 5, { width:220 } );
-			gui.addGroup("");
-			gui.addSlider("adjustFX.contrast", -1, 1);
-			gui.addSlider("bloomFX.threshold", 0, 255);
-			gui.addToggle("pixelateFX.active");
-			gui.show();
-			*/
 			
 			xml = FP.getXML(EFFECTS_XML);
 			
@@ -349,7 +212,7 @@ package
 			
 			Style.setStyle(Style.LIGHT);
 			
-			effectsWin = new Window(FP.engine, 20, 30, "Effects Explorer");
+			effectsWin = new Window(FP.engine, 5, 25, "Effects Explorer - ver " + FXMan.VERSION);
 			var effectsAccordion:Accordion = new Accordion(effectsWin, 0, 0);
 			effectsAccordion.width = 190;
 			effectsWin.alpha = .9;
@@ -359,12 +222,13 @@ package
 			effectsWin.addEventListener(MouseEvent.ROLL_OVER, function (e:Event):void 
 			{
 				trace("win OVER");
-				//effectsWin.minimized = false;
+				effectsWin.minimized = false;
+				if (hideAccordion) hideAccordion.cancel();
 			});
 			effectsWin.addEventListener(MouseEvent.ROLL_OUT, function (e:Event):void 
 			{
 				trace("win OUT");
-				//effectsWin.minimized = true;
+				hideAccordion = FP.alarm(.5, function():void { effectsWin.minimized = true; });
 			});
 
 			FXMan.clear();
@@ -374,14 +238,42 @@ package
 			effectsAccordion.onMinimize = onAccordionChanged;
 			effectsAccordion.onMaximize = onAccordionChanged;
 			
-			effectsWin.setSize(effectsAccordion.width+1, effectsAccordion.height+1+20);
+			effectsWin.setSize(effectsAccordion.width + 1, effectsAccordion.height + 1 + 20);
+			
+			imageFX.onPreRender = function(imageFX:FXImage):void {
+				/*var g:Graphics = FP.sprite.graphics;
+				var mtx:Matrix = FP.matrix;
+				mtx.createGradientBox(circle.r * 2, circle.r * 2, 0, -circle.r + player.x-200, -circle.r +player.y-100);
+				g.clear();
+				g.beginGradientFill(GradientType.RADIAL, [0xFF000000, 0xFFFFFFFF], [0, 1], [200, 244], mtx);
+				g.drawRect(0, 0, imageFX.buffer.rect.width, imageFX.buffer.rect.height);
+				g.endFill();
+				maskBMD = new BitmapData(imageFX.buffer.rect.width, imageFX.buffer.rect.height, true, 0x0);
+				maskBMD.draw(FP.sprite, null, null, BlendMode.NORMAL);
+				//maskPixelate.update(maskImg);
+				//maskPixelate.preRender(maskImg);
+				//imgFX.setSource(maskImg.getSource(), maskBMD.rect, false);
+				//imgFX.drawMask = maskImg.getSource();
+				maskPixelate.applyTo(maskBMD);
+				//Draw.graphic(new Image(maskBMD));
+				imageFX.drawMask = maskBMD;
+				//maskPixelate.postRender(maskImg);*/
+			}
+			
+			trace(imageFX.effects);
+			
+			var pbsf:PBShaderFilterFX = new PBShaderFilterFX("../../effects/dot.pbj", function ():void 
+			{
+				trace(pbsf.info, "\n\nloaded");
+			});
 		}
 		
 		public function onAccordionChanged(accordion:Accordion, win:Window, idx:int):void 
 		{
 			trace(win.minimized ? "min" : "max", idx);
 			imageFX.effects.at(idx).active = !win.minimized;
-			effectsWin.setSize(accordion.width+1, accordion.height+1+20);
+			effectsWin.setSize(accordion.width + 1, accordion.height + 1 + 20);
+			trace(imageFX.effects.at(idx), imageFX.effects.at(idx).active);
 		}
 		
 		public function createUIFor(xmlDesc:XML, accordion:Accordion):void 
@@ -414,6 +306,7 @@ package
 			
 			fx = new fxClass;
 			FXMan.add(imageFX, fx);
+			//imageFX.effects.add(fx);
 			fx.active = false;
 			
 			accordion.addWindow(xmlDesc.@className);
@@ -484,8 +377,6 @@ package
 			{
 				var entry:*;
 				
-				if (fx is RetroCRTFX) (fx as RetroCRTFX).updateScanLines();
-				
 				for (var prop:String in tween.vars) {
 					if (prop == "hexColors") prop = "color";
 					entry = components[xmlDesc.@className + "." + prop];
@@ -494,6 +385,8 @@ package
 						entry.comp.enabled = false;
 					}
 				}
+				
+				//imageFX.updateBuffer();
 			});
 			
 			tween.eventCallback("onComplete", function ():void 
@@ -513,6 +406,9 @@ package
 			
 			btn = new PushButton(hbox, 30, 0, "tween", function (e:Event):void 
 			{
+				for (var prop:String in tween.vars) {
+					if (defaults.hasOwnProperty(prop)) fx.setProps(defaults[prop]);
+				}
 				tween.restart();
 			});
 			btn.width = 100;
@@ -536,7 +432,7 @@ package
 			winH += 18 + vbox.spacing;
 			win.setSize(accordion.width, winH + 5);
 			
-			if (fx is GlowFX) vbox.enabled = false;
+			//if (fx is GlowFX) vbox.enabled = false;
 
 		}
 		
@@ -584,7 +480,7 @@ package
 				}
 				fx[param] = value;
 
-				if (param.indexOf("scanLines") == 0) (fx as RetroCRTFX).updateScanLines(); 
+				//if (param.indexOf("scanLines") == 0) (fx as RetroCRTFX).updateScanLines(); 
 				
 				trace(fx, param, fx[param]);
 				trace("del");
@@ -599,8 +495,9 @@ package
 				trace("imgrect", imageFX.clipRect);
 				imageFX.setSource(FP.buffer, new Rectangle(40, 40, 140, 140));
 				trace(imageFX.clipRect);
-				trace(imageFX.getSource().rect);
+				//trace(imageFX.getSource().rect);
 				trace("imgrect", imageFX.clipRect);
+				//trace("bufrect", imageFX.buffer.rect);
 			}
 			if (key(Key.B, true)) {
 				if (!clone) {
@@ -633,6 +530,9 @@ package
 		
 		override public function render():void 
 		{
+			if (Input.pressed(Key.L)) {
+				TweenMax.fromTo(blurFilter, 3, { blurX:0 }, { blurX:20, overwrite:"all" } );
+			}
 			if (key(Key.F, true)) {
 				Input.clear();
 				trace(fx);
@@ -671,8 +571,26 @@ package
 					//fx.visible = fx.active = !fx.active;
 				});
 			}
+				/*var g:Graphics = FP.sprite.graphics;
+				var mtx:Matrix = FP.matrix;
+				mtx.createGradientBox(circle.r * 2, circle.r * 2, 0, -circle.r + player.x-200, -circle.r +player.y-100);
+				g.clear();
+				g.beginGradientFill(GradientType.RADIAL, [0xFF000000, 0xFFFFFFFF], [0, 1], [200, 244], mtx);
+				g.drawRect(0, 0, imageFX.width, imageFX.height);
+				g.endFill();
+				maskBMD.fillRect(maskBMD.rect, 0x0);
+				maskBMD.draw(FP.sprite, null, null, BlendMode.NORMAL);
+				//maskPixelate.update(maskImg);
+				//maskPixelate.preRender(maskImg);
+				//imgFX.setSource(maskImg.getSource(), maskBMD.rect, false);
+				//imgFX.drawMask = maskImg.getSource();
+				maskPixelate.applyTo(maskBMD);
+				//Draw.graphic(new Image(maskBMD));
+				imageFX.drawMask = maskBMD;
+				//maskPixelate.postRender(maskImg);*/
+
 			super.render();
-			if (clone) clone.syncGFXWith(spriteFX);
+			if (clone) clone.cloneGraphicsFrom(spriteFX);
 			if (key(Key.C, true)) {
 				maskPixelate.applyTo(FP.buffer);
 			}

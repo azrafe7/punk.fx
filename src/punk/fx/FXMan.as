@@ -12,7 +12,7 @@ package punk.fx
 	{
 		
 		/** Library version. */
-		public static var VERSION:String = "0.1.015";
+		public static var VERSION:String = "0.2.001";
 
 		/** @private */
 		protected static var _effects:Dictionary = new Dictionary(false); 		// (weak) Dictionary(FXImage, FXList)
@@ -25,8 +25,8 @@ package punk.fx
 		protected static function _add(target:FXImage, effects:*):void 
 		{
 			if (target == null) throw new Error("FXImage target cannot be null.");
-			if (!_effects[target]) _effects[target] = new FXList(effects);
-			else FXList(_effects[target]).add(effects);
+			if (!_effects[target]) _effects[target] = target.effects;
+			FXList(_effects[target]).add(effects);
 		}
 		
 		/**
@@ -57,7 +57,7 @@ package punk.fx
 		}
 		
 		/**
-		 * Removes targets from the manager.
+		 * Removes targets from the manager (also removing the associated effects).
 		 * 
 		 * @param	targets		targets to be removed (a Vector/Array of FXImages or a single FXImage). Pass null to remove all.
 		 */
@@ -71,15 +71,21 @@ package punk.fx
 			if (targets is Array || targets is Vector.<*>) targetArray = targets;
 			else targetArray = [targets];
 			
-			for each (target in targetArray) delete _effects[target];
+			for each (target in targetArray) {
+				FXList(_effects[target]).clear();
+				delete _effects[target];
+			}
 		}
 		
 		/**
-		 * Removes all targets from the manager.
+		 * Removes all targets and effects from the manager.
 		 */
 		public static function clear():void 
 		{
-			for (var target:* in _effects) delete _effects[target];
+			for (var target:* in _effects) {
+				FXList(_effects[target]).clear();
+				delete _effects[target];
+			}
 		}
 		
 		/**

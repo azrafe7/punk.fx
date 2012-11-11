@@ -1,0 +1,51 @@
+<languageVersion : 1.0;>
+
+kernel LineSlide
+<   namespace : "LineSlide";
+    vendor : "Shogo Kimura";
+    version : 1;
+    description : "";
+>
+#define PI 3.1415926535897932384626433832795
+{
+    input image4 src;
+    output pixel4 dst;
+
+    parameter float thickness
+    <
+        defaultValue : float( 10.0);
+        minValue :   float( 1.0);
+        maxValue :  float( 2000.0);
+    >;
+    parameter float rotate
+    <
+        defaultValue : float( 0.0);     
+        minValue :   float( 0.0);     
+        maxValue :  float( PI);
+        description : "rad";
+    >;
+    parameter float slide
+    <
+        defaultValue : float( 100.0);     
+        minValue :   float( -2000.0);     
+        maxValue :  float( 2000.0);     
+    >;
+
+    void
+    evaluatePixel()
+    {
+        float2 srcpos = outCoord();
+        float2 outpos = float2(srcpos.x * cos(rotate) + srcpos.y * sin(rotate), srcpos.y * cos(-rotate) + srcpos.x * sin(-rotate));
+        float2 slidetmp = float2(0.0 * cos(-rotate) + slide * sin(-rotate), slide * cos(rotate) + 0.0 * sin(rotate));
+        
+        dst = pixel4(0.0, 0.0, 0.0, 0.0);
+
+        if (thickness > mod(outpos.x, thickness * 2.0)) {
+            dst = sampleNearest(src, srcpos - float2(slidetmp.x, slidetmp.y));
+        } else if (thickness * 2.0 <= mod(outpos.x, thickness * 2.0)) {
+            dst = sampleNearest(src,srcpos + float2(slidetmp.x, slidetmp.y));
+        } else {
+            dst = sampleNearest(src,srcpos + float2(slidetmp.x, slidetmp.y));
+        }
+    }
+}

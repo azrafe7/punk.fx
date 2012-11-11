@@ -39,22 +39,32 @@ List of Currently Supported Effects
 
 		01 • AdjustFX           - color adjustment effect (contrast, hue, saturation, brightness)
 		02 • BloomFX            - bloom effect
-		03 • BlurFX             - blur effect
+		03 • BlurFX             - blur filter effect
 		04 • FadeFX             - fade effect (opaque/transparent)
 		05 • FilterFX           - wrapper to use standard Flash filters (DropShadow, BlurFilter, etc.) and Pixel Bender ShaderFilters
-		06 • GlowFX             - glow filter effect
-		07 • PBCircleSplashFX   - Pixel Bender circle splash effect
-		08 • PBHalfToneFX       - Pixel Bender halftone effect
-		09 • PBPixelateFX       - Pixel Bender pixelate effect
-		10 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
-		11 • PBWaterFallFX      - Pixel Bender waterfall effect
-		12 • PixelateFX         - pixelate effect
-		13 • RetroCRTFX         - retro CRT monitor effect (with scanlines, noise and RGB channel displacement)
+		06 • GlitchFX           - glitch effect (random linear disturb)
+		07 • GlowFX             - glow filter effect
+		08 • PixelateFX         - pixelate effect
+		09 • RGBDisplacementFX  - RGB channels displacement
+		10 • ScanLinesFX        - Scanlines and noise effect
+		11 • PBCircleSplashFX   - Pixel Bender circle splash effect
+		12 • PBDot       		- Pixel Bender dot effect
+		13 • PBHalfToneFX       - Pixel Bender halftone effect
+		14 • PBLineSlideFX      - Pixel Bender lineslide effect
+		15 • PBPixelateFX       - Pixel Bender pixelate effect
+		16 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
+		17 • PBWaterFallFX      - Pixel Bender waterfall effect
 
 
 ChangeLog
 ---------
 
+* **ver 0.2.001**:
+  - FXMan decoupled from FXImage (it's not mandatory anymore to use it, but it can be useful to do so)
+  - more effects: PBDot, PBLineSlide, Glitch
+  - RetroCRT split into 2: ScanLines & RGBDisplacement effects
+  - restructured MinimalComps/TweenMax/FX binding code
+  - minor fixes/improvements
 * **ver 0.1.015**:
   - added MinimimalComps to playtest the effects
   - minor improvements
@@ -76,8 +86,8 @@ ChangeLog
 License (MIT) & Credits
 --------------------
 
-<pre>Permission is hereby granted, free of charge, to any person obtaining a 
-copy of this software and associated documentation files (the 
+<pre>Permission is hereby granted, free of charge, to any person obtaining 
+a copy of this software and associated documentation files (the 
 "Software"), to deal in the Software without restriction, including 
 without limitation the rights to use, copy, modify, merge, publish, 
 distribute, sublicense, and/or sell copies of the Software, and to 

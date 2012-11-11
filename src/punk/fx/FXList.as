@@ -1,5 +1,9 @@
 package punk.fx
 {
+	import flash.display.Bitmap;
+	import flash.filters.BitmapFilter;
+	import flash.filters.ShaderFilter;
+	import punk.fx.effects.FilterFX;
 	import punk.fx.effects.FX;
 
 	/**
@@ -59,16 +63,15 @@ package punk.fx
 		}
 		
 		/**
-		 * Used internally to add FXs to the FXList.
+		 * Used internally to add an FX to the FXList.
 		 * 
 		 * @private
 		 */
 		protected function _add(effect:*):void 
 		{
-			if (effect == null) throw new Error("Effect cannot be null.");
-			if (!(_ensureUniqueness && contains(effect))) _effects[_effects.length] = (effect is Class ? new effect : effect);
+			effect = _validateEffect(effect);
+			if (!(_ensureUniqueness && contains(effect))) _effects[_effects.length] = effect;
 		}
-		
 		
 		/**
 		 * Adds one or more FXs to the FXList.
@@ -90,18 +93,34 @@ package punk.fx
 		}
 		
 		/**
-		 * Used internally to insert FXs into the FXList.
+		 * Used internally to convert an object to a valid FX.
+		 * 
+		 * @private
+		 */
+		protected function _validateEffect(effect:*):*
+		{
+			var fx:* = effect;
+			
+			if (effect is Class) fx = new effect;
+			if (fx is BitmapFilter || effect is BitmapFilter) fx = new FilterFX(fx);
+			
+			if (fx == null || !(fx is FX)) throw new Error("Invalid or null effect.");
+			return fx;
+		}
+
+		/**
+		 * Used internally to insert an FX into the FXList.
 		 * 
 		 * @private
 		 */
 		protected function _insert(effect:*, at:int=0):void 
 		{
-			if (effect == null) throw new Error("Effect cannot be null.");
-			if (!(_ensureUniqueness && contains(effect))) _effects.splice(at, 0, (effect is Class ? new effect : effect));
+			effect = _validateEffect(effect);
+			if (!(_ensureUniqueness && contains(effect))) _effects.splice(at, 0, effect);
 		}
 		
 		/**
-		 * Inserts one or more FXs into the FXList.
+		 * Inserts one or more FXs to the FXList.
 		 * 
 		 * @param	effects		a single FX or a Vector/Array of FXs to be inserted into the list.
 		 * @param	at			index at which effects will be inserted (defaults to 0).

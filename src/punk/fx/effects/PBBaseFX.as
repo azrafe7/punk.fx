@@ -31,7 +31,7 @@ package punk.fx.effects
 			if (!clipRect) clipRect = bitmapData.rect;
 
 			PBShaderFilterFX.applyShaderFilter(bitmapData, clipRect, bitmapData, clipRect.topLeft, filter);
-			
+
 			super.applyTo(bitmapData, clipRect);
 		}
 		

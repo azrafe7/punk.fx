@@ -23,9 +23,6 @@ package punk.fx
 		/** Whether the source is the entire screen. @see #getSource() */ 
 		protected var _sourceIsScreen:Boolean;
 		
-		/** The original source for the image (without effects applied to it). */
-		protected var _originalSource:BitmapData;
-		
 		/** Auto-incremented counter for id. */
 		protected static var _idAutoCounter:int = 0;
 		
@@ -35,12 +32,21 @@ package punk.fx
 		/** Number of FXs associated with this instance. */
 		protected var _nEffects:int;
 		
+		/** List of effects associated with this insance. */
+		public var effects:FXList;
 		
 		/** You can add custom data to this dictionary. */
 		public var data:Dictionary = new Dictionary(false);
 		
 		/** Name of the FXImage instance (useful for debugging if the id is not enough). */
 		public var name:String = "";
+
+		/** 
+		 * Sync the graphics with this object (can be any of the classes supported by cloneGraphicsFrom). 
+		 * Auto-updates every frame. 
+		 * @see #cloneGraphicsFrom()
+		 */
+		public var syncWith:* = null;
 		
 		/** Callback function called just before rendering (signature: <code>function(imgFX:FXImage</code>)). */
 		public var onPreRender:Function = null;
@@ -56,16 +62,8 @@ package punk.fx
 			super(new BitmapData(10, 10));		// dummy call to super constructor
 			setSource(source, clipRect);
 			active = true;						// sets the FXImage to active (set this to false if you don't want the FXImage to update)
+			effects = new FXList();				// create a new FXList to hold the effects
 			_id = _idAutoCounter++;
-		}
-		
-		
-		/**
-		 * Updates the FXImage.
-		 */
-		override public function update():void 
-		{
-			super.update();
 		}
 		
 		/**
@@ -77,54 +75,57 @@ package punk.fx
 		 */
 		override public function render(target:BitmapData, point:Point, camera:Point):void 
 		{
-			var fx:FX;
-			var _effects:Vector.<FX> = (effects ? effects.getAll() : null);
+			if (_sourceIsScreen) updateBuffer(true);			// update buffer if the source is the whole screen
+			else if (syncWith) cloneGraphicsFrom(syncWith);		// clone graphics from syncWith object if it is set
 			
 			// run onPreRender callback if exists (passing this instance as first parameter)
 			if (onPreRender != null && onPreRender is Function) onPreRender(this);
+
+			super.render(target, point, camera);
+		}
+
+		/**
+		 * Updates the buffer by applying tranforms and effects.
+		 * @param	clearBefore		if true the buffer is cleared before drawing to it.
+		 */
+		override public function updateBuffer(clearBefore:Boolean = false):void 
+		{
+			var fx:FX;
+			var _effects:Vector.<FX> = (effects ? effects.getAll() : null);
+
+			_source = getSource();
+			
+			var _tempMask:BitmapData = _drawMask;
+			_drawMask = null;
+			super.updateBuffer(clearBefore);
+			_drawMask = _tempMask;
 			
 			// if this instance is associated with some effects...
 			if (_effects && (_nEffects = effects.length)) {
 				var i:int;
-				_originalSource = getSource();
-				var clonedSource:BitmapData = _originalSource.clone();
-				
-				//clonedSource.lock();
 				
 				// apply each associated effect if active
 				for (i = 0; i < _nEffects; ++i) {
 					fx = _effects[i];
-					if (fx.active) fx.applyTo(clonedSource, clipRect);
+					if (fx.active) fx.applyTo(_buffer, _bufferRect);
 				}
-				
-				//clonedSource.unlock();
-				
-				_source = clonedSource;
-				updateBuffer(true);
-				
-				// render the FXImage
-				super.render(target, point, camera);
 			}
-			else {		// no effects... so just render the FXImage
-				_source = _originalSource = getSource();
-				if (_sourceIsScreen) updateBuffer();
-				super.render(target, point, camera);
-			}
+			
+			if (_drawMask) _buffer.copyPixels(_buffer, _bufferRect, FP.zero, _drawMask, FP.zero);
 		}
 		
 		/**
 		 * Returns the whole BitmapData used as source (recapturing the screen if it's the case).
 		 *
-		 * @return the whole BitmapData used as source (recapturing the screen if it's the case).
+		 * @return the whole BitmapData used as source.
 		 */
 		public function getSource():BitmapData 
 		{
-			_source = _sourceIsScreen ? FP.buffer : _originalSource;
-			return _source;
+			return _source = _sourceIsScreen ? FP.buffer : _source;
 		}
 		
 		/**
-		 * Sets the original source for the image (can be Class or BitmapData; defaults to the entire screen) and its clip rectangle. 
+		 * Sets the source for the image (can be Class or BitmapData; defaults to the entire screen) and its clip rectangle. 
 		 * NB: Doesn't reset image properties (like origin, alpha, etc.).
 		 * 
 		 * @param	source			Class or BitmapData to use as source (null means FP.buffer... so the whole screen).
@@ -151,40 +152,7 @@ package punk.fx
 				trace("createbuf", clipRect);
 			}
 			
-			updateBuffer();
-			
-			_originalSource = _source;
-		}
-
-		public function getOriginalSource():BitmapData 
-		{
-			return _originalSource;
-		}
-		
-		/**
-		 * Sets the properties specified by the props Object.
-		 * 
-		 * @example This will set the <code>color</code> and <code>quality</code> properties of <code>effect</code>, 
-		 * while skipping the <code>foobar</code> property without throwing an <code>Exception</code> 
-		 * since <code>strictMode</code> is set to <code>false</code>.
-		 * 
-		 * <listing version="3.0">
-		 * 
-		 * effect.setProps({color:0xff0000, quality:2, foobar:"dsjghkjdgh"}, false);
-		 * </listing>
-		 * 
-		 * @param	props			an Object containing key/value pairs to be set on the FX instance.
-		 * @param	strictMode		if true (default) an Excpetion will be thrown when trying to assign to properties/vars that don't exist in the FX instance.
-		 * @return the FXImage itself for chaining.
-		 */
-		public function setProps(props:*, strictMode:Boolean=true):* 
-		{
-			for (var prop:* in props) {
-				if (this.hasOwnProperty(prop)) this[prop] = props[prop];
-				else if (strictMode) throw new Error("Cannot find property " + prop + " on " + this + ".");
-			}
-			
-			return this;
+			updateBuffer();			
 		}
 		
 		/**
@@ -232,22 +200,6 @@ package punk.fx
 			
 			return image;
 		}
-
-		/**
-		 * The FXList associated with this instance.
-		 */
-		public function get effects():FXList 
-		{
-			return FXMan.getEffectsOf(this);
-		}
-		
-		/**
-		 * @private
-		 */
-		public function set effects(value:FXList):void 
-		{
-			throw new Error("You must set the effects through FXMan (e.g.: FXMan.add(fxImage, effects)).");
-		}
 		
 		/**
 		 * The BitmapData buffer (untransformed BitmapData that gets drawn to screen).
@@ -281,11 +233,11 @@ package punk.fx
 			return res;
 		}
 		
-		/** Synchronize graphics with targetObj's graphics.
+		/** Clone graphics from targetObj's graphics.
 		 *
 		 * @param targetObj		subclass of Image or one of the classes supported by setSource().
 		 */
-		public function syncGFXWith(targetObj:*):void 
+		public function cloneGraphicsFrom(targetObj:*):void 
 		{
 			if (targetObj is Image) {
 				var targetImage:Image = targetObj as Image;
