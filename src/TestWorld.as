@@ -241,7 +241,7 @@ package
 			effectsWin.setSize(effectsAccordion.width + 1, effectsAccordion.height + 1 + 20);
 			
 			imageFX.onPreRender = function(imageFX:FXImage):void {
-				/*var g:Graphics = FP.sprite.graphics;
+				var g:Graphics = FP.sprite.graphics;
 				var mtx:Matrix = FP.matrix;
 				mtx.createGradientBox(circle.r * 2, circle.r * 2, 0, -circle.r + player.x-200, -circle.r +player.y-100);
 				g.clear();
@@ -256,8 +256,9 @@ package
 				//imgFX.drawMask = maskImg.getSource();
 				maskPixelate.applyTo(maskBMD);
 				//Draw.graphic(new Image(maskBMD));
-				imageFX.drawMask = maskBMD;
-				//maskPixelate.postRender(maskImg);*/
+				//imageFX.drawMask = maskBMD;
+				imageFX.applyMask(maskBMD);
+				//maskPixelate.postRender(maskImg);
 			}
 			
 			trace(imageFX.effects);
@@ -265,6 +266,7 @@ package
 			var pbsf:PBShaderFilterFX = new PBShaderFilterFX("../../effects/dot.pbj", function ():void 
 			{
 				trace(pbsf.info, "\n\nloaded");
+				trace(FXMan.BUILD_DATE);
 			});
 		}
 		
@@ -463,12 +465,12 @@ package
 			return target;
 		}
 
-		public function createEventDelegate(comp:Component, fx:FX, param:String):Function 
+		public function createEventDelegate(comp:Component, obj:*, param:String):Function 
 		{
 			return function (e:Event):void 
 			{
 				var value:*;
-				trace(comp, fx, param);
+				trace(comp, obj, param);
 				if (comp is CheckBox) {
 					value = (comp as CheckBox).selected;
 				} else if (comp is HUISlider) {
@@ -478,11 +480,11 @@ package
 				} else {
 					throw new Error("Component " + comp + " not supported!");
 				}
-				fx[param] = value;
+				obj[param] = value;
 
 				//if (param.indexOf("scanLines") == 0) (fx as RetroCRTFX).updateScanLines(); 
 				
-				trace(fx, param, fx[param]);
+				trace(obj, param, obj[param]);
 				trace("del");
 			}
 		}

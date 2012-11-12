@@ -120,7 +120,7 @@ package punk.fx
 		}
 		
 		/**
-		 * Inserts one or more FXs to the FXList.
+		 * Inserts one or more FXs to the FXList at the specified index.
 		 * 
 		 * @param	effects		a single FX or a Vector/Array of FXs to be inserted into the list.
 		 * @param	at			index at which effects will be inserted (defaults to 0).
@@ -217,7 +217,7 @@ package punk.fx
 		}
 		
 		/**
-		 * Returns the FX at specified index in the FXList.
+		 * Returns the FX at the specified index in the FXList.
 		 * 
 		 * @param	idx		the index of the FX to fetch.
 		 * @return the FX at idx.

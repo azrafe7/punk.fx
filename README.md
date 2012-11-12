@@ -10,7 +10,9 @@ Still a *work-in-progress* but the core functionality is more or less in place.
 Overview & Usage
 ----------------
 
-**TO DO**
+You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) and the [full package documentation](http://azrafe7.github.com/punk.fx/docs) 
+or take a look at this messy [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/FX%20Project%20PlayTest.swf) to get an idea of what 
+this all is about. 
 
 **Note**: <code>TestWorld.as</code> is a complete mess but it's just what I'm using to test all the stuff. 
 
@@ -48,7 +50,7 @@ List of Currently Supported Effects
 		09 • RGBDisplacementFX  - RGB channels displacement
 		10 • ScanLinesFX        - Scanlines and noise effect
 		11 • PBCircleSplashFX   - Pixel Bender circle splash effect
-		12 • PBDot       		- Pixel Bender dot effect
+		12 • PBDot              - Pixel Bender dot effect
 		13 • PBHalfToneFX       - Pixel Bender halftone effect
 		14 • PBLineSlideFX      - Pixel Bender lineslide effect
 		15 • PBPixelateFX       - Pixel Bender pixelate effect
@@ -109,7 +111,7 @@ Copyright (c) 2012 Giuseppe Di Mauro (aka azrafe7)
 		
 </pre>		
 Special thanks to ChevyRay, Draknek, ChrisKelly (that [firestarted](http://flashpunk.net/forums/index.php?topic=3544.0) me) and all the awesome FlashPunk community, 
-Grant Skinner, GreenSock, the PB filter coders, and the ones that I'm ( _surely_ ) forgetting to mention that helped me 
+Grant Skinner, GreenSock, the PB filters' coders, and the ones that I'm ( _surely_ ) forgetting to mention that helped me 
 feed this little creature ( _quite probably unwittingly_ ).
 
 <small><b>azrafe7</b></small> <small><code>(azrafe7[at]gmail[dot]com)</code></small>

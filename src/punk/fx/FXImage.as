@@ -32,7 +32,7 @@ package punk.fx
 		/** Number of FXs associated with this instance. */
 		protected var _nEffects:int;
 		
-		/** List of effects associated with this insance. */
+		/** List of effects associated with this instance. */
 		public var effects:FXList;
 		
 		/** You can add custom data to this dictionary. */
@@ -95,6 +95,7 @@ package punk.fx
 
 			_source = getSource();
 			
+			// temporarily disable drawMask (to apply it after the effects)
 			var _tempMask:BitmapData = _drawMask;
 			_drawMask = null;
 			super.updateBuffer(clearBefore);
@@ -111,7 +112,13 @@ package punk.fx
 				}
 			}
 			
-			if (_drawMask) _buffer.copyPixels(_buffer, _bufferRect, FP.zero, _drawMask, FP.zero);
+			if (_drawMask) applyMask(_drawMask);
+		}
+		
+		/** Apply drawMask to buffer. */
+		public function applyMask(drawMask:BitmapData):void 
+		{
+			_buffer.copyPixels(_buffer, _bufferRect, FP.zero, drawMask, FP.zero);
 		}
 		
 		/**

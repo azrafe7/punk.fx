@@ -5,18 +5,20 @@ package punk.fx.effects
 	import flash.geom.Rectangle;
 
 	/**
-	 * Glitch effect.
+	 * Glitch effect (random linear disturb).
 	 * 
 	 * @author azrafe7
 	 */
 	public class GlitchFX extends FX
 	{
+		/** @private Temp BitmapData to store the source BMD. */
+		protected var _tempBMD:BitmapData;
 		
 		/** @private Rectangle used to slide portions of the image. */
-		protected var rect:Rectangle = new Rectangle;
+		protected var _rect:Rectangle = new Rectangle;
 
 		/** @private Point used to draw slided portions of the image. */
-		protected var point:Point = new Point;
+		protected var _point:Point = new Point;
 		
 		
 		/** Max amount of x displacement of the sliding stripes. */
@@ -55,31 +57,31 @@ package punk.fx.effects
 
 			if (maxSlide > 0 && (maxHeight - minHeight >= 1)) {
 				
-				var tempBMD:BitmapData = bitmapData.clone();
+				_tempBMD = bitmapData.clone();
 				
 				// width of sliding stripes
-				rect.width = clipRect.width;
-				rect.y = clipRect.y;
+				_rect.width = clipRect.width;
+				_rect.y = clipRect.y;
 				
 				bitmapData.fillRect(clipRect, 0);
 			
 				for (var y:int = 0; y < clipRect.height; ) {
 					// random sliding stripe height
-					rect.height = Math.ceil(minHeight + (maxHeight - minHeight) * Math.random());
-					if (rect.y + rect.height > clipRect.height) rect.height = clipRect.height - rect.y;
+					_rect.height = Math.ceil(minHeight + (maxHeight - minHeight) * Math.random());
+					if (_rect.y + _rect.height > clipRect.height) _rect.height = clipRect.height - _rect.y;
 					
 					// random sliding stripe x pos
-					point.x = clipRect.x + int((Math.random()*2-1) * Math.random() * maxSlide);
-					point.y = y;
+					_point.x = clipRect.x + int((Math.random()*2-1) * Math.random() * maxSlide);
+					_point.y = y;
 					
-					bitmapData.copyPixels(tempBMD, rect, point);
+					bitmapData.copyPixels(_tempBMD, _rect, _point);
 					
-					y += rect.height;
-					rect.y += rect.height;
+					y += _rect.height;
+					_rect.y += _rect.height;
 				}
 				
-				tempBMD.dispose();
-				tempBMD = null;
+				_tempBMD.dispose();
+				_tempBMD = null;
 			}
 			
 			super.applyTo(bitmapData, clipRect);

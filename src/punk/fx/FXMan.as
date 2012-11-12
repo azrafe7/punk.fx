@@ -13,6 +13,9 @@ package punk.fx
 		
 		/** Library version. */
 		public static var VERSION:String = "0.2.001";
+		
+		/** Build date (DD/MM/YYYY). */
+		public static var BUILD_DATE:String = CONFIG::timeStamp;
 
 		/** @private */
 		protected static var _effects:Dictionary = new Dictionary(false); 		// (weak) Dictionary(FXImage, FXList)
