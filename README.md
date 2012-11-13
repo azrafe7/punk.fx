@@ -10,9 +10,10 @@ Still a *work-in-progress* but the core functionality is more or less in place.
 Overview & Usage
 ----------------
 
-You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) and the [full package documentation](http://azrafe7.github.com/punk.fx/docs) 
-or take a look at this messy [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/FX%20Project%20PlayTest.swf) to get an idea of what 
-this all is about. 
+You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) to get started with punk.fx or read the 
+full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better understand the library's internal classes and methods.
+You can also take a look at this messy [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/FX%20Project%20PlayTest.swf) to 
+get an idea of what this all is about. 
 
 **Note**: <code>TestWorld.as</code> is a complete mess but it's just what I'm using to test all the stuff. 
 
@@ -65,6 +66,7 @@ ChangeLog
   - FXMan decoupled from FXImage (it's not mandatory anymore to use it, but it can be useful to do so)
   - more effects: PBDot, PBLineSlide, Glitch
   - RetroCRT split into 2: ScanLines & RGBDisplacement effects
+  - FXImage.applyMask()
   - restructured MinimalComps/TweenMax/FX binding code
   - minor fixes/improvements
 * **ver 0.1.015**:
