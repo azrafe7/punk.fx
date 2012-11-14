@@ -31,10 +31,633 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p>You can consult the <a href="https://github.com/azrafe7/punk.fx/wiki">wiki</a> to get started with punk.fx or read the 
+        <p>You can consult the <a href="https://github.com/azrafe7/punk.fx/wiki">wiki</a> (also copied below) to get started with punk.fx or read the 
 full package <a href="http://azrafe7.github.com/punk.fx/docs">documentation</a> to better understand the library's internal classes and methods.
 You can also take a look at this messy <a href="http://dl.dropbox.com/u/32864004/dev/FPDemo/FX%20Project%20PlayTest.swf">demo</a> to 
 get an idea of what this all is about. </p>
+
+<hr><h2>WIKI</h2>
+
+<p><strong>punk.fx</strong> is a <code>[WIP]</code> library that tries to make it easy to apply effects to graphics in FlashPunk 1.6.</p>
+
+<p><a></a></p>
+
+<h2>Dependencies</h2>
+
+<p>Its only dependencies are <a href="http://flashpunk.net/forums/index.php?topic=2831.0">FlashPunk</a> and <a href="http://gskinner.com/blog/archives/2007/12/colormatrix_cla.html">ColorMatrix</a> (the other packages present in the repo are only needed to compile the demo).</p>
+
+<p>You can download them from the official sites or use the copies in the repo (respectively in <code>src/net/flashpunk</code> and <code>src/com/gskinner</code>).</p>
+
+<p><a></a></p>
+
+<h2>Brief Overview</h2>
+
+<p>The core of the package is <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html"><code>FXImage</code></a>, a class that extends FlashPunk's <code>Image</code> and that exposes functionalities to apply effects to the underlying graphics (plus other useful functions).</p>
+
+<p>NB: You'll obviously need to add the FXImage to an Entity and add the latter to the World to make it render to screen (same process you'd use with a normal FlashPunk Image).</p>
+
+<p>A bunch of effects are supported (here's the <a href="#effects" title="list of supported effects">full list</a>), and the user can easily apply them to multiple images, the whole screen, or to <code>BitmapData</code> objects (with the possibility to pass a <code>Rectangle</code> representing the region of the object that will be affected by the tranforms).</p>
+
+<p>Here's a link to the whole <a href="http://azrafe7.github.com/punk.fx/docs" title="punk.fx docs">documentation</a> of the punk.fx classes.</p>
+
+<p><a></a></p>
+
+<h3>Index</h3>
+
+<ul>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#overview">Brief Overview</a></li>
+<li>
+<a href="#gettingStarted">Getting Started</a>
+
+<ul>
+<li><a href="#simpleUsage">Simple Usage</a></li>
+<li><a href="#flashFilters">Using Standard Flash Filters</a></li>
+<li><a href="#multipleProps">Changing Multiple Properties</a></li>
+<li><a href="#multipleEffects">Applying Multiple Effects</a></li>
+<li><a href="#shareEffects">Applying Effects to Multiple Targets</a></li>
+<li><a href="#screenEffects">Applying Effects to the Whole Screen</a></li>
+</ul>
+</li>
+<li><a href="#effects">Currently Supported Effects</a></li>
+<li>
+<a href="#inDepth">In-Depth View</a>
+
+<ul>
+<li><a href="#FXImage">FXImage</a></li>
+<li><a href="#FXList">FXList</a></li>
+<li><a href="#FXMan">FXMan</a></li>
+<li><a href="#FX">FX</a></li>
+</ul>
+</li>
+<li><a href="#internals">How Does It Work</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ul><p><a></a></p>
+
+<h3>Getting Started</h3>
+
+<p>Once you've downloaded the punk.fx package and the needed <a href="#dependencies">dependencies</a> you're ready to get started and to 
+experiment with it. The examples below will show you how to achieve some simple tasks and how to <em>effect</em>-ively ( <em>pun intended</em> ) use the library.</p>
+
+<p><a></a></p>
+
+<h4>Simple Usage</h4>
+
+<p>All you have to do to use the effects is:</p>
+
+<ol>
+<li>create a new <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html"><code>FXImage</code></a> instance</li>
+<li>instantiate one (or more) of the supported effects</li>
+<li>add the instantiated effects to the FXImage object</li>
+</ol><p>In code, the process is very similar to the way you apply standard Flash filters to <code>DisplayObjects</code>. </p>
+
+<p>Let's assume you have an embedded <code>Bitmap</code> named <code>TURRET</code>. Then you can use the following snippet:</p>
+
+<pre><code>    var fxImage:FXImage = new FXImage(TURRET);
+    var fx:AdjustFX = new AdjustFX();
+    fxImage.effects.add(fx);
+</code></pre>
+
+<p>At this point you can modify the effect's parameters and they will be automatically reflected to the image graphics.</p>
+
+<p><a></a></p>
+
+<h4>Using Standard Flash Filters</h4>
+
+<p>You can add standard Flash filters and PixelBender filters to the effect list of an FXImage and they will be handled right away by the library (they are internally wrapped in proper classes).</p>
+
+<p>It's as simple as this:</p>
+
+<pre><code>   var shadowFilter:DropShadowFilter = new DropShadowFilter(10);
+   fxImage.effects.add(shadowFilter);
+   shadowFilter.alpha = .6;
+</code></pre>
+
+<p><a></a></p>
+
+<h4>Changing Multiple Properties</h4>
+
+<p>You can modify more than one property of an effect (instance/subclass of <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/effects/FX.html"><code>FX</code></a>) at once by using the convenient <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#setProps()"><code>setProps()</code></a> method.</p>
+
+<pre><code>   var commonProps:* = {blur: 10, quality:2};
+   var fx:FX = new BloomFX();
+   var glowFX:GlowFX = new GlowFX(10);
+   fx.setProps({threshold: 125}).setProps(commonProps);
+   glowFX.setProps(commonProps);
+</code></pre>
+
+<p><a></a></p>
+
+<h4>Applying Multiple Effects</h4>
+
+<p>Multiple effects can be applied to the same FXImage, thus resulting in a combination of them.</p>
+
+<p>The <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#effects"><code>effects</code></a> property (which is of type <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html"><code>FXList</code></a>) in FXImage makes it easy to do so by exposing some useful methods like <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#add()"><code>add()</code></a> and <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#insert()"><code>insert()</code></a>.</p>
+
+<pre><code>   fxImage.add([FadeFX, new DropShadowFilter(10)]);
+   var adjustFX:AdjustFX = new AdjustFX();
+   fxImage.insert(adjustFX, 1);
+</code></pre>
+
+<p><a></a></p>
+
+<h4>Applying Effects to Multiple Targets</h4>
+
+<p>The same list of effects can be applied to different FXImages. In this way, when you modify the parameters of a specific effect, all the FXImages that share that same effect will reflect the changes.</p>
+
+<p>You can manually add the effects to separate FXImages in this way:</p>
+
+<pre><code>   var pixelateFX:PixelateFX = new PixelateFX();
+   var fadeFX:FadeFX = new FadeFX(.5);
+   fxImageOne.add([pixelateFX, fadeFX]);
+   fxImageTwo.add([pixelateFX, fadeFX]);
+   fxImageThree.add([pixelateFX, fadeFX]);
+   pixelateFX.scale = 10;
+</code></pre>
+
+<p>Or use <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html"><code>FXMan</code></a> (more on it <a href="#FXMan">later</a>) to do it with less code:</p>
+
+<pre><code>   var pixelateFX:PixelateFX = new PixelateFX();
+   var fadeFX:FadeFX = new FadeFX(.5);
+   FXMan.add([fxImageOne, fxImageTwo, fxImageThree], [pixelateFX, fadeFX]);
+   pixelateFX.scale = 10;
+</code></pre>
+
+<p><a></a></p>
+
+<h4>Applying Effects to the Whole Screen</h4>
+
+<p>Applying effects to the whole screen can be achieved easily and in different ways, all of which resort to setting the FXImage source to <code>FP.buffer</code>, explicitly or implicitly.</p>
+
+<ul>
+<li>
+<p><em>Method 1</em> (pass <code>null</code> to the constructor, which is the default):</p>
+
+<pre><code>var fxScreen:FXImage = new FXImage();
+fxScreen.effects.add(new PixelateFX(5));
+</code></pre>
+</li>
+<li>
+<p><em>Method 2</em> (explicitly pass <code>FP.buffer</code> to the constructor):</p>
+
+<pre><code>var fxScreen:FXImage = new FXImage(FP.buffer);
+fxScreen.effects.add(new PixelateFX(5));
+</code></pre>
+</li>
+<li>
+<p><em>Method 3</em> (explicitly <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#setSource()">set the source</a> to <code>FP.buffer</code>):</p>
+
+<pre><code>fxScreen.setSource(FP.buffer);
+fxScreen.effects.add(new PixelateFX(5));
+</code></pre>
+</li>
+</ul><p>All of these methods are equivalent, with the latter requiring the variable fxScreen to be already instantiated.</p>
+
+<p>It's worth noting that an FXImage representing the whole screen will trigger the update of the effects at the end of every frame, so it can be quite resource intensive (expecially in terms of CPU usage and rendering time).</p>
+
+<p>Another thing to keep in mind is that the FXImage will actually be drawn on top of the screen buffer, so if you're applying a fade effect to it you will see the <em>real</em> screen below show through. To prevent this you can simply clear the FP.buffer before rendering the FXImage.</p>
+
+<p><a></a></p>
+
+<h2>Currently Supported Effects</h2>
+
+<pre><code>    01 • AdjustFX           - color adjustment effect (contrast, hue, saturation, brightness)
+    02 • BloomFX            - bloom effect
+    03 • BlurFX             - blur filter effect
+    04 • FadeFX             - fade effect (opaque/transparent)
+    05 • FilterFX           - wrapper to use standard Flash filters (DropShadow, BlurFilter, etc.) and Pixel Bender ShaderFilters
+    06 • GlitchFX           - glitch effect (random linear disturb)
+    07 • GlowFX             - glow filter effect
+    08 • PixelateFX         - pixelate effect
+    09 • RGBDisplacementFX  - RGB channels displacement
+    10 • ScanLinesFX        - Scanlines and noise effect
+    11 • PBCircleSplashFX   - Pixel Bender circle splash effect
+    12 • PBDot              - Pixel Bender dot effect
+    13 • PBHalfToneFX       - Pixel Bender halftone effect
+    14 • PBLineSlideFX      - Pixel Bender lineslide effect
+    15 • PBPixelateFX       - Pixel Bender pixelate effect
+    16 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
+    17 • PBWaterFallFX      - Pixel Bender waterfall effect
+</code></pre>
+
+<p><a></a></p>
+
+<h2>In-Depth View</h2>
+
+<p>In the next sections a more in-depth view of the package classes will be shown, documenting their role in the framework and how to take advantage of their methods/properties.</p>
+
+<p><a></a></p>
+
+<h4>FXImage</h4>
+
+<p>Let's start with the main class, <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html"><code>FXImage</code></a>.</p>
+
+<p>As stated above, this class inherits from <code>net.flashpunk.graphics.Image</code>, and provides properties and methods to easily apply effects to the underlying BitmapData.</p>
+
+<p>When you instantiate an FXImage an <em>incremental</em> <code>id</code> will be automatically assigned to it.</p>
+
+<h5>Properties</h5>
+
+<ul>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#effects"><code>effects</code></a></p>
+
+<p>Used to add or remove effects associated with the FXImage instance.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#data"><code>data</code></a></p>
+
+<p>You can use this <code>Dictionary</code> to store custom data to associate with the instance.</p>
+
+<pre><code>fxImage.data["playerPos"] = { x: player.x, y: player.y };
+...
+trace(fxImage.data["playerPos"].x);
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#name"><code>name</code></a></p>
+
+<p>You can assign a name to the instance making it easy to identify a particular instance when debugging.</p>
+
+<pre><code>fxImage.name = "playerImage";
+...
+trace(fxImage.toString());  // outputs "FXImage@playerImage"
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#buffer"><code>buffer</code></a></p>
+
+<p>Gets/sets the underlying BitmapData buffer (the one inherited from FlashPunk's Image).</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#syncWith"><code>syncWith</code></a></p>
+
+<p>By setting this property to a valid graphic object, the graphics of the current instance will be synced to that of the object at every frame (calls <code>cloneGraphicsFrom()</code> internally).</p>
+
+<pre><code>fxImage.syncWith = player.spriteMap;
+// or...
+fxImage.syncWith = TURRET;
+// or...
+fxImage.syncWith = myBitmapData;
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#onPreRender"><code>onPreRender</code></a></p>
+
+<p>You can assign to this property a callback function that will be called just before the render step of the current instance. A reference to the current FXImage instance will be passed as first parameter to the function.</p>
+
+<pre><code>function preProcess(img:FXImage):void {
+    img.color = Math.random()*0xFFFFFF;
+    // img.onPreRender = null;      // just run once =&gt; disable the callback
+}
+...
+fxImage.onPreRender = preProcess;
+</code></pre>
+</li>
+</ul><h5>Methods</h5>
+
+<ul>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#FXImage()"><code>FXImage</code></a></p>
+
+<p>Constructor. Pass <code>null</code> as first parameter or <code>FP.buffer</code> to set the source to the whole screen. The second parameter is an optional clipping rectangle.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#applyMask()"><code>applyMask()</code></a></p>
+
+<p>Used to apply a draw mask to the image (in some cases can be convenient to use this instead of the <code>drawMask</code> property, bypassing the execution of <code>updateBuffer()</code> and so avoiding <em>re</em>-applying the effects in the same frame).</p>
+
+<pre><code>fxImage.drawMask = myMaskBitmapData;
+// ~ equivalent to
+fxImage.applyMask(myMaskBitmapData);
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#getSource()"><code>getSource()</code></a></p>
+
+<p>Returns the BitmapData used as source for the image.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#setSource()"><code>setSource()</code></a></p>
+
+<p>Sets the BitmapData to use as source for the image. You can also pass an embedded Class holding a Bitmap, a Bitmap object or a BitmapData, and specify a clipping rectangle. </p>
+
+<pre><code>fxImage.setSource(FP.buffer);
+// or...
+fxImage.setSource(myBitmapData, new Rectangle(30, 30, 50, 100));
+// or...
+fxImage.setSource(TURRET);
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#cloneGraphicsFrom()"><code>cloneGraphicsFrom()</code></a></p>
+
+<p>Copies the graphics from the target object and sets it as the source for the current instance.</p>
+
+<pre><code>fxImage.cloneGraphicsFrom(player.spriteMap);
+// or...
+fxImage.cloneGraphicsFrom(anotherFXImage);
+// or...
+fxImage.cloneGraphicsFrom(TURRET);
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#toString()"><code>toString()</code></a></p>
+
+<p>Returns a String representation of the instance (useful for debugging) in the format <code>&lt;class name&gt;@&lt;id OR name&gt;</code>.</p>
+
+<pre><code>// if the name property is not set the id will be used
+trace(fxImage.toString());      // "FXImage@1"
+// with the name property set to "fooImage"
+trace(fxImage.toString());      // "FXImage@fooImage"
+</code></pre>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#getBitmapData()"><code>getBitmapData()</code></a></p>
+
+<p>Returns a BitmapData object from the passed object, which can be a Class holding a Bitmap, a Bitmap or a BitmapData object.</p>
+</li>
+</ul><p><a></a></p>
+
+<h4>FXList</h4>
+
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html"><code>FXList</code></a> is the class used by FXImage to hold the effects (see <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#effects"><code>FXImage.effects</code></a>).</p>
+
+<p>It provides methods to add, remove, and generally access the contained effects.</p>
+
+<p>Most of the methods of FXList return the instance itself for chaining, making it possible to write code like this:</p>
+
+<pre><code>var fxList:FXList = fxImage.effects;
+fxList.clear().add([BloomFX, new FadeFX(.6)]).insert(DropShadowFilter, 1);
+</code></pre>
+
+<h5>Properties</h5>
+
+<ul>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#length"><code>length</code></a></p>
+
+<p>Returns the number of effects contained in the FXList instance.</p>
+</li>
+</ul><h5>Methods</h5>
+
+<ul>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#FXList()"><code>FXList()</code></a></p>
+
+<p>Constructor. You can pass a single FX or a Vector/Array of FXs to be added to the list.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#add()"><code>add()</code></a></p>
+
+<p>Adds one or more effects to the list. You can pass a single FX or a Vector/Array of FXs to be added to the list.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#insert()"><code>insert()</code></a></p>
+
+<p>Inserts one or more effects to the list. You can pass a single FX or a Vector/Array of FXs to be added to the list and optionally specify the index at which to insert them (index defaults to 0).</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#remove()"><code>remove()</code></a></p>
+
+<p>Removes one or more effects from the list. You can pass a single FX or a Vector/Array of FXs to be removed from the list.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#removeAt()"><code>removeAt()</code></a></p>
+
+<p>Removes the effect at the specified index.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#clear()"><code>clear()</code></a></p>
+
+<p>Removes all the effects from the list.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#contains()"><code>contains()</code></a></p>
+
+<p>Checks if one or more FXs are in the FXList. Returns true only if <em>all</em> of the effects passed in the first parameter are present in the list.</p>
+
+<pre><code>var blurFX:BlurFX = new BlurFX();
+var bloomFX:BloomFX = new BloomFX();
+var glowFX:GlowFX = new GlowFX();
+var fxList:FXList = new FXList([blurFX, bloomFX]);
+trace(fxList.contains(blurFX));             // true
+trace(fxList.contains([bloomFX, glowFX]));  // false
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#at()"><code>at()</code></a></p>
+
+<p>Returns the effect at the specified index.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#indexOf()"><code>indexOf()</code></a></p>
+
+<p>Returns the index of the specified effect or -1 if it's not present in the list.</p>
+
+<pre><code>var blurFX:BlurFX = new BlurFX();
+var bloomFX:BloomFX = new BloomFX();
+var glowFX:GlowFX = new GlowFX();
+var fxList:FXList = new FXList([blurFX, bloomFX]);
+trace(fxList.indexOf(bloomFX));     // 1
+trace(fxList.indexOf(glowFX));      // -1
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#getAll()"><code>getAll()</code></a></p>
+
+<p>Returns the internal Vector of FXs containing all the FXs in the FXList (it's not a copy so <em>beware</em>).</p>
+
+<pre><code>var fxVector:Vector&lt;FX&gt; = fxImage.effects.getAll();
+fxVector[1].setProps(...);
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#forEach()"><code>forEach()</code></a></p>
+
+<p>Executes a callback function passing each FX in the FXList as the first parameter.</p>
+
+<pre><code>function modifyFX(fx:FX):void {
+    fx.setProps({color: 0xFF0000}, false});
+}
+...
+fxList.forEach = modifyFX;
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#toString()"><code>toString()</code></a></p>
+
+<p>Returns a String representation of the instance (useful for debugging) in the format <code>&lt;class name&gt;[ &lt;list of effects&gt; ]</code>.</p>
+</li>
+</ul><p><a></a></p>
+
+<h4>FXMan</h4>
+
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html"><code>FXMan</code></a> is a <em>static</em> class that lets you manage FXs and the FXImages and get track of them. You can use FXMan to apply effects to FXImages instead of doing it direcly.</p>
+
+<p>It provides methods to add, remove, retrieve and generally access the contained FXImages and the associated FXs.</p>
+
+<p>Note that its methods <em>may</em> only work on FXImages/FXs that were previously added via FXMan (so it's advisable to not mix FXMan usage and direct manipulation via specific FXImage instances - <em>choose your way and stick with it!</em>).</p>
+
+<h5>Properties</h5>
+
+<ul>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#VERSION"><code>VERSION</code></a></p>
+
+<p>Returns the version of the punk.fx library as a String.</p>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#BUILD_DATE"><code>BUILD_DATE</code></a></p>
+
+<p>Returns the build date of the punk.fx library as a String in the format <code>DD/MM/YYYY</code>.</p>
+</li>
+</ul><h5>Methods</h5>
+
+<ul>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#add()"><code>add()</code></a></p>
+
+<p>Adds FXs to one or multiple targets.</p>
+
+<pre><code>FXMan.add(fxImage, BlurFX);
+FXMan.add([fxImageOne, fxImageFive], [new FadeFX(.5), BlurFX]);
+</code></pre>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#removeEffects()"><code>removeEffects()</code></a></p>
+
+<p>Removes FXs <em>instances</em> from every target (FXImages) that is using them.</p>
+
+<pre><code>FXMan.removeEffects(blurFX);
+FXMan.removeEffects([fadeFX, blurFX]);
+</code></pre>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#removetargets()"><code>removeTargets()</code></a></p>
+
+<p>Removes targets (FXImages) from the manager <em>and</em> their associated effects. Pass <code>null</code> to remove all the FXImages from the manager.</p>
+
+<pre><code>FXMan.removeTargets([fxImageOne, fxImageThree]);    // remove effects from the specified FXImages (and the FXImages too)
+FXMan.removeTargets();      // same as FXMan.clear()
+</code></pre>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#clear()"><code>clear()</code></a></p>
+
+<p>Removes all targets (FXImages) from the manager <em>and</em> their associated effects.</p>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#getEffectsOf()"><code>getEffectsOf()</code></a></p>
+
+<p>Returns the list of effects associated with the target (as an FXList).</p>
+
+<pre><code>var fxList:FXList;
+fxList = FXMan.getEffectsOf(fxImage);
+// same as...
+fxList = fxImage.effects;
+</code></pre>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#getAllEffects()"><code>getAllEffects()</code></a></p>
+
+<p>Returns all the effects in the manager, stored in a <code>Vector&lt;FX&gt;</code>.</p>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#getAllTargets()"><code>getAllTargets()</code></a></p>
+
+<p>Returns all the targets (FXImages) in the manager, stored in a <code>Vector&lt;FXImage&gt;</code>.</p>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#getTargetsWith()"><code>getTargetsWith()</code></a></p>
+
+<p>Returns a Vector of all the FXImages in the manager that are using <em>all</em> the specified effects.</p>
+
+<pre><code>FXMan.getTargetsWith([glowFX, blurFX]);
+</code></pre>
+</li>
+<li>
+<p><code>static</code> <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FXMan.html#toString()"><code>toString()</code></a></p>
+
+<p>Returns a String representation of the FXMan (useful for debugging).</p>
+</li>
+</ul><p><a></a></p>
+
+<h4>FX</h4>
+
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html"><code>FX</code></a> is the base class for all the effects. You can extend this class to create custom effects.</p>
+
+<p>When you instantiate an FX an <em>incremental</em> <code>id</code> will be automatically  assigned to it.</p>
+
+<h5>Properties</h5>
+
+<ul>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html#active"><code>active</code></a></p>
+
+<p>If you set this to <code>false</code> then the FXImages associated with this effect will not apply it.</p>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html#name"><code>name</code></a></p>
+
+<p>You can assign a name to the instance making it easy to identify a particular instance when debugging.</p>
+
+<pre><code>fx.name = "thisEffect";
+...
+trace(fx.toString());   // outputs "&lt;FX class&gt;@thisEffect"
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html#onPostProcess()"><code>onPostProcess</code></a></p>
+
+<p>You can assign to this property a callback function that will be called just after the effect has been applied. The source BitmapData and its clipping rectangle will be passed as parameters.</p>
+
+<pre><code>function postProcessFX(bmd:BitmapData, rect:Rectangle):void {
+    bmd.threshold(bmd, rect, FP.zero, "&lt;=", 127, 0x00000000, 0x00FFFFFF, true);
+}
+...
+fx.onPostProcess = postProcessFX;
+</code></pre>
+</li>
+</ul><h5>Methods</h5>
+
+<ul>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html#setProps()"><code>setProps()</code></a></p>
+
+<p>You can modify more than one property of an FX at once by using the convenient <a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html#setProps()"><code>setProps()</code></a> method. If you pass <code>true</code> (default) as the second parameter an error will be thrown if any of the specified properties doesn't exist.</p>
+
+<pre><code>var fx:FX = new BloomFX();
+fx.setProps({threshold: 125, quality: 2});      // OK
+fx.setProps({threshold: 125, color: 0xFFFFFF}); // ERROR: because "color" property doesn't exist
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html#applyTo()"><code>applyTo()</code></a></p>
+
+<p>Applies the effect to the clipRect region of bitmapData.</p>
+
+<pre><code>var fx:FX = new BloomFX();
+var rect:Rectangle = new Rectangle(10, 10, 150, 20); 
+fx.applyTo(myBMD, rect);
+</code></pre>
+</li>
+<li>
+<p><a href="http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html#toString()"><code>toString()</code></a></p>
+
+<p>Returns a String representation of the FX instance (useful for debugging) in the format <code>&lt;class name&gt;@&lt;id OR name&gt;</code>.</p>
+</li>
+</ul><p><a></a></p>
+
+<h2>How Does It Work</h2>
+
+<p>TO-DOOH TA-DAH<a></a></p>
+
+<p><a></a></p>
+
+<h2>FAQ</h2>
+
+<p>TA-DAH TO-DOOH</p>
       </section>
     </div>
 
