@@ -40,7 +40,7 @@ get an idea of what this all is about. </p>
 
 <p><strong>punk.fx</strong> is a <code>[WIP]</code> library that tries to make it easy to apply effects to graphics in FlashPunk 1.6.</p>
 
-<p><a></a></p>
+<p><a id="dependencies"></a></p>
 
 <h2>Dependencies</h2>
 
@@ -48,7 +48,7 @@ get an idea of what this all is about. </p>
 
 <p>You can download them from the official sites or use the copies in the repo (respectively in <code>src/net/flashpunk</code> and <code>src/com/gskinner</code>).</p>
 
-<p><a></a></p>
+<p><a id="overview"></a></p>
 
 <h2>Brief Overview</h2>
 
@@ -60,7 +60,7 @@ get an idea of what this all is about. </p>
 
 <p>Here's a link to the whole <a href="http://azrafe7.github.com/punk.fx/docs" title="punk.fx docs">documentation</a> of the punk.fx classes.</p>
 
-<p><a></a></p>
+<p><a id="index"></a></p>
 
 <h3>Index</h3>
 
@@ -92,14 +92,14 @@ get an idea of what this all is about. </p>
 </li>
 <li><a href="#internals">How Does It Work</a></li>
 <li><a href="#faq">FAQ</a></li>
-</ul><p><a></a></p>
+</ul><p><a id="gettingStarted"></a></p>
 
 <h3>Getting Started</h3>
 
 <p>Once you've downloaded the punk.fx package and the needed <a href="#dependencies">dependencies</a> you're ready to get started and to 
 experiment with it. The examples below will show you how to achieve some simple tasks and how to <em>effect</em>-ively ( <em>pun intended</em> ) use the library.</p>
 
-<p><a></a></p>
+<p><a id="simpleUsage"></a></p>
 
 <h4>Simple Usage</h4>
 
@@ -120,7 +120,7 @@ experiment with it. The examples below will show you how to achieve some simple 
 
 <p>At this point you can modify the effect's parameters and they will be automatically reflected to the image graphics.</p>
 
-<p><a></a></p>
+<p><a id="flashFilters"></a></p>
 
 <h4>Using Standard Flash Filters</h4>
 
@@ -133,7 +133,7 @@ experiment with it. The examples below will show you how to achieve some simple 
    shadowFilter.alpha = .6;
 </code></pre>
 
-<p><a></a></p>
+<p><a id="multipleProps"></a></p>
 
 <h4>Changing Multiple Properties</h4>
 
@@ -146,7 +146,7 @@ experiment with it. The examples below will show you how to achieve some simple 
    glowFX.setProps(commonProps);
 </code></pre>
 
-<p><a></a></p>
+<p><a id="multipleEffects"></a></p>
 
 <h4>Applying Multiple Effects</h4>
 
@@ -159,7 +159,7 @@ experiment with it. The examples below will show you how to achieve some simple 
    fxImage.insert(adjustFX, 1);
 </code></pre>
 
-<p><a></a></p>
+<p><a id="shareEffects"></a></p>
 
 <h4>Applying Effects to Multiple Targets</h4>
 
@@ -183,7 +183,7 @@ experiment with it. The examples below will show you how to achieve some simple 
    pixelateFX.scale = 10;
 </code></pre>
 
-<p><a></a></p>
+<p><a id="screenEffects"></a></p>
 
 <h4>Applying Effects to the Whole Screen</h4>
 
@@ -217,7 +217,7 @@ fxScreen.effects.add(new PixelateFX(5));
 
 <p>Another thing to keep in mind is that the FXImage will actually be drawn on top of the screen buffer, so if you're applying a fade effect to it you will see the <em>real</em> screen below show through. To prevent this you can simply clear the FP.buffer before rendering the FXImage.</p>
 
-<p><a></a></p>
+<p><a id="effects"></a></p>
 
 <h2>Currently Supported Effects</h2>
 
@@ -240,13 +240,13 @@ fxScreen.effects.add(new PixelateFX(5));
     17 • PBWaterFallFX      - Pixel Bender waterfall effect
 </code></pre>
 
-<p><a></a></p>
+<p><a id="inDepth"></a></p>
 
 <h2>In-Depth View</h2>
 
 <p>In the next sections a more in-depth view of the package classes will be shown, documenting their role in the framework and how to take advantage of their methods/properties.</p>
 
-<p><a></a></p>
+<p><a id="FXImage"></a></p>
 
 <h4>FXImage</h4>
 
@@ -377,7 +377,7 @@ trace(fxImage.toString());      // "FXImage@fooImage"
 
 <p>Returns a BitmapData object from the passed object, which can be a Class holding a Bitmap, a Bitmap or a BitmapData object.</p>
 </li>
-</ul><p><a></a></p>
+</ul><p><a id="FXList"></a></p>
 
 <h4>FXList</h4>
 
@@ -489,7 +489,7 @@ fxList.forEach = modifyFX;
 
 <p>Returns a String representation of the instance (useful for debugging) in the format <code>&lt;class name&gt;[ &lt;list of effects&gt; ]</code>.</p>
 </li>
-</ul><p><a></a></p>
+</ul><p><a id="FXMan"></a></p>
 
 <h4>FXMan</h4>
 
@@ -581,7 +581,7 @@ fxList = fxImage.effects;
 
 <p>Returns a String representation of the FXMan (useful for debugging).</p>
 </li>
-</ul><p><a></a></p>
+</ul><p><a id="FX"></a></p>
 
 <h4>FX</h4>
 
@@ -647,13 +647,13 @@ fx.applyTo(myBMD, rect);
 
 <p>Returns a String representation of the FX instance (useful for debugging) in the format <code>&lt;class name&gt;@&lt;id OR name&gt;</code>.</p>
 </li>
-</ul><p><a></a></p>
+</ul><p><a id="internals"></a></p>
 
 <h2>How Does It Work</h2>
 
-<p>TO-DOOH TA-DAH<a></a></p>
+<p>TO-DOOH TA-DAH</p>
 
-<p><a></a></p>
+<p><a id="faq"></a></p>
 
 <h2>FAQ</h2>
 

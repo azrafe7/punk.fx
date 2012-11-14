@@ -160,11 +160,10 @@ img {
 
 pre, code {
   width: 100%;
-  color: #222;
-  background-color: #fff;
+  background-color: #e7e7e7;
 
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-  font-size: 14px;
+  font-size: 12px;
 
   border-radius: 2px;
   -moz-border-radius: 2px;
@@ -177,14 +176,14 @@ pre, code {
 pre {
   width: 100%;
   padding: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,.1);
+  box-shadow: 0 0 2px rgba(0,0,0,.5);
   overflow: auto;
 }
 
 code {
-  padding: 3px;
+  padding: 2px;
   margin: 0 3px;
-  box-shadow: 0 0 10px rgba(0,0,0,.1);
+  box-shadow: 0 0 2px rgba(0,0,0,.5);
 }
 
 pre code {
