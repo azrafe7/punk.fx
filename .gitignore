@@ -1,9 +1,14 @@
-# Build and Release Folders
+# Excluded Folders
 obj/
 bin/
+src/fmpp*
 
-# Project property files
-.actionScriptProperties
-.flexProperties
-.settings/
-.project
+# Excluded Files
+*.log
+*.ax
+*.ftl
+*.fmpp
+*.tdd
+*.inc
+build.xml
+*PadPreview*.*
