@@ -7,7 +7,7 @@ package
 	public class Player extends Entity
 	{
 		[Embed(source = 'assets/swordguy.png')]
-		private const SWORDGUY:Class;
+		public const SWORDGUY:Class;
 
 		public var sprSwordguy:Spritemap = new Spritemap(SWORDGUY, 48, 32);
 		

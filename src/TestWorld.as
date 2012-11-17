@@ -62,9 +62,15 @@ package
 	import punk.fx.effects.PixelateFX;
 	import punk.fx.effects.RGBDisplacementFX;
 	import punk.fx.effects.ScanLinesFX;
-	import punk.fx.FXImage;
 	import punk.fx.FXList;
 	import punk.fx.FXMan;
+	import punk.fx.graphics.FXImage;
+	import punk.fx.graphics.FXPreRotation;
+	import punk.fx.graphics.FXSpritemap;
+	import punk.fx.graphics.FXText;
+	import punk.fx.graphics.FXTiledImage;
+	import punk.fx.graphics.FXTiledSpritemap;
+	import punk.fx.graphics.IFXGraphic;
 	import uk.co.soulwire.gui.SimpleGUI;
 	
 	/**
@@ -89,6 +95,14 @@ package
 		PixelateFX;
 		RGBDisplacementFX;
 		ScanLinesFX;
+		
+		FXText;
+		FXImage;
+		FXPreRotation;
+		FXSpritemap;
+		FXTiledImage;
+		FXTiledSpritemap;
+		
 		
 		private var xml:XML;
 		private var effectsWin:Window;
@@ -158,7 +172,7 @@ package
 			background = new Backdrop(BACKGROUND, false, false);
 			addGraphic(background);
 			
-			imageFX = new FXImage(null);
+			imageFX = new FXImage(swordguy);
 			imageFX.name = "imageFX";
 			//imageFX.alpha = .4;
 			addGraphic(imageFX, -4, 200, 100);
@@ -266,8 +280,36 @@ package
 			var pbsf:PBShaderFilterFX = new PBShaderFilterFX("../../effects/dot.pbj", function ():void 
 			{
 				trace(pbsf.info, "\n\nloaded");
-				trace(FXMan.BUILD_DATE);
+				//trace(FXMan.BUILD_DATE);
 			});
+
+			trace("----------", imageFX as IFXGraphic);
+			
+			var t:FXText = new FXText("111 effecting texdt");
+			var p:FX;
+			t.autoUpdate = true;
+			FXMan.add(t, p=new BlurFX(0));
+			t.updateBuffer();
+			
+			addGraphic(t, -1, 60, 60);
+			TweenMax.to(p, 3, { blur:16, yoyo:true, repeat: -1, onUpdate:function ():void 
+			{
+				//t.updateBuffer(true);
+			} } );
+
+			
+			var sm:FXTiledSpritemap = new FXTiledSpritemap(player.SWORDGUY, 48,32, 48, 32);
+			sm.add("run", [6, 7, 8, 9, 10, 11], 20, true);
+			sm.play("run");
+			sm.autoUpdate = true;
+			FXMan.add(sm, p);
+			
+			trace(FXMan.getTargetsWith(p));
+			
+			sm.scale = 2.5;
+			sm.updateBuffer();
+			
+			addGraphic(sm, -1, 60, 60);
 		}
 		
 		public function onAccordionChanged(accordion:Accordion, win:Window, idx:int):void 
@@ -435,7 +477,6 @@ package
 			win.setSize(accordion.width, winH + 5);
 			
 			//if (fx is GlowFX) vbox.enabled = false;
-
 		}
 		
 		/**
