@@ -62,6 +62,14 @@ List of Currently Supported Effects
 ChangeLog
 ---------
 
+* **ver 0.2.023**:
+  - autoUpdate property
+  - all FP graphics classes that extend Image are now supported
+  - preprocessing via FMPP with Ant to generate FXGraphics classes from template
+  - introduced IFXGraphic interface
+  - FXMan uses IFXGraphic under the hood
+  - struggled with ASDoc... but finally won ;)
+  - restructured bits here and there
 * **ver 0.2.001**:
   - FXMan decoupled from FXImage (it's not mandatory anymore to use it, but it can be useful to do so)
   - more effects: PBDot, PBLineSlide, Glitch
