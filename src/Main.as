@@ -7,6 +7,7 @@ package
 	import net.flashpunk.graphics.Text;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
+	import punk.fx.FXMan;
 	
 	/**
 	 * ...
@@ -23,7 +24,7 @@ package
 			super(640, 480, 60, false);
 			
 			//FP.console.toggleKey = Key.TAB;
-			//FP.console.log("TAB - toggle console");
+			FP.console.log("punk.fx v" + FXMan.VERSION + " demo");
 			FP.console.enable();
 			FP.screen.scale = 1;
 			FP.world = new TestWorld;
@@ -33,11 +34,6 @@ package
 		{
 			trace("FP init!");
 			super.init();
-
-			helloText = new Text("Hello FlashPunk World!", 0, 0, {size: 32, color: 0xFF3366});
-			helloText.centerOrigin();
-	
-			FP.world.add(new Entity(FP.screen.width/2, FP.screen.height/2, helloText));
 		}
 		
 		override public function update():void

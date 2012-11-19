@@ -58,6 +58,7 @@ package punk.fx.graphics
 			super(source, frameWidth, frameHeight, callback);
 			
 			active = true;					// sets the FXSpritemap to active (set this to false if you don't want the FXSpritemap to update)
+			autoUpdate = true;				// updates the buffer every frame
 			_id = _idAutoCounter++;
 		}
 		
@@ -70,7 +71,7 @@ package punk.fx.graphics
 		 */
 		override public function render(target:BitmapData, point:Point, camera:Point):void 
 		{
-			if (_autoUpdate) updateBuffer(true);	// update buffer if autoUpdate is set to true
+			if (_autoUpdate && _effects.length > 0) updateBuffer(true);	// update buffer if autoUpdate is set to true
 				
 			// run onPreRender callback if exists (passing this instance as first parameter)
 			if (onPreRender != null && onPreRender is Function) onPreRender(this);

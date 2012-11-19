@@ -1,5 +1,6 @@
 package punk.fx.effects
 {
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BitmapDataChannel;
 	import flash.display.BlendMode;
@@ -31,6 +32,10 @@ package punk.fx.effects
 		/** @private BitmapData used for the scan lines */
 		protected var _scanLinesBMD:BitmapData;
 
+		/** @private BitmapData used for the draw mask */
+		protected var _maskBMD:BitmapData;
+
+		
 		/** Identifies horizontal scan lines. */
 		public static const HORIZONTAL:int = 0;
 		
@@ -55,6 +60,8 @@ package punk.fx.effects
 		/** @private Scan lines offset. */
 		protected var _scanLinesOffset:Number = 0;
 		
+		/** @private Whether to use a draw mask. */
+		protected var _useDrawMask:Boolean = false;
 
 		/** Whether to draw the scan lines. */
 		public var scanLines:Boolean;
@@ -98,6 +105,7 @@ package punk.fx.effects
 			if (_rect.width < clipRect.width || _rect.height < clipRect.height) {			
 				_noiseBMD = new BitmapData(clipRect.width, clipRect.height, true, 0xFF000000);
 				_scanLinesBMD = new BitmapData(clipRect.width, clipRect.height, true, 0xFF000000);
+				_maskBMD = new BitmapData(clipRect.width, clipRect.height, true, 0);
 
 				// set flag to redraw scan lines
 				_updateScanLines = true;
@@ -119,6 +127,12 @@ package punk.fx.effects
 			_mat.identity();
 			_mat.translate(clipRect.x, clipRect.y);
 			
+			// create mask
+			if (_useDrawMask) {
+				_maskBMD.fillRect(_maskBMD.rect, 0);
+				_maskBMD.threshold(bitmapData, clipRect, FP.zero, ">", 0x00000000, 0xFF000000, 0xFFFFFFFF);
+			}
+
 			// apply background noise
 			if (noiseAmount > 0) {
 				_noiseBMD.noise(noiseSeed < 0 ? Math.random() * 255 : noiseSeed, 0, noiseAmount, 7, true);
@@ -130,6 +144,11 @@ package punk.fx.effects
 				bitmapData.draw(_scanLinesBMD, _mat, null, scanLinesBlendMode);
 			}
 
+			// apply mask
+			if (_useDrawMask) {
+				bitmapData.copyPixels(bitmapData, clipRect, clipRect.topLeft, _maskBMD, clipRect.topLeft);
+			}
+			
 			super.applyTo(bitmapData, clipRect);
 		}
 
@@ -228,8 +247,19 @@ package punk.fx.effects
 		/** @private */
 		public function set scanLinesOffset(value:Number):void 
 		{
-			if (value != _scanLinesOffset) _updateScanLines = true;
 			_scanLinesOffset = value;
+		}
+		
+		/** Whether to use a draw mask. */
+		public function get useDrawMask():Boolean 
+		{
+			return _useDrawMask;
+		}
+		
+		/** @private */
+		public function set useDrawMask(value:Boolean):void 
+		{
+			_useDrawMask = value;
 		}
 		
 	}

@@ -69,6 +69,7 @@ package punk.fx.graphics
 			setSource(source, clipRect);
 			
 			active = true;					// sets the FXImage to active (set this to false if you don't want the FXImage to update)
+			autoUpdate = true;				// updates the buffer every frame
 			_id = _idAutoCounter++;
 		}
 		
@@ -81,8 +82,8 @@ package punk.fx.graphics
 		 */
 		override public function render(target:BitmapData, point:Point, camera:Point):void 
 		{
-			if (_sourceIsScreen || _autoUpdate) updateBuffer(true);	// update buffer if the source is the whole screen or autoUpdate is set to true
-			else if (syncWith) cloneGraphicsFrom(syncWith);			// clone graphics from syncWith object if it is set
+			if (syncWith) cloneGraphicsFrom(syncWith);						// clone graphics from syncWith object if it is set
+			else if (_sourceIsScreen || (_autoUpdate && _effects.length > 0)) updateBuffer(true);	// update buffer if the source is the whole screen or autoUpdate is set to true
 				
 			// run onPreRender callback if exists (passing this instance as first parameter)
 			if (onPreRender != null && onPreRender is Function) onPreRender(this);

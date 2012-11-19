@@ -4,8 +4,11 @@ package punk.fx.effects
 	import flash.display.BitmapDataChannel;
 	import flash.display.BlendMode;
 	import flash.display.Graphics;
+	import flash.geom.ColorTransform;
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.sampler.NewObjectSample;
 	import net.flashpunk.FP;
 
 	/**
@@ -40,6 +43,9 @@ package punk.fx.effects
 		/** @private Offset of the blue channel */
 		protected var _blueOffset:Point = new Point;
 
+		/** @private ColorTransform used to isolate the channels. */
+		protected var _colorTransform:ColorTransform = new ColorTransform(0, 0, 0, 1);
+		
 		
 		/** X offset of the red channel. */
 		public var redOffsetX:Number;
@@ -109,10 +115,6 @@ package punk.fx.effects
 				//trace("RGB disp: new BMD", bitmapData.rect)
 			}
 			
-			// update matrix to draw to proper position
-			_mat.identity();
-			_mat.translate(clipRect.x, clipRect.y);
-			
 			if (redOffsetX == 0 && redOffsetY == 0 && 
 				greenOffsetX == 0 && greenOffsetY == 0 && 
 				blueOffsetX == 0 && blueOffsetY == 0 && 
@@ -121,9 +123,9 @@ package punk.fx.effects
 				//trace("no offsets")
 			} else {
 				// clear channel bitmapDatas
-				_redBMD.fillRect(bitmapData.rect, 0xFF000000);
-				_greenBMD.fillRect(bitmapData.rect, 0xFF000000);
-				_blueBMD.fillRect(bitmapData.rect, 0xFF000000);
+				_redBMD.fillRect(bitmapData.rect, 0x00000000);
+				_greenBMD.fillRect(bitmapData.rect, 0x00000000);
+				_blueBMD.fillRect(bitmapData.rect, 0x00000000);
 				
 				// update offset points
 				_redOffset.x = redOffsetX; 			_redOffset.y = redOffsetY;
@@ -131,18 +133,55 @@ package punk.fx.effects
 				_blueOffset.x = blueOffsetX; 		_blueOffset.y = blueOffsetY;
 				
 				// copy RGB channels to respective bitmapDatas with relative offsets
-				if (showRedChannel) _redBMD.copyChannel(bitmapData, clipRect, _redOffset, BitmapDataChannel.RED, BitmapDataChannel.RED);
-				if (showGreenChannel) _greenBMD.copyChannel(bitmapData, clipRect, _greenOffset, BitmapDataChannel.GREEN, BitmapDataChannel.GREEN);
-				if (showBlueChannel) _blueBMD.copyChannel(bitmapData, clipRect, _blueOffset, BitmapDataChannel.BLUE, BitmapDataChannel.BLUE);
+				if (showRedChannel) {
+					// update matrix to draw to proper position
+					_mat.identity();
+					_mat.translate(redOffsetX, redOffsetY);
+					
+					// update colorTransform
+					_colorTransform.redMultiplier = 1;
+					_colorTransform.greenMultiplier = _colorTransform.blueMultiplier = 0;
+					
+					// draw
+					_redBMD.draw(bitmapData, _mat, _colorTransform);
+				}
+				if (showGreenChannel) {
+					// update matrix to draw to proper position
+					_mat.identity();
+					_mat.translate(greenOffsetX, greenOffsetY);
+					
+					// update colorTransform
+					_colorTransform.greenMultiplier = 1;
+					_colorTransform.redMultiplier = _colorTransform.blueMultiplier = 0;
+					
+					// draw
+					_greenBMD.draw(bitmapData, _mat, _colorTransform);
+				}
+				if (showBlueChannel) {
+					// update matrix to draw to proper position
+					_mat.identity();
+					_mat.translate(blueOffsetX, blueOffsetY);
+					
+					// update colorTransform
+					_colorTransform.blueMultiplier = 1;
+					_colorTransform.greenMultiplier = _colorTransform.redMultiplier = 0;
+					
+					// draw
+					_blueBMD.draw(bitmapData, _mat, _colorTransform);
+				}
 				
 				// clear target
 				bitmapData.fillRect(clipRect, 0);
+				
+				// update matrix to draw to proper position
+				_mat.identity();
+				_mat.translate(clipRect.x, clipRect.y);
 				
 				// draw channels to target
 				if (showRedChannel) bitmapData.draw(_redBMD, _mat);
 				if (showGreenChannel) bitmapData.draw(_greenBMD, _mat, null, BlendMode.SCREEN);
 				if (showBlueChannel) bitmapData.draw(_blueBMD, _mat, null, BlendMode.SCREEN);
-			}			
+			}
 			
 			super.applyTo(bitmapData, clipRect);
 		}
