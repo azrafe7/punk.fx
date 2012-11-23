@@ -12,7 +12,7 @@ Overview & Usage
 
 You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) to get started with punk.fx or read the 
 full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better understand the library's internal classes and methods.
-You can also take a look at this <del>messy</del> [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20v0.2.023%20demo.swf) to 
+You can also take a look at this <del>messy</del> [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20v0.2.029%20demo.swf) to 
 get an idea of what this all is about. 
 
 **Note**: <code>TestWorld.as</code> is a <del>complete</del> partial mess but it's just what I'm using to test all the stuff. 
@@ -53,15 +53,20 @@ List of Currently Supported Effects
 		11 • PBCircleSplashFX   - Pixel Bender circle splash effect
 		12 • PBDot              - Pixel Bender dot effect
 		13 • PBHalfToneFX       - Pixel Bender halftone effect
-		14 • PBLineSlideFX      - Pixel Bender lineslide effect
-		15 • PBPixelateFX       - Pixel Bender pixelate effect
-		16 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
-		17 • PBWaterFallFX      - Pixel Bender waterfall effect
+		14 • PBLightPointFX     - Pixel Bender light point effect
+		15 • PBLineSlideFX      - Pixel Bender lineslide effect
+		16 • PBPixelateFX       - Pixel Bender pixelate effect
+		17 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
+		18 • PBWaterFallFX      - Pixel Bender waterfall effect
+		19 • PBZoomBlurFX       - Pixel Bender zoom blur effect
 
 
 ChangeLog
 ---------
 
+* **ver 0.2.029**:
+  - PBLightPointFX and PBZoomBlurFX added
+  - useDrawMask property added to a couple of effects
 * **ver 0.2.023**:
   - autoUpdate property
   - all FP graphics classes that extend Image are now supported
