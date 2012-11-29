@@ -247,7 +247,7 @@ package punk.fx.graphics
 			// recreate the buffer if needed
 			if (!_buffer || (_buffer.width != clipRect.width && _buffer.height != clipRect.height)) {
 				createBuffer();
-				trace("createbuf", clipRect);
+				//trace("FXImage: createbuf", clipRect);
 			}
 			
 			updateBuffer();			

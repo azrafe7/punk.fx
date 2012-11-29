@@ -67,6 +67,7 @@ ChangeLog
 * **ver 0.2.029**:
   - PBLightPointFX and PBZoomBlurFX added
   - useDrawMask property added to a couple of effects
+  - minor fixes
 * **ver 0.2.023**:
   - autoUpdate property
   - all FP graphics classes that extend Image are now supported

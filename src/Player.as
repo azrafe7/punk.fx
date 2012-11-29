@@ -12,6 +12,8 @@ package
 
 		public var sprSwordguy:FXSpritemap = new FXSpritemap(SWORDGUY, 48*2*1.5, 32*2*1.5);
 		
+		public var dx:Number = 120;
+
 		public function Player(x:Number, y:Number)
 		{
 			super(x, y);
@@ -26,23 +28,21 @@ package
 			sprSwordguy.centerOO();
 		}
 		
-		private var dx:Number = 120;
-
 		override public function update():void
 		{
-			moveBy(dx*FP.elapsed*.5, 0);
+			moveBy(dx*FP.elapsed, 0);
 			
 			if(x > 500) 
 			{
 				dx *= -1;
+				x = 500;
 				sprSwordguy.flipped = true;
-			}
-			else if(x < 200)
+			} else if(x < 200)
 			{
 				dx *= -1;
+				x = 200;
 				sprSwordguy.flipped = false;
 			}
-			moveBy(dx*FP.elapsed*.5, 0);
 		}
 	}
 }

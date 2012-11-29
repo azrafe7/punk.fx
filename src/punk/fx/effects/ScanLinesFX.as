@@ -88,7 +88,7 @@ package punk.fx.effects
 		 * @param	scanLines		whether to draw the scan lines.
 		 * @param	noiseAmount		amount of noise to draw (0..255). Set this to 0 for no noise.
 		 */
-		public function ScanLinesFX(offsets:Array = null, scanLines:Boolean = true, noiseAmount:uint = 25) 
+		public function ScanLinesFX(scanLines:Boolean = true, noiseAmount:uint = 25) 
 		{
 			super();
 			
@@ -157,7 +157,7 @@ package punk.fx.effects
 		{
 			var g:Graphics = FP.sprite.graphics;
 			g.clear();
-			g.lineStyle(scanLinesThickness, scanLinesColor, scanLinesAlpha);
+			g.lineStyle(scanLinesThickness, scanLinesColor & 0xFFFFFF, scanLinesAlpha);
 			if (scanLinesDir == ScanLinesFX.HORIZONTAL) {
 				for (var y:Number = _scanLinesOffset % _scanLinesGap; y < _scanLinesBMD.height; y += scanLinesGap) {
 					g.moveTo(_scanLinesBMD.rect.x, y);
