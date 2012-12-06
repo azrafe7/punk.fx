@@ -1,6 +1,6 @@
 You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) (also copied below) to get started with punk.fx or read the 
 full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better understand the library's internal classes and methods.
-You can also take a look at this messy [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/FX%20Project%20PlayTest.swf) to 
+You can also take a look at this [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20v.0.3.001%20demo.swf) to 
 get an idea of what this all is about. 
 
 **Note:** the wiki below refers to the 0.2.x version of the lib, so it doesn't yet reflect recent changes/additions like FXLayer,

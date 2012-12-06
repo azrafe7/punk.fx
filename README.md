@@ -12,7 +12,7 @@ Overview & Usage
 
 You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) to get started with punk.fx or read the 
 full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better understand the library's internal classes and methods.
-You can also take a look at this <del>messy</del> [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20v0.2.029%20demo.swf) to 
+You can also take a look at this <del>messy</del> [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20v.0.3.001%20demo.swf) to 
 get an idea of what this all is about. 
 
 **Note**: <code>TestWorld.as</code> is a <del>complete</del> partial mess but it's just what I'm using to test all the stuff. 
@@ -65,7 +65,7 @@ List of Currently Supported Effects
 ChangeLog
 ---------
 
-* **ver 0.3.001*:
+* **ver 0.3.001**:
   - powerful FXLayer added, for applying effects to entities
   - TList: lists reorganized into new package
   - ColorTransformFX
