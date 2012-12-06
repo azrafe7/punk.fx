@@ -43,27 +43,34 @@ List of Currently Supported Effects
 		01 • AdjustFX           - color adjustment effect (contrast, hue, saturation, brightness)
 		02 • BloomFX            - bloom effect
 		03 • BlurFX             - blur filter effect
-		04 • FadeFX             - fade effect (opaque/transparent)
-		05 • FilterFX           - wrapper to use standard Flash filters (DropShadow, BlurFilter, etc.) and Pixel Bender ShaderFilters
-		06 • GlitchFX           - glitch effect (random linear disturb)
-		07 • GlowFX             - glow filter effect
-		08 • PixelateFX         - pixelate effect
-		09 • RGBDisplacementFX  - RGB channels displacement
-		10 • ScanLinesFX        - Scanlines and noise effect
-		11 • PBCircleSplashFX   - Pixel Bender circle splash effect
-		12 • PBDot              - Pixel Bender dot effect
-		13 • PBHalfToneFX       - Pixel Bender halftone effect
-		14 • PBLightPointFX     - Pixel Bender light point effect
-		15 • PBLineSlideFX      - Pixel Bender lineslide effect
-		16 • PBPixelateFX       - Pixel Bender pixelate effect
-		17 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
-		18 • PBWaterFallFX      - Pixel Bender waterfall effect
-		19 • PBZoomBlurFX       - Pixel Bender zoom blur effect
+		04 • ColorTransformFX   - wrapper for ColorTransform
+		05 • FadeFX             - fade effect (opaque/transparent)
+		06 • FilterFX           - wrapper to use standard Flash filters (DropShadow, BlurFilter, etc.) and Pixel Bender ShaderFilters
+		07 • GlitchFX           - glitch effect (random linear disturb)
+		08 • GlowFX             - glow filter effect
+		09 • PixelateFX         - pixelate effect
+		10 • RGBDisplacementFX  - RGB channels displacement
+		11 • ScanLinesFX        - Scanlines and noise effect
+		12 • PBCircleSplashFX   - Pixel Bender circle splash effect
+		13 • PBDot              - Pixel Bender dot effect
+		14 • PBHalfToneFX       - Pixel Bender halftone effect
+		15 • PBLightPointFX     - Pixel Bender light point effect
+		16 • PBLineSlideFX      - Pixel Bender lineslide effect
+		17 • PBPixelateFX       - Pixel Bender pixelate effect
+		18 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
+		19 • PBWaterFallFX      - Pixel Bender waterfall effect
+		20 • PBZoomBlurFX       - Pixel Bender zoom blur effect
 
 
 ChangeLog
 ---------
 
+* **ver 0.3.001*:
+  - powerful FXLayer added, for applying effects to entities
+  - TList: lists reorganized into new package
+  - ColorTransformFX
+  - added particles to demo to show FXLayer capabilities
+  - minor fixes
 * **ver 0.2.029**:
   - PBLightPointFX and PBZoomBlurFX added
   - useDrawMask property added to a couple of effects

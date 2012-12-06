@@ -2,10 +2,10 @@ package punk.fx.graphics
 {
 	import flash.display.BitmapData;
 	import flash.geom.Point;
-	import punk.fx.FXList;
+	import punk.fx.lists.FXList;
 	
 	/**
-	 * Simple interface that has to be implemented by graphics that support FXs.
+	 * Simple interface implemented by graphics that support FXs.
 	 * 
 	 * @author azrafe7
 	 */

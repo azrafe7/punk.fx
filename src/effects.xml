@@ -7,8 +7,8 @@
 		<param name="hue" type="Number" min="-180.0" max="180.0" default="0.0" />
 	</effect>
 	<effect className="BloomFX">
-		<param name="blur" type="Number" min="0.0" max="64.0" default="2.0" tweenTo="32" />
-		<param name="threshold" type="int" min="0" max="255" default="255" tweenTo="180" />
+		<param name="blur" type="Number" min="0.0" max="64.0" default="2.0" tweenTo="16" />
+		<param name="threshold" type="int" min="0" max="255" default="255" tweenTo="85" />
 		<param name="quality" type="int" min="1" max="3" default="1" />
 	</effect>
 	<effect className="BlurFX">
@@ -16,6 +16,16 @@
 		<param name="blurX" type="Number" min="0.0" max="128.0" default="0.0" tweenTo="12" />
 		<param name="blurY" type="Number" min="0.0" max="128.0" default="0.0" tweenTo="16" />
 		<param name="quality" type="int" min="1" max="3" default="1" />
+	</effect>
+	<effect className="ColorTransformFX">
+		<param name="redMultiplier" type="Number" min="0.0" max="10.0" default="1.0" />
+		<param name="greenMultiplier" type="Number" min="0.0" max="10.0" default="1.0" />
+		<param name="blueMultiplier" type="Number" min="0.0" max="10.0" default="1.0" />
+		<param name="alphaMultiplier" type="Number" min="0.0" max="10.0" default="1.0" />
+		<param name="redOffset" type="Number" min="-255" max="255" default="0" tweenTo="255" />
+		<param name="greenOffset" type="Number" min="-255" max="255" default="0" tweenTo="255" />
+		<param name="blueOffset" type="Number" min="-255" max="255" default="0" tweenTo="255" />
+		<param name="alphaOffset" type="Number" min="-255" max="255" default="0" tweenTo="-220" />
 	</effect>
 	<effect className="FadeFX">
 		<param name="alpha" type="Number" min="0.0" max="1.0" default="1.0" tweenTo="0.4" />
@@ -28,9 +38,9 @@
 		<param name="minHeight" type="Number" min="1" max="120" default="1" />
 	</effect>
 	<effect className="GlowFX">
-		<param name="blur" type="Number" min="0.0" max="128.0" default="0.0" tweenTo="12" />
+		<param name="blur" type="Number" min="0.0" max="64.0" default="0.0" tweenTo="12" />
 		<param name="color" type="uint" min="0" max="0xFFFFFF" default="0xFFFFFF" />
-		<param name="strength" type="Number" min="0.0" max="256.0" default="2.0" tweenTo="6" />
+		<param name="strength" type="Number" min="0.0" max="64.0" default="2.0" tweenTo="6" />
 		<param name="quality" type="int" min="1" max="3" default="1" />
 		<param name="inner" type="Boolean" default="false" />
 		<param name="knockout" type="Boolean" default="false" />
@@ -79,6 +89,14 @@
 		<param name="angle" type="Number" min="0.0" max="360.0" default="0.0" tweenTo="90" />
 		<param name="maxDotSize" type="Number" min="0.0" max="25.0" default="4.0" tweenTo="8" />
 		<param name="gamma" type="Number" min="0.0" max="5" default=".8" />
+		<param name="useDrawMask" type="Boolean" default="false" />
+	</effect>
+	<effect className="PBLightPointFX">
+		<param name="centerX" type="Number" min="0.0" max="640.0" default="25.0" tweenTo="500" />
+		<param name="centerY" type="Number" min="0.0" max="640.0" default="25.0" />
+		<param name="attenuationDelta" type="Number" min="0.0" max="640.0" default="50.0" tweenTo="150.0" />
+		<param name="attenuationSpeed" type="Number" min="0.0" max="2.0" default=".2" tweenTo="1.4" />
+		<param name="attenuationDecay" type="Number" min="0.0" max="2.0" default=".8" />
 	</effect>
 	<effect className="PBLineSlideFX">
 		<param name="slide" type="Number" min="-640.0" max="640.0" default="0.0" tweenTo="100" />
@@ -91,5 +109,10 @@
 	<effect className="PBWaterFallFX">
 		<param name="percent" type="Number" min="0.0" max="1.0" default="0.0" tweenTo="1" />
 		<param name="direction" type="int" min="0" max="3" default="0" />
+	</effect>
+	<effect className="PBZoomBlurFX">
+		<param name="centerX" type="Number" min="0.0" max="640.0" default="256.0" />
+		<param name="centerY" type="Number" min="0.0" max="640.0" default="256.0" />
+		<param name="amount" type="Number" min="0.0" max=".5" default="0.0" tweenTo="0.3" />
 	</effect>
 </list>

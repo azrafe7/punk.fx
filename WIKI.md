@@ -3,6 +3,8 @@ full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better u
 You can also take a look at this messy [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/FX%20Project%20PlayTest.swf) to 
 get an idea of what this all is about. 
 
+**Note:** the wiki below refers to the 0.2.x version of the lib, so it doesn't yet reflect recent changes/additions like FXLayer,
+but it's still a valid reference to get started (anyway the docs folder in the repo is up-to-date).
 _______________________________________________________________________________________________________
 
 ## WIKI

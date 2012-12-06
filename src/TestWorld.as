@@ -2,10 +2,13 @@ package
 {
 	import com.bit101.components.*;
 	import com.greensock.*;
+	import flash.display.BlendMode;
 	import flash.events.*;
+	import flash.geom.Point;
 	import flash.utils.*;
 	import net.flashpunk.*;
 	import net.flashpunk.graphics.*;
+	import net.flashpunk.utils.Input;
 	import punk.fx.*;
 	import punk.fx.effects.*;
 	import punk.fx.graphics.*;
@@ -21,18 +24,21 @@ package
 		AdjustFX;
 		BloomFX;
 		BlurFX;
+		ColorTransformFX;
 		FadeFX;
 		GlitchFX;
 		GlowFX;
 		PBCircleSplashFX;
 		PBDotFX;
 		PBHalfToneFX;
+		PBLightPointFX;
 		PBLineSlideFX;
 		PBPixelateFX;
 		PBWaterFallFX;
 		PixelateFX;
 		RGBDisplacementFX;
 		ScanLinesFX;
+		PBZoomBlurFX;
 		
 		// declare all FXGraphicss so that the compiler knows them
 		FXText;
@@ -52,15 +58,23 @@ package
 		private var xml:XML;
 		private var effectsWin:Window;
 		private var hideAccordion:Tween;
-		public var components:Dictionary = new Dictionary(true); // key=<fx name>.<prop> value={comp:<component>, fx:<fx>, defValue:*}
-		public var tween:TweenMax;
-
+		private var components:Dictionary = new Dictionary(true); // key=<fx name>.<prop> value={comp:<component>, fx:<fx>, defValue:*}
+		private var tween:TweenMax;
+		private var radioTargets:Dictionary = new Dictionary(true); // key=<RadioButton> value=<IFXGraphic target>;
+		private var trailsCheckBox:CheckBox;
+		
+		public var trailsTransformFX:ColorTransformFX = new ColorTransformFX(1, 1, 1, .9);		
+		
 		public var fxImage:FXImage;			// whole screen
 		public var fxSpritemap:FXSpritemap;	// swordguy
-		public var fxTarget:IFXGraphic;		// switches between fxImage and fxSpritemap
+		public var fxLayer:FXLayer;			// particles
+		public var fxTarget:IFXGraphic;		// switches between fxImage, fxSpritemap and fxLayer
+		
 		public var background:Backdrop;
 		public var fx:FX;
-		public static var player:Player;
+		public var trackedPoint:Point = new Point;
+		public var player:Player;
+		public var gears:EmitterEntity;
 		
 		
 		public function TestWorld() 
@@ -86,28 +100,37 @@ package
 			
 			fxImage = new FXImage;	// no source passed as first parameter => represents the whole screen
 			fxImage.name = "FXScreen";
-			fxImage.autoUpdate = false;
+			//fxImage.autoUpdate = false;
 			addGraphic(fxImage, -3);	// layers matter... try changing this to -1
 			
-			// clear the screen before drawing fxImage
+			// sync with camera & clear the screen before drawing fxImage
 			fxImage.onPreRender = function (img:FXImage):void 
 			{
+				img.x = FP.camera.x;
+				img.y = FP.camera.y;
 				FP.screen.refresh();
 			}
+			
+			gears = new EmitterEntity(FP.halfWidth, 50);
+			add(gears);
+			gears.visible = false;	// set visibility to false so particles only render to the fxLayer and not on FP.buffer
+			fxLayer = new FXLayer;
+			fxLayer.entities.add(gears);
+			addGraphic(fxLayer);
 			
 			fxTarget = fxImage;
 			
 			createUI();
 		}
 
-		// creates the EffectExplorer win
+		// creates the EffectExplorer win and the target selector UI
 		public function createUI():void 
 		{
 			xml = FP.getXML(EFFECTS_XML);
 			
 			Style.setStyle(Style.LIGHT);
 			
-			effectsWin = new Window(FP.engine, 5, 25, "Effects Explorer - ver " + FXMan.VERSION);
+			effectsWin = new Window(FP.engine, 5, 20, "Effects Explorer - ver " + FXMan.VERSION);
 			
 			// create target radio buttons
 			createTargetUI();
@@ -125,6 +148,7 @@ package
 			});
 			effectsWin.addEventListener(MouseEvent.ROLL_OUT, function (e:Event):void 
 			{
+				// auto-hide the accordion
 				hideAccordion = FP.alarm(.5, function():void { effectsWin.minimized = true; });
 			});
 
@@ -141,6 +165,7 @@ package
 		public function onAccordionChanged(accordion:Accordion, win:Window, idx:int):void 
 		{
 			fxTarget.effects.at(idx).active = !win.minimized;
+			fx = win.minimized ? null : fxTarget.effects.at(idx);
 			effectsWin.setSize(accordion.width + 1, accordion.height + 1 + 20);
 		}
 		
@@ -148,17 +173,19 @@ package
 		public function createTargetUI():void 
 		{
 			
-			var win:Window = new Window(FP.engine, FP.width-150, 25, "Target Selection:");
+			var win:Window = new Window(FP.engine, FP.width-150, 20, "Target Selection:");
 			win.alpha = .9;
 			win.hasMinimizeButton = false;
 			var winH:Number = win.titleBar.height;
 			var vbox:VBox = new VBox(win, 8, 5);
 			
-			var radio:RadioButton;
-			radio = new RadioButton(vbox, 0, 0, "FXImage (screen)", fxTarget == fxImage, switchTarget);
-			radio = new RadioButton(vbox, 0, 0, "FXSpritemap (swordguy)", fxTarget == fxSpritemap, switchTarget);
+			radioTargets[new RadioButton(vbox, 0, 0, "FXImage (screen)", fxTarget == fxImage, switchTarget)] 			= fxImage;
+			radioTargets[new RadioButton(vbox, 0, 0, "FXSpritemap (swordguy)", fxTarget == fxSpritemap, switchTarget)] 	= fxSpritemap;
+			radioTargets[new RadioButton(vbox, 0, 0, "FXLayer (particles)", fxTarget == fxLayer, switchTarget)] 		= fxLayer;
+
+			trailsCheckBox = new CheckBox(vbox, 12, 0, "preRender (trails)", handleTrails);
 			
-			winH += 18 * 2;
+			winH += 17 * 4;
 			win.setSize(145, winH);
 		}
 		
@@ -167,12 +194,37 @@ package
 		public function switchTarget(e:Event):void 
 		{
 			var radio:RadioButton = RadioButton(e.target);
-			if ((radio.label.indexOf("FXImage") >= 0 && fxTarget == fxImage) || (radio.label.indexOf("FXSpritemap") >= 0 && fxTarget == fxSpritemap)) return;
+			
+			// exit early if the target hasn't changed
+			if (fxTarget == radioTargets[radio]) return;
+			
 			var oldTarget:IFXGraphic = fxTarget;
-			fxTarget = (oldTarget == fxSpritemap ? fxImage : fxSpritemap);
+			fxTarget = radioTargets[radio];
 			fxTarget.effects.clear();
 			FXMan.add(fxTarget, oldTarget.effects.getAll());
 			FXMan.removeTargets(oldTarget);
+		}
+		
+		
+		// handle trailsCheckBox
+		public function handleTrails(e:Event):void 
+		{
+			var checkBox:CheckBox = CheckBox(e.target);
+			
+			if (checkBox.selected) {
+				fxLayer.autoClearSource = false;
+				fxLayer.onPreRender = enableTrails;
+			} else {
+				fxLayer.autoClearSource = true;
+				fxLayer.onPreRender = null;
+			}
+		}
+		
+		
+		// preRender function to activate particle trails (applies a ColorTransform to fxLayer's source buffer).
+		public function enableTrails(fxLayer:*):void 
+		{
+			trailsTransformFX.applyTo(fxLayer.getSource());
 		}
 		
 		// create components and add them to accordion by parsing the xml. Also binding it all together (comps, tween, fx).
@@ -183,10 +235,10 @@ package
 			var paramClass:Class;
 			var fxClassPath:String;
 			var fxClass:Class;
+			var fx:FX;
 			var min:*;
 			var max:*;
 			var value:*;
-			var fx:FX;
 			var win:Window;
 			var winH:Number;
 			var vbox:VBox;
@@ -271,7 +323,7 @@ package
 			tween = new TweenMax(fx.setProps(defaults), 3, tweenTo);
 			tween.pause();
 			
-			// disable componenst while the tween is running
+			// disable components while the tween is running
 			tween.eventCallback("onUpdate", function ():void 
 			{
 				var entry:*;
@@ -352,7 +404,6 @@ package
 				obj[param] = value;
 			}
 		}
-		
-	}
 
+	}
 }

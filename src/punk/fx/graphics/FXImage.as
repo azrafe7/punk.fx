@@ -7,7 +7,7 @@ package punk.fx.graphics
 	import flash.utils.Dictionary;
 	import net.flashpunk.FP;
 	import punk.fx.effects.FX;
-	import punk.fx.FXList;
+	import punk.fx.lists.FXList;
 	import flash.utils.getQualifiedClassName;
 	import net.flashpunk.graphics.Image;
 	import flash.display.Bitmap;
@@ -83,7 +83,7 @@ package punk.fx.graphics
 		override public function render(target:BitmapData, point:Point, camera:Point):void 
 		{
 			if (syncWith) cloneGraphicsFrom(syncWith);						// clone graphics from syncWith object if it is set
-			else if (_sourceIsScreen || (_autoUpdate && _effects.length > 0)) updateBuffer(true);	// update buffer if the source is the whole screen or autoUpdate is set to true
+			else if (_sourceIsScreen || (_autoUpdate /*&& _effects.length > 0*/)) updateBuffer(true);	// update buffer if the source is the whole screen or autoUpdate is set to true
 				
 			// run onPreRender callback if exists (passing this instance as first parameter)
 			if (onPreRender != null && onPreRender is Function) onPreRender(this);
@@ -114,7 +114,7 @@ package punk.fx.graphics
 		public function applyEffects(effects:FXList = null):void 
 		{
 			var fx:FX;
-			var _effects:Vector.<FX> = (effects ? effects.getAll() : this.effects.getAll());
+			var _effects:Vector.<*> = (effects ? effects.getAll() : this.effects.getAll());
 
 			// if there are effects to apply...
 			if (_effects && (_nEffects = _effects.length)) {

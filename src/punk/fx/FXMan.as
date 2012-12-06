@@ -3,6 +3,7 @@ package punk.fx
 	import flash.utils.Dictionary;
 	import punk.fx.effects.FX;
 	import punk.fx.graphics.IFXGraphic;
+	import punk.fx.lists.FXList;
 	
 	/**
 	 * Manager of IFXGraphics and the FXs associated to them.
@@ -13,11 +14,16 @@ package punk.fx
 	{
 		
 		/** Library version. */
-		public static var VERSION:String = "0.2.023";
+		public static var VERSION:String = "0.3.001";
 		
 		/** Build date (DD/MM/YYYY). */
 		public static var BUILD_DATE:String = CONFIG::timeStamp;
 
+		// print out punk.fx version and build date if in DEBUG
+		CONFIG::debug {
+			trace("punk.fx v" + VERSION + " (" + BUILD_DATE + ")");
+		}
+		
 		/** 
 		 * @private (weak) Dictionary(IFXGraphic, FXList).
 		 * It's actually a (weak) Dictionary(*, FXList) but is ensured that the added targets implement IFXGraphic.
@@ -119,7 +125,7 @@ package punk.fx
 			
 			for (var target:* in _effects) fxList.add(_effects[target]);
 			
-			return fxList.getAll();
+			return fxList.getAll() as Vector.<FX>;
 		}
 
 		/**

@@ -7,7 +7,7 @@ package punk.fx.graphics
 	import flash.utils.Dictionary;
 	import net.flashpunk.FP;
 	import punk.fx.effects.FX;
-	import punk.fx.FXList;
+	import punk.fx.lists.FXList;
 	import flash.utils.getQualifiedClassName;
 	import net.flashpunk.graphics.TiledSpritemap;
  
@@ -103,7 +103,7 @@ package punk.fx.graphics
 		public function applyEffects(effects:FXList = null):void 
 		{
 			var fx:FX;
-			var _effects:Vector.<FX> = (effects ? effects.getAll() : this.effects.getAll());
+			var _effects:Vector.<*> = (effects ? effects.getAll() : this.effects.getAll());
 
 			// if there are effects to apply...
 			if (_effects && (_nEffects = _effects.length)) {

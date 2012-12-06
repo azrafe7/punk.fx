@@ -54,7 +54,7 @@ package punk.fx.effects
 		 * @param	inner		whether the glowing must be applied to the inside of the image.
 		 * @param	knockout	whether the image must be cut out.
 		 */
-		public function GlowFX(blur:Number = 0, color:uint = 0xffffff, strength:Number = 0, quality:int = 1, inner:Boolean = false, knockout:Boolean = false) 
+		public function GlowFX(blur:Number = 0, color:uint = 0xffffff, strength:Number = 2, quality:int = 1, inner:Boolean = false, knockout:Boolean = false) 
 		{
 			super();
 			
