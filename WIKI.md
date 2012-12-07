@@ -27,7 +27,7 @@ You can download them from the official sites or use the copies in the repo (res
 Brief Overview
 --------------
 
-The core of the package is [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html), a class that extends FlashPunk's `Image` and that exposes functionalities to apply effects to the underlying graphics (plus other useful functions).
+The core of the package is [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html), a class that extends FlashPunk's `Image` and that exposes functionalities to apply effects to the underlying graphics (plus other useful functions).
 
 <small>NB: You'll obviously need to add the FXImage to an Entity and add the latter to the World to make it render to screen (same process you'd use with a normal FlashPunk Image).</small>
 
@@ -73,7 +73,7 @@ experiment with it. The examples below will show you how to achieve some simple 
 
 All you have to do to use the effects is:
 
-  1. create a new [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html) instance
+  1. create a new [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html) instance
   2. instantiate one (or more) of the supported effects
   3. add the instantiated effects to the FXImage object
 
@@ -120,7 +120,7 @@ You can modify more than one property of an effect (instance/subclass of [`FX`](
 
 Multiple effects can be applied to the same FXImage, thus resulting in a combination of them.
 
-The [`effects`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#effects) property (which is of type [`FXList`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html)) in FXImage makes it easy to do so by exposing some useful methods like [`add()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#add(\)) and [`insert()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#insert(\)).
+The [`effects`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#effects) property (which is of type [`FXList`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html)) in FXImage makes it easy to do so by exposing some useful methods like [`add()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#add(\)) and [`insert()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#insert(\)).
 
        fxImage.add([FadeFX, new DropShadowFilter(10)]);
        var adjustFX:AdjustFX = new AdjustFX();
@@ -142,7 +142,7 @@ You can manually add the effects to separate FXImages in this way:
        fxImageThree.add([pixelateFX, fadeFX]);
        pixelateFX.scale = 10;
 
-Or use [`FXMan`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html) (more on it [later](#FXMan)) to do it with less code:
+Or use [`FXMan`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html) (more on it [later](#FXMan)) to do it with less code:
 
        var pixelateFX:PixelateFX = new PixelateFX();
        var fadeFX:FadeFX = new FadeFX(.5);
@@ -166,7 +166,7 @@ Applying effects to the whole screen can be achieved easily and in different way
         var fxScreen:FXImage = new FXImage(FP.buffer);
 	    fxScreen.effects.add(new PixelateFX(5));
 
-* *Method 3* (explicitly [set the source](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#setSource(\)) to `FP.buffer`):
+* *Method 3* (explicitly [set the source](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#setSource(\)) to `FP.buffer`):
 
 		fxScreen.setSource(FP.buffer);
 	    fxScreen.effects.add(new PixelateFX(5));
@@ -214,7 +214,7 @@ In the next sections a more in-depth view of the package classes will be shown, 
 
 #### FXImage
 
-Let's start with the main class, [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html).
+Let's start with the main class, [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html).
 
 As stated above, this class inherits from `net.flashpunk.graphics.Image`, and provides properties and methods to easily apply effects to the underlying BitmapData.
 
@@ -222,11 +222,16 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 
 ##### Properties
 
-  - [`effects`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#effects)
+  - [`autoUpdate`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#autoUpdate)
+    
+	Whether to auto update the buffer every frame (defaults to true).
+	If you set this to false, then you'll have to manually call `updateBuffer(...)` to apply the effects.
+
+  - [`effects`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#effects)
     
 	Used to add or remove effects associated with the FXImage instance.
 
-  - [`data`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#data)
+  - [`data`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#data)
     
 	You can use this `Dictionary` to store custom data to associate with the instance.
 
@@ -234,7 +239,7 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 		...
 		trace(fxImage.data["playerPos"].x);
 
-  - [`name`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#name)
+  - [`name`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#name)
     
 	You can assign a name to the instance making it easy to identify a particular instance when debugging.
 
@@ -242,11 +247,11 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 		...
 		trace(fxImage.toString());	// outputs "FXImage@playerImage"
 
-  - [`buffer`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#buffer)
+  - [`buffer`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#buffer)
     
 	Gets/sets the underlying BitmapData buffer (the one inherited from FlashPunk's Image).
 
-  - [`syncWith`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#syncWith)
+  - [`syncWith`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#syncWith)
 
 	By setting this property to a valid graphic object, the graphics of the current instance will be synced to that of the object at every frame (calls `cloneGraphicsFrom()` internally).
 
@@ -256,7 +261,7 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 		// or...
 		fxImage.syncWith = myBitmapData;
 
-  - [`onPreRender`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#onPreRender)
+  - [`onPreRender`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#onPreRender)
 
 	You can assign to this property a callback function that will be called just before the render step of the current instance. A reference to the current FXImage instance will be passed as first parameter to the function.
 
@@ -270,11 +275,11 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 
 ##### Methods
 
-  - [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#FXImage(\))
+  - [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#FXImage(\))
     
 	Constructor. Pass `null` as first parameter or `FP.buffer` to set the source to the whole screen. The second parameter is an optional clipping rectangle.
 
-  - [`applyMask()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#applyMask(\))
+  - [`applyMask()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#applyMask(\))
     
 	Used to apply a draw mask to the image (in some cases can be convenient to use this instead of the `drawMask` property, bypassing the execution of `updateBuffer()` and so avoiding _re_-applying the effects in the same frame).
 
@@ -282,11 +287,11 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 		// ~ equivalent to
 		fxImage.applyMask(myMaskBitmapData);
 
-  - [`getSource()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#getSource(\))
+  - [`getSource()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#getSource(\))
     
 	Returns the BitmapData used as source for the image.
 
-  - [`setSource()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#setSource(\))
+  - [`setSource()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#setSource(\))
     
 	Sets the BitmapData to use as source for the image. You can also pass an embedded Class holding a Bitmap, a Bitmap object or a BitmapData, and specify a clipping rectangle. 
 
@@ -296,7 +301,7 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 		// or...
 		fxImage.setSource(TURRET);
 
-  - [`cloneGraphicsFrom()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#cloneGraphicsFrom(\))
+  - [`cloneGraphicsFrom()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#cloneGraphicsFrom(\))
     
 	Copies the graphics from the target object and sets it as the source for the current instance.
 
@@ -306,7 +311,7 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 		// or...
 		fxImage.cloneGraphicsFrom(TURRET);
 
-  - [`toString()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#toString(\))
+  - [`toString()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#toString(\))
     
 	Returns a String representation of the instance (useful for debugging) in the format `<class name>@<id OR name>`.
 
@@ -315,7 +320,7 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 		// with the name property set to "fooImage"
 		trace(fxImage.toString());		// "FXImage@fooImage"
 
-  - `static` [`getBitmapData()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#getBitmapData(\))
+  - `static` [`getBitmapData()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#getBitmapData(\))
     
 	Returns a BitmapData object from the passed object, which can be a Class holding a Bitmap, a Bitmap or a BitmapData object.
 
@@ -324,7 +329,7 @@ When you instantiate an FXImage an _incremental_ `id` will be automatically assi
 
 #### FXList
 
-[`FXList`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html) is the class used by FXImage to hold the effects (see [`FXImage.effects`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXImage.html#effects)).
+[`FXList`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html) is the class used by FXImage to hold the effects (see [`FXImage.effects`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#effects)).
 
 It provides methods to add, remove, and generally access the contained effects.
 
@@ -335,37 +340,37 @@ Most of the methods of FXList return the instance itself for chaining, making it
 
 ##### Properties
 
-  - [`length`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#length)
+  - [`length`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#length)
     
 	Returns the number of effects contained in the FXList instance.
 
 ##### Methods
 
-  - [`FXList()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#FXList(\))
+  - [`FXList()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#FXList(\))
     
 	Constructor. You can pass a single FX or a Vector/Array of FXs to be added to the list.
 
-  - [`add()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#add(\))
+  - [`add()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#add(\))
     
 	Adds one or more effects to the list. You can pass a single FX or a Vector/Array of FXs to be added to the list.
 
-  - [`insert()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#insert(\))
+  - [`insert()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#insert(\))
     
 	Inserts one or more effects to the list. You can pass a single FX or a Vector/Array of FXs to be added to the list and optionally specify the index at which to insert them (index defaults to 0).
 
-  - [`remove()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#remove(\))
+  - [`remove()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#remove(\))
     
 	Removes one or more effects from the list. You can pass a single FX or a Vector/Array of FXs to be removed from the list.
 
-  - [`removeAt()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#removeAt(\))
+  - [`removeAt()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#removeAt(\))
     
 	Removes the effect at the specified index.
 
-  - [`clear()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#clear(\))
+  - [`clear()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#clear(\))
     
 	Removes all the effects from the list.
 
-  - [`contains()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#contains(\))
+  - [`contains()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#contains(\))
     
 	Checks if one or more FXs are in the FXList. Returns true only if _all_ of the effects passed in the first parameter are present in the list.
 
@@ -376,11 +381,11 @@ Most of the methods of FXList return the instance itself for chaining, making it
 		trace(fxList.contains(blurFX));				// true
 		trace(fxList.contains([bloomFX, glowFX]));	// false
 
-  - [`at()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#at(\))
+  - [`at()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#at(\))
     
 	Returns the effect at the specified index.
 
-  - [`indexOf()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#indexOf(\))
+  - [`indexOf()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#indexOf(\))
     
 	Returns the index of the specified effect or -1 if it's not present in the list.
 
@@ -391,14 +396,14 @@ Most of the methods of FXList return the instance itself for chaining, making it
 		trace(fxList.indexOf(bloomFX));		// 1
 		trace(fxList.indexOf(glowFX));		// -1
 
-  - [`getAll()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#getAll(\))
+  - [`getAll()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#getAll(\))
     
 	Returns the internal Vector of FXs containing all the FXs in the FXList (it's not a copy so _beware_).
 
 		var fxVector:Vector.<FX> = fxImage.effects.getAll();
 		fxVector[1].setProps(...);
 
-  - [`forEach()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#forEach(\))
+  - [`forEach()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#forEach(\))
     
 	Executes a callback function passing each FX in the FXList as the first parameter.
 
@@ -408,7 +413,7 @@ Most of the methods of FXList return the instance itself for chaining, making it
 		...
 		fxList.forEach = modifyFX;
 
-  - [`toString()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FXList.html#toString(\))
+  - [`toString()`](http://azrafe7.github.com/punk.fx/docs/punk/fx/lists/FXList.html#toString(\))
     
 	Returns a String representation of the instance (useful for debugging) in the format `<class name>[ <list of effects> ]`.
 
@@ -492,7 +497,7 @@ Note that its methods _may_ only work on FXImages/FXs that were previously added
 
 #### FX
 
-[`FX`](http://azrafe7.github.com/punk.fx/docs/punk/fx/FX.html) is the base class for all the effects. You can extend this class to create custom effects.
+[`FX`](http://azrafe7.github.com/punk.fx/docs/punk/fx/effects/FX.html) is the base class for all the effects. You can extend this class to create custom effects.
 
 When you instantiate an FX an _incremental_ `id` will be automatically  assigned to it.
 
