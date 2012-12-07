@@ -3,6 +3,25 @@
     <title>API Documentation</title><link rel="stylesheet" href="style.css" type="text/css" media="screen"><link rel="stylesheet" href="print.css" type="text/css" media="print"><link rel="stylesheet" href="override.css" type="text/css">
     <script language="javascript" type="text/javascript">
     	<!--
+		// Reload page if new content available (see http://stackoverflow.com/questions/12556593/determining-a-page-is-outdated-on-github-pages)
+		// Check if a new cache is available on page load.
+		window.addEventListener('load', function(e) {
+
+		  window.applicationCache.addEventListener('updateready', function(e) {
+			if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+			  // Browser downloaded a new app cache.
+			  // Swap it in and reload the page to get the new hotness.
+			  window.applicationCache.swapCache();
+			  if (confirm('A new version of this site is available. Load it?')) {
+				window.location.reload();
+			  }
+			} else {
+			  // Manifest didn't changed. Nothing new to server.
+			}
+		  }, false);
+
+		}, false);
+
         window.onload=function(){
             var d=document.location.search;
 			var args=d.substring(d.lastIndexOf('?')+1,d.length);
