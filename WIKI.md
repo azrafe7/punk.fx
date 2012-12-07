@@ -1,15 +1,16 @@
-You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) (also copied below) to get started with punk.fx or read the 
+You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) (below) to get started with punk.fx or read the 
 full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better understand the library's internal classes and methods.
 You can also take a look at this [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20v.0.3.001%20demo.swf) to 
 get an idea of what this all is about. 
 
-**Note:** the wiki below refers to the 0.2.x version of the lib, so it doesn't yet reflect recent changes/additions like FXLayer,
+**Note:** this wiki may be _slightly_ outdated, not reflecting the most recent changes/additions,
 but it's still a valid reference to get started (anyway the docs folder in the repo is up-to-date).
+
 _______________________________________________________________________________________________________
 
 ## WIKI
 
-**punk.fx** is a `[WIP]` library that tries to make it easy to apply effects to graphics in FlashPunk 1.6.
+**punk.fx** is a library that makes it easy to apply effects to graphics in FlashPunk 1.6.
 
 
 <a id="dependencies"></a>
@@ -21,19 +22,25 @@ Its only dependencies are [FlashPunk](http://flashpunk.net/forums/index.php?topi
 
 You can download them from the official sites or use the copies in the repo (respectively in `src/net/flashpunk` and `src/com/gskinner`).
 
+Then all you have to do to use the library is just copy/import the `src/punk` folder into your own project and you're ready to go.
 
 <a id="overview"></a>
 
 Brief Overview
 --------------
 
-The core of the package is [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html), a class that extends FlashPunk's `Image` and that exposes functionalities to apply effects to the underlying graphics (plus other useful functions).
+The core of the package is [`FXImage`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html), a class that extends FlashPunk's `Image` and that exposes functionalities to apply effects to the underlying graphics (plus other useful functions). 
 
-<small>NB: You'll obviously need to add the FXImage to an Entity and add the latter to the World to make it render to screen (same process you'd use with a normal FlashPunk Image).</small>
+Along with FXImage you'll find other classes that extend the graphics that you commonly use with FlashPunk (so there's `FXSpritemap`, `FXText`, etc.) and a special [`FXLayer`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXLayer.html) class, that lets you apply effects to entities by working as an additional layer on the screen.
 
-A bunch of effects are supported (here's the [full list](#effects "list of supported effects")), and the user can easily apply them to multiple images, the whole screen, or to `BitmapData` objects (with the possibility to pass a `Rectangle` representing the region of the object that will be affected by the tranforms).
+<small>NB: You'll obviously need to add the _FX-Graphic_ to an Entity and add the latter to the World to make it render to screen (same process you'd use with a normal FlashPunk graphic).</small>
 
-Here's a link to the whole [documentation](http://azrafe7.github.com/punk.fx/docs "punk.fx docs") of the punk.fx classes.
+A bunch of effects are supported (here's the [full list](#effects "list of supported effects")), and the user can easily apply them to multiple _FX-Graphic_ instances, the whole screen, `Entities` or `BitmapData` objects (with the possibility to pass a `Rectangle` representing the region of the object that will be affected by the tranforms).
+
+Here's a link to the whole [documentation](http://azrafe7.github.com/punk.fx/docs "punk.fx docs") of the punk.fx classes. This, instead, is a link to punk.fx's [thread](http://flashpunk.net/forums/index.php?topic=5049) on FlashPunk's Forums.
+
+![demo snapshot](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20demo%20snapshot.png)
+<small><code>[demo snapshot]</code></small>
 
 
 <a id="index"></a>
@@ -49,6 +56,8 @@ Here's a link to the whole [documentation](http://azrafe7.github.com/punk.fx/doc
     - [Applying Multiple Effects](#multipleEffects)
     - [Applying Effects to Multiple Targets](#shareEffects)
     - [Applying Effects to the Whole Screen](#screenEffects)
+    - [Applying Effects to Other Graphics](#otherGraphics)
+    - [Applying Effects to Entities](#entityEffects)
   - [Currently Supported Effects](#effects)
   - [In-Depth View](#inDepth)
     - [FXImage](#FXImage)
@@ -176,6 +185,48 @@ All of these methods are equivalent, with the latter requiring the variable fxSc
 It's worth noting that an FXImage representing the whole screen will trigger the update of the effects at the end of every frame, so it can be quite resource intensive (expecially in terms of CPU usage and rendering time).
 
 Another thing to keep in mind is that the FXImage will actually be drawn on top of the screen buffer, so if you're applying a fade effect to it you will see the _real_ screen below show through. To prevent this you can simply clear the FP.buffer before rendering the FXImage.
+A simple way to achieve this is by using the [`onPreRender`](http://azrafe7.github.com/punk.fx/docs/punk/fx/graphics/FXImage.html#onPreRender) property of FXImage:
+
+		fxScreen.onPreRender = function(fxImage:*) {
+			FP.screen.refresh();
+		};
+
+
+<a id="otherGraphics"></a>
+
+#### Applying Effects to Other Graphics
+
+All of the _FX-graphics_ you find in the `punk.fx.graphics` package expose most of the same functionalities FXImage has, so, if you want to apply effects to other graphics (different from FXImage), the process is the same:
+
+		var fxImage:FXImage = new FXImage(TURRET);
+		var fxText:FXText = new FXText("Hello World!");
+		var fxSpritemap:FXSpritemap = new FXSpritemap(TANK_SPRITEMAP, 48, 32);
+		...
+		var pixelateFX:PixelateFX = new PixelateFX();
+		var fadeFX:FadeFX = new FadeFX(.5);
+		
+		FXMan.add([fxImage, fxText, fxSpritemap], [pixelateFX, fadeFX]);
+		pixelateFX.scale = 10;
+		
+
+<a id="entityEffects"></a>
+
+#### Applying Effects to Entities
+
+To apply effects to entities a special class has been made: `FXLayer`.
+It's very similar to the other graphic classes, but has an `entities` property that lets you add multiple entities to it, so that the effects will be applied to all of them when rendered. 
+
+It works as an overlay (or an extra buffer if you want): entities are drawn on to it, effects are applied, and then all of it gets rendered to the screen (or to the specified target). Here's a simple example:
+
+		var simpleEntity:Entity = new Entity(...);
+		var player:PlayerEntity = new PlayerEntity(...);
+		var particles:ParticlesEntity = new ParticlesEntity(...);
+
+		var colorTransformFX:ColorTranformFX = new ColorTransformFX(1.2, .7, 1, .5);
+
+		var fxLayer:FXLayer = new FXLayer();  // with no parameters will default to the size of the screen
+		fxLayer.entities.add([simpleEntity, player, particles]);
+		fxLayer.effects.add(colorTransformFX);
 
 
 <a id="effects"></a>
@@ -186,20 +237,23 @@ Currently Supported Effects
 		01 • AdjustFX           - color adjustment effect (contrast, hue, saturation, brightness)
 		02 • BloomFX            - bloom effect
 		03 • BlurFX             - blur filter effect
-		04 • FadeFX             - fade effect (opaque/transparent)
-		05 • FilterFX           - wrapper to use standard Flash filters (DropShadow, BlurFilter, etc.) and Pixel Bender ShaderFilters
-		06 • GlitchFX           - glitch effect (random linear disturb)
-		07 • GlowFX             - glow filter effect
-		08 • PixelateFX         - pixelate effect
-		09 • RGBDisplacementFX  - RGB channels displacement
-		10 • ScanLinesFX        - Scanlines and noise effect
-		11 • PBCircleSplashFX   - Pixel Bender circle splash effect
-		12 • PBDot              - Pixel Bender dot effect
-		13 • PBHalfToneFX       - Pixel Bender halftone effect
-		14 • PBLineSlideFX      - Pixel Bender lineslide effect
-		15 • PBPixelateFX       - Pixel Bender pixelate effect
-		16 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
-		17 • PBWaterFallFX      - Pixel Bender waterfall effect
+		04 • ColorTransformFX   - wrapper for ColorTransform
+		05 • FadeFX             - fade effect (opaque/transparent)
+		06 • FilterFX           - wrapper to use standard Flash filters (DropShadow, BlurFilter, etc.) and Pixel Bender ShaderFilters
+		07 • GlitchFX           - glitch effect (random linear disturb)
+		08 • GlowFX             - glow filter effect
+		09 • PixelateFX         - pixelate effect
+		10 • RGBDisplacementFX  - RGB channels displacement
+		11 • ScanLinesFX        - Scanlines and noise effect
+		12 • PBCircleSplashFX   - Pixel Bender circle splash effect
+		13 • PBDot              - Pixel Bender dot effect
+		14 • PBHalfToneFX       - Pixel Bender halftone effect
+		15 • PBLightPointFX     - Pixel Bender light point effect
+		16 • PBLineSlideFX      - Pixel Bender lineslide effect
+		17 • PBPixelateFX       - Pixel Bender pixelate effect
+		18 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
+		19 • PBWaterFallFX      - Pixel Bender waterfall effect
+		20 • PBZoomBlurFX       - Pixel Bender zoom blur effect
 
 
 <a id="inDepth"></a>
@@ -209,6 +263,7 @@ In-Depth View
 
 In the next sections a more in-depth view of the package classes will be shown, documenting their role in the framework and how to take advantage of their methods/properties.
 
+**Note:** although not all lib classes are listed below, you can easily work out how the non-listed ones operate, as most of them have very similar features (i.e.: once you get how FXImage works, then using FXSpritemap, FXLayer, etc. is a snap; same with FXList and EntityList).
 
 <a id="FXImage"></a>
 

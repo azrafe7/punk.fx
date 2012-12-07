@@ -3,21 +3,17 @@ punk.fx
 
 A library for applying graphic effects in FlashPunk v1.6.
 
-Still a *work-in-progress* but the core functionality is more or less in place.
-
-
 
 Overview & Usage
 ----------------
 
-You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) to get started with punk.fx or read the 
+With **punk.fx** you can easily apply graphic effects to all FlashPunk's graphic classes (by using the proper FXGraphic classes that extend the FP ones) or to whole Entities (via FXLayer). 
+The library provides a collection of built-in effects (Pixelate, Glow, Fade, etc.), and makes it possible to also use the standard Flash filters (DropShadow, Blur, etc.) along with Pixel Bender filters, all just writing a few lines of code.
+
+You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) to get started with **punk.fx** or read the 
 full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better understand the library's internal classes and methods.
-You can also take a look at this <del>messy</del> [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20v.0.3.001%20demo.swf) to 
+You can also take a look at this [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20latest%20demo.swf) to 
 get an idea of what this all is about. 
-
-**Note**: <code>TestWorld.as</code> is a <del>complete</del> partial mess but it's just what I'm using to test all the stuff. 
-
-I know, I know... but I'm laaezy ;)
 
 
 Dependencies & Other Useful Resources
@@ -29,7 +25,7 @@ grab the latest versions from the links below):
  * [FlashPunk 1.6](http://flashpunk.net/forums/index.php?topic=2831.0) by ChevyRay, Draknek & the rest of the FP community - for obvious reasons
  * [ColorMatrix](http://gskinner.com/blog/archives/2007/12/colormatrix_cla.html) by gskinner - for the AdjustFX effect
 	
-You may also want to take a look at these:
+You may also want to take a look at these (not needed to use the lib, but you may find them useful):
 
  * [Pixel Bender Toolkit](http://www.adobe.com/devnet/pixelbender.html) - for experimenting with shaders
  * [PBJ2ShaderFilter](http://xperiments.es/blog/en/pbj2shaderfilter-air-tool-to-generate-a-shaderfilter-class-from-pixel-bender-files/) - tool to generate ShaderFilter classes from pbj files
@@ -40,26 +36,26 @@ You may also want to take a look at these:
 List of Currently Supported Effects
 -----------------------------------
 
-		01 • AdjustFX           - color adjustment effect (contrast, hue, saturation, brightness)
-		02 • BloomFX            - bloom effect
-		03 • BlurFX             - blur filter effect
-		04 • ColorTransformFX   - wrapper for ColorTransform
-		05 • FadeFX             - fade effect (opaque/transparent)
-		06 • FilterFX           - wrapper to use standard Flash filters (DropShadow, BlurFilter, etc.) and Pixel Bender ShaderFilters
-		07 • GlitchFX           - glitch effect (random linear disturb)
-		08 • GlowFX             - glow filter effect
-		09 • PixelateFX         - pixelate effect
-		10 • RGBDisplacementFX  - RGB channels displacement
-		11 • ScanLinesFX        - Scanlines and noise effect
-		12 • PBCircleSplashFX   - Pixel Bender circle splash effect
-		13 • PBDot              - Pixel Bender dot effect
-		14 • PBHalfToneFX       - Pixel Bender halftone effect
-		15 • PBLightPointFX     - Pixel Bender light point effect
-		16 • PBLineSlideFX      - Pixel Bender lineslide effect
-		17 • PBPixelateFX       - Pixel Bender pixelate effect
-		18 • PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
-		19 • PBWaterFallFX      - Pixel Bender waterfall effect
-		20 • PBZoomBlurFX       - Pixel Bender zoom blur effect
+		01 â€¢ AdjustFX           - color adjustment effect (contrast, hue, saturation, brightness)
+		02 â€¢ BloomFX            - bloom effect
+		03 â€¢ BlurFX             - blur filter effect
+		04 â€¢ ColorTransformFX   - wrapper for ColorTransform
+		05 â€¢ FadeFX             - fade effect (opaque/transparent)
+		06 â€¢ FilterFX           - wrapper to use standard Flash filters (DropShadow, BlurFilter, etc.) and Pixel Bender ShaderFilters
+		07 â€¢ GlitchFX           - glitch effect (random linear disturb)
+		08 â€¢ GlowFX             - glow filter effect
+		09 â€¢ PixelateFX         - pixelate effect
+		10 â€¢ RGBDisplacementFX  - RGB channels displacement
+		11 â€¢ ScanLinesFX        - Scanlines and noise effect
+		12 â€¢ PBCircleSplashFX   - Pixel Bender circle splash effect
+		13 â€¢ PBDot              - Pixel Bender dot effect
+		14 â€¢ PBHalfToneFX       - Pixel Bender halftone effect
+		15 â€¢ PBLightPointFX     - Pixel Bender light point effect
+		16 â€¢ PBLineSlideFX      - Pixel Bender lineslide effect
+		17 â€¢ PBPixelateFX       - Pixel Bender pixelate effect
+		18 â€¢ PBShaderFilterFX   - wrapper to load and apply Pixel Bender effects at run-time
+		19 â€¢ PBWaterFallFX      - Pixel Bender waterfall effect
+		20 â€¢ PBZoomBlurFX       - Pixel Bender zoom blur effect
 
 
 ChangeLog
