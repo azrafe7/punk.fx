@@ -7,8 +7,8 @@ A library for applying graphic effects in FlashPunk v1.6.
 Overview & Usage
 ----------------
 
-With **punk.fx** you can easily apply graphic effects to all FlashPunk's graphic classes (by using the proper FXGraphic classes that extend the FP ones) or to whole Entities (via FXLayer). 
-The library provides a collection of built-in effects (Pixelate, Glow, Fade, etc.), and makes it possible to also use the standard Flash filters (DropShadow, Blur, etc.) along with Pixel Bender filters, all just writing a few lines of code.
+With **punk.fx** you can easily apply graphic effects to most of FlashPunk's graphic classes (by using the proper _FX-Graphic_ classes that extend the FP ones) or to whole entities (via FXLayer). 
+The library provides a collection of built-in effects (Pixelate, Glow, Fade, etc.), and makes it possible to use the standard Flash filters (DropShadow, Blur, etc.) along with Pixel Bender filters, all just by writing a few lines of code.
 
 You can consult the [wiki](https://github.com/azrafe7/punk.fx/wiki) to get started with **punk.fx** or read the 
 full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better understand the library's internal classes and methods.
