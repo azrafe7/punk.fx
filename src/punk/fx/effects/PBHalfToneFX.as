@@ -1,7 +1,10 @@
 package punk.fx.effects 
 {
+	import flash.geom.Rectangle;
+	import flash.display.BitmapData;
 	import flash.display.Shader;
 	import flash.filters.ShaderFilter;
+	import net.flashpunk.FP;
 	
 	/**
 	 * Wrapper for Pixel Bender HalfTone effect by SuperKarthik.
@@ -12,10 +15,15 @@ package punk.fx.effects
 	 */
 	public class PBHalfToneFX extends PBBaseFX
 	{
+		/** @private */
+		protected var _maskBMD:BitmapData;
+		
 		/** Embedded Shader Class. */
 		[Embed(source = "pbj/HalfTone.pbj", mimeType = "application/octet-stream")]
-		public static var SHADER_DATA:Class;
+		public static var SHADER_DATA:Class;		
 		
+		/** Whether to use a draw mask. */
+		public var useDrawMask:Boolean = false;
 		
 		/**
 		 * Creates a new PBHalfToneFX with the specified values.
@@ -38,6 +46,25 @@ package punk.fx.effects
 			this.angle = angle;
 			this.maxDotSize = maxDotSize;
 			this.gamma = gamma;
+		}
+		
+		/** @inheritDoc */
+		override public function applyTo(bitmapData:BitmapData, clipRect:Rectangle = null):void 
+		{
+			if (!clipRect) clipRect = bitmapData.rect;
+			
+			// setup the draw mask, creating a new bitmapData if the current one is too small
+			if (useDrawMask) {
+				if (!_maskBMD || _maskBMD.rect.width < clipRect.width || _maskBMD.rect.height < clipRect.height) {			
+					_maskBMD = new BitmapData(clipRect.width, clipRect.height, true, 0);
+				}
+				_maskBMD.fillRect(_maskBMD.rect, 0);
+				_maskBMD.threshold(bitmapData, clipRect, FP.zero, ">", 0x00000000, 0xFF000000, 0xFFFFFFFF);
+			}
+			
+			super.applyTo(bitmapData, clipRect);
+			
+			if (useDrawMask) bitmapData.copyPixels(bitmapData, clipRect, clipRect.topLeft, _maskBMD, clipRect.topLeft);
 		}
 		
 		/** Angle at which you wish to draw the halftone image (in degrees). */

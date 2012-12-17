@@ -22,9 +22,15 @@ package punk.fx.effects
 		/** @private BitmapData used for thresholding */
 		protected var _thresholdBMD:BitmapData;
 
+		/** @private Blur factor of the effect (assigned to both blurX and blurY) */
+		protected var _blur:Number;
+
 		
-		/** Blur factor of the effect */
-		public var blur:Number;
+		/** Amount of blur in the x direction */
+		public var blurX:Number;
+
+		/** Amount of blur in the y direction */
+		public var blurY:Number;
 
 		/** Threshold level to use before the blur */
 		public var threshold:uint;
@@ -59,8 +65,8 @@ package punk.fx.effects
 
 			var _threshold:uint = 0xFF << 24 | threshold << 16 | threshold << 8 | threshold;
 			
-			_filter.blurX = blur;
-			_filter.blurY = blur;
+			_filter.blurX = blurX;
+			_filter.blurY = blurY;
 			_filter.quality = quality;
 
 			// apply filter only if threshold is < 255
@@ -83,6 +89,17 @@ package punk.fx.effects
 			super.applyTo(bitmapData, clipRect);
 		}
 		
+		/** Blur factor of the effect (assigned to both blurX and blurY) */
+		public function get blur():Number 
+		{
+			return _blur;
+		}
+		
+		/** @private */
+		public function set blur(value:Number):void 
+		{
+			_blur = blurX = blurY = value;
+		}
 	}
 
 }
