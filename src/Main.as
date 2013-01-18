@@ -27,7 +27,7 @@ package
 			super(640, 480, 60, false);
 			
 			//FP.console.toggleKey = Key.TAB;
-			FP.console.log("               punk.fx v" + FXMan.VERSION + " demo (build date: " + FXMan.BUILD_DATE + ")");
+			FP.console.log("                           punk.fx v" + FXMan.VERSION + " demo (build date: " + FXMan.BUILD_DATE + ")");
 			FP.console.enable();
 			FP.screen.scale = 1;
 			FP.world = new TestWorld;

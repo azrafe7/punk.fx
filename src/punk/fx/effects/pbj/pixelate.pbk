@@ -2,36 +2,69 @@
 
 kernel Pixelate
 <
-   namespace : "net.riastar.shader";
-   vendor : "RIAstar";
-   version : 1;
-   description : "pixelates an image";
+	namespace : "punk.fx";
+	vendor : "azrafe7";
+	version : 1;
+	description : "Pixelate effect (with pivot)";
 >
 {
-   input image4 src;
-   output pixel4 dst;
+	input image4 src;
+	output pixel4 dst;
 
-   parameter float size
-   <
-      minValue: 1.0;
-      maxValue: 20.0;
-      defaultValue: 4.0;
-   >;
+	parameter float scale
+	<
+		minValue: 1.0;
+		maxValue: 600.0;
+		defaultValue: 4.0;
+		description: "Scale factor";
+	>;
 
-   void evaluatePixel() {
-      float2 pos = outCoord();
-      float center = (size + 1.0) / 2.0;
+	parameter float2 imageSize
+	<
+		minValue: float2(1.0, 1.0);
+		maxValue: float2(2000.0, 2000.0);
+		defaultValue: float2(500.0, 375.0);
+		description: "Size of the input image";
+	>;
 
-      dst = sampleNearest(src, float2(
-         pos.x - mod(pos.x, size) + center,
-         pos.y - mod(pos.y, size) + center
-      ));
+	parameter float2 pivot
+	<
+		minValue: float2(0.0, 0.0);
+		maxValue: float2(100.0, 100.0);
+		defaultValue: float2(50.0, 50.0);
+		description: "Pivot point in percent of image size (defaults to center of image)";
+	>;
 
-      //make sure not to sample outside the borders
-      if (dst.a <= 0.0)
-         dst = sampleNearest(src, float2(
-            pos.x - mod(pos.x, size),
-            pos.y - mod(pos.y, size)
-         ));
-   }
+	void evaluatePixel() {
+		float2 pos = outCoord();
+		  
+		// just copy every pixel if scale <= 1.0
+		if (scale > 1.0) {
+			float2 pivotPos = ((imageSize)*clamp(pivot, 0.0, 99.99))/50.0;
+			float halfScale = scale*.5;
+			float2 offset = mod(pivotPos, scale);
+			offset *= .5;
+
+			// pixel to grab
+			float2 sampledPixel = pos - mod(pos + scale - offset, scale) + halfScale;
+
+			// adjust if out of bounds
+			if (sampledPixel.x < 0.0 || sampledPixel.x > imageSize.x) {
+				sampledPixel.x += (sampledPixel.x < 0.0 ? 1.0 : -1.0) * (scale - offset.x);
+			}
+			if (sampledPixel.y < 0.0 || sampledPixel.y > imageSize.y) {
+				sampledPixel.y += (sampledPixel.y < 0.0 ? 1.0 : -1.0) * (scale - offset.y);
+			}
+          
+			dst = sampleNearest(src, sampledPixel);
+
+			// DEBUG (make transparent pixel bright red)
+			/*if (dst.a <= 0.0) {
+				// pixel4(RGBA)
+				dst = pixel4(0xFF,0,0,0xFF);
+			}*/
+		} else {
+			dst = sampleNearest(src, pos);
+		}
+	}
 }

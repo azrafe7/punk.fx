@@ -14,7 +14,7 @@ package punk.fx
 	{
 		
 		/** Library version. */
-		public static var VERSION:String = "0.3.001";
+		public static var VERSION:String = "0.3.007";
 		
 		/** Build date (DD/MM/YYYY). */
 		public static var BUILD_DATE:String = CONFIG::timeStamp;

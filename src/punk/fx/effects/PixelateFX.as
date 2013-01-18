@@ -53,9 +53,13 @@ package punk.fx.effects
 				var tempH:Number = Math.ceil(clipRect.height * invScale);
 				var tempBMD:BitmapData = new BitmapData(tempW, tempH, true, 0);
 				
+				// offsets != 0 if clipRect is not an integer multiple of scale
+				var offsetX:Number = (scale - clipRect.width % scale) / 2;
+				var offsetY:Number = (scale - clipRect.height % scale) / 2;
+				
 				// scale down (and translate using clipRect position)
 				_scaleMatrix.identity();
-				_scaleMatrix.translate(-clipRect.x, -clipRect.y);
+				_scaleMatrix.translate(-clipRect.x + offsetX, -clipRect.y + offsetY);
 				_scaleMatrix.scale(invScale, invScale);
 				
 				tempBMD.draw(bitmapData, _scaleMatrix);

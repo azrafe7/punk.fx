@@ -105,6 +105,8 @@
 	</effect>
 	<effect className="PBPixelateFX">
 		<param name="scale" type="Number" min="1.0" max="128.0" default="1.0" tweenTo="15" />
+		<param name="pivotX" type="Number" min="0.0" max="100.0" default="50.0" />
+		<param name="pivotY" type="Number" min="0.0" max="100.0" default="50.0" />
 	</effect>
 	<effect className="PBWaterFallFX">
 		<param name="percent" type="Number" min="0.0" max="1.0" default="0.0" tweenTo="1" />
