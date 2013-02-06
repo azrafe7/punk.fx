@@ -35,7 +35,7 @@
 	<effect className="GlitchFX">
 		<param name="maxSlide" type="Number" min="0.0" max="40.0" default="0.0" tweenTo="14" />
 		<param name="maxHeight" type="Number" min="1" max="120" default="5" tweenTo="10" />
-		<param name="minHeight" type="Number" min="1" max="120" default="1" />
+		<param name="minHeight" type="Number" min="0" max="120" default="1" />
 	</effect>
 	<effect className="GlowFX">
 		<param name="blur" type="Number" min="0.0" max="64.0" default="0.0" tweenTo="12" />
@@ -68,6 +68,7 @@
 		<param name="scanLinesDir" type="int" min="0" max="1" default="0" />
 		<param name="scanLinesOffset" type="Number" min="-40" max="40" default="0" />
 		<param name="noiseAmount" type="uint" min="0" max="255" default="25" tweenTo="180" />
+		<param name="noiseSeed" type="int" min="-1" max="50" default="-1" />
 		<param name="useDrawMask" type="Boolean" default="false" />
 	</effect>
 	<effect className="PBCircleSplashFX">
