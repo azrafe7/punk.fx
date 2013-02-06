@@ -247,6 +247,7 @@ package punk.fx.effects
 		/** @private */
 		public function set scanLinesOffset(value:Number):void 
 		{
+			if (value != _scanLinesOffset) _updateScanLines = true;
 			_scanLinesOffset = value;
 		}
 		
