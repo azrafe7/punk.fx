@@ -214,7 +214,7 @@ package punk.fx.lists
 		 */
 		public function clear():TList 
 		{
-			while (_items.length) _items.pop();
+			_items.length = 0;
 			
 			return this;
 		}

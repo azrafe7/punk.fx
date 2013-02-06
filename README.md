@@ -61,6 +61,9 @@ List of Currently Supported Effects
 ChangeLog
 ---------
 
+* **ver 0.3.007**:
+  - PBPixelateFX with pivot (pixelates from center by default)
+  - fixed scanLinesOffset: now updates properly
 * **ver 0.3.001**:
   - powerful FXLayer added, for applying effects to entities
   - TList: lists reorganized into new package
