@@ -1,0 +1,143 @@
+<languageVersion : 1.0;>
+
+kernel PolarMap <
+    
+    namespace   : "punk.fx";
+    vendor      : "azrafe7";
+    version     : 1;
+    description : "Generates a polar map centered at centerPos.";
+>
+{
+    input  image4 src;
+    output pixel4 dst;
+    
+    const float PI = 3.14159265359;
+    
+    parameter float2 inputSize <
+    
+        minValue     : float2(1, 1);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(512, 512);
+		description  : "Size of input image.";
+    >;
+
+    parameter int3 isActive <
+    
+       defaultValue  : int3(1, 0, 0);
+	   description   : "Active centers flags.";
+    >;
+
+    parameter float2 centerPos0 <
+    
+        minValue     : float2(0, 0);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(256, 256);
+		description  : "Center position (in pixels).";
+    >;
+
+    parameter float radius0 <
+    
+       minValue      : float(0);
+       maxValue      : float(1000);
+       defaultValue  : float(256);
+	   description   : "Radius cut-off (use inputSize.x/2 as a default value).";
+    >;
+
+    parameter int useGrayScale <
+    
+       defaultValue  : 0;
+	   description   : "Whether to use a gray scale for the computed image (valid only for centers == 1).";
+    >;
+
+    parameter float2 centerPos1 <
+    
+        minValue     : float2(0, 0);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(256, 256);
+		description  : "2nd center position (in pixels).";
+    >;
+
+    parameter float radius1 <
+    
+       minValue      : float(0);
+       maxValue      : float(1000);
+       defaultValue  : float(256);
+	   description   : "2nd Radius cut-off (use inputSize.x/2 as a default value).";
+    >;
+
+    parameter float2 centerPos2 <
+    
+        minValue     : float2(0, 0);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(256, 256);
+		description  : "3rd center position (in pixels).";
+    >;
+
+    parameter float radius2 <
+    
+       minValue      : float(0);
+       maxValue      : float(1000);
+       defaultValue  : float(256);
+	   description   : "3rd radius cut-off (use inputSize.x/2 as a default value).";
+    >;
+
+    void evaluatePixel() {
+
+		// current position in our texture
+		float2 pos = outCoord();
+		
+        // number of active centers
+        int activeCenters = isActive.r + isActive.g + isActive.b;
+        
+        // normalized position
+        float2 normPos = pos/inputSize;
+        
+        // cartesian to polar
+        float normRadius = radius0 * normPos.x;
+        float theta = 2.0 * PI * normPos.y;
+        float2 coords = float2(normRadius * cos(theta) + centerPos0.x, normRadius * sin(theta) + centerPos0.y);
+        
+        // distance from center
+        float dist = distance(coords, centerPos0);
+        
+        // close to center => brighter
+        float4 distColor = sampleNearest(src, coords);
+        
+        if (distColor.a > 0.0 && (useGrayScale != 0 || activeCenters >= 2)) distColor.r = float(1.0-dist/radius0);
+        if (useGrayScale != 0 && isActive.r != 0) distColor.gba = float3(distColor.r, distColor.r, 1.0);
+        if (activeCenters >= 2) {
+            distColor.gba = pixel3(0.0, 0.0, 1.0);
+        }
+        
+        dst = pixel4(0.0, 0.0, 0.0, 1.0);
+        if (isActive.r != 0) dst.rgba = distColor.rgba;
+
+		if (isActive.g != 0) {
+			// cartesian to polar
+			normRadius = radius1 * normPos.x;
+			theta = 2.0 * PI * normPos.y;
+			coords = float2(normRadius * cos(theta) + centerPos1.x, normRadius * sin(theta) + centerPos1.y);
+			
+			// distance from center
+			dist = distance(coords, centerPos1);
+			
+			// close to center => brighter
+			distColor = sampleNearest(src, coords);
+			if (distColor.a > 0.0) dst.g = float(1.0-dist/radius1);
+        }
+ 
+		if (isActive.b != 0) {
+			// cartesian to polar
+			normRadius = radius2 * normPos.x;
+			theta = 2.0 * PI * normPos.y;
+			coords = float2(normRadius * cos(theta) + centerPos2.x, normRadius * sin(theta) + centerPos2.y);
+			
+			// distance from center
+			dist = distance(coords, centerPos2);
+			
+			// close to center => brighter
+			distColor = sampleNearest(src, coords);
+			if (distColor.a > 0.0) dst.b = float(1.0-dist/radius2);
+		}
+    }
+}

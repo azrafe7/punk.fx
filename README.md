@@ -63,6 +63,7 @@ ChangeLog
 
 * **ver 0.3.007**:
   - PBPixelateFX with pivot (pixelates from center by default)
+  - added slideFunction to GlitchFX (and a sineWave() example of how to use it)
   - fixed scanLinesOffset: now updates properly
 * **ver 0.3.001**:
   - powerful FXLayer added, for applying effects to entities

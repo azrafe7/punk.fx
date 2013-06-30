@@ -1,0 +1,221 @@
+<languageVersion : 1.0;>
+
+kernel ShadowMap <
+    
+    namespace   : "punk.fx";
+    vendor      : "azrafe7";
+    version     : 1;
+    description : "Generates a shadow map.";
+>
+{
+    input  image4 src;
+    input  image4 reducedDistanceMap;
+    output pixel4 dst;
+    
+    const float TWO_PI = 6.28318530718;
+    
+    parameter float2 inputSize <
+    
+        minValue     : float2(1, 1);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(128, 128);
+		description  : "Size of input image.";
+    >;
+
+    parameter int3 isActive <
+    
+       defaultValue  : int3(1, 0, 0);
+	   description   : "Active lights flags.";
+    >;
+
+    parameter float2 lightPos0 <
+    
+        minValue     : float2(0, 0);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(64, 64);
+		description  : "Light position (in pixels).";
+    >;
+
+    parameter float lightRadius0 <
+    
+       minValue      : float(0);
+       maxValue      : float(1000);
+       defaultValue  : float(64);
+	   description   : "Light fall-off (based on distance).";
+    >;
+
+   parameter float penetration0 <
+    
+       minValue      : float(0);
+       maxValue      : float(1);
+       defaultValue  : float(.1);
+	   description   : "Light penetration (in percent of lightRadius).";
+    >;
+
+    parameter int transparent0 <
+    
+       defaultValue  : 0;
+	   description   : "Whether to use alpha transparency in the darkness.";
+    >;
+
+   parameter float3 fallOff0 <
+    
+       minValue      : float3(-1, -1, 0);
+       maxValue      : float3(1, 1, 1000);
+       defaultValue  : float3(0, 1, 0);
+	   description   : "Light fall-off (x:constant, y:linear, z:quadratic).";
+    >;
+
+    parameter float2 lightPos1 <
+    
+        minValue     : float2(0, 0);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(64, 64);
+		description  : "2nd light position (in pixels).";
+    >;
+
+    parameter float lightRadius1 <
+    
+       minValue      : float(0);
+       maxValue      : float(1000);
+       defaultValue  : float(64);
+	   description   : "2nd light fall-off (based on distance).";
+    >;
+
+   parameter float penetration1 <
+    
+       minValue      : float(0);
+       maxValue      : float(1);
+       defaultValue  : float(.1);
+	   description   : "2nd light penetration (in percent of lightRadius2).";
+    >;
+
+    parameter int transparent1 <
+    
+       defaultValue  : 0;
+	   description   : "Whether to use alpha transparency in the darkness for 2nd light.";
+    >;
+
+   parameter float3 fallOff1 <
+    
+       minValue      : float3(-1, -1, 0);
+       maxValue      : float3(1, 1, 1000);
+       defaultValue  : float3(0, 1, 0);
+	   description   : "2nd light fall-off (x:constant, y:linear, z:quadratic).";
+    >;
+
+    parameter float2 lightPos2 <
+    
+        minValue     : float2(0, 0);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(64, 64);
+		description  : "3nd light position (in pixels).";
+    >;
+
+    parameter float lightRadius2 <
+    
+       minValue      : float(0);
+       maxValue      : float(1000);
+       defaultValue  : float(64);
+	   description   : "3rd light fall-off (based on distance).";
+    >;
+
+   parameter float penetration2 <
+    
+       minValue      : float(0);
+       maxValue      : float(1);
+       defaultValue  : float(.1);
+	   description   : "3rd light penetration (in percent of lightRadius3).";
+    >;
+
+    parameter int transparent2 <
+    
+       defaultValue  : 0;
+	   description   : "Whether to use alpha transparency in the darkness for 3rd light.";
+    >;
+
+   parameter float3 fallOff2 <
+    
+       minValue      : float3(-1, -1, 0);
+       maxValue      : float3(1, 1, 1000);
+       defaultValue  : float3(0, 1, 0);
+	   description   : "3rd light fall-off (x:constant, y:linear, z:quadratic).";
+    >;
+    
+    
+    void evaluatePixel() {
+
+		// current position in our texture
+		float2 pos = outCoord();
+		
+        float2 delta = pos - lightPos0;
+        float theta = atan(delta.y, delta.x);
+        if (theta < 0.0) theta += TWO_PI;
+        theta /= TWO_PI;
+        
+        float reducedDistance = 1.0 - sampleNearest(reducedDistanceMap, float2(0.0, inputSize.y * theta)).r;
+        
+        float dist = distance(pos, lightPos0);
+        float occluderDist = lightRadius0 * reducedDistance;
+        pixel4 lightPixel = pixel4(0.0, 0.0, 0.0, 1.0);
+        float distFactor = dist/lightRadius0;
+        float attenuation = fallOff0.x + fallOff0.y * distFactor;
+        float lightMax = 1.0;
+        if (fallOff0.z > 0.0) lightMax /= fallOff0.z * distFactor * distFactor;
+        float lightValue = lightMax - 1.0 * attenuation;
+        if (dist < occluderDist + .5) lightPixel.rgb = pixel3(lightValue);
+        else if (dist < occluderDist + .5 + penetration0 * lightRadius0) lightPixel.rgb = penetration0 * pixel3(lightValue);
+        if (transparent0 != 0 && dist > occluderDist + .5) lightPixel.a = lightPixel.r;
+
+        pixel4 tmp = sampleNearest(src, pos);  // seems unnecessary, but this line is needed to properly export to Flash
+        dst.rgba = pixel4(0.0, 0.0, 0.0, 1.0);
+        if (isActive.r != 0) dst.rgba = lightPixel.rgba;
+
+		
+		if (isActive.g != 0) {
+			delta = pos - lightPos1;
+			theta = atan(delta.y, delta.x);
+			if (theta < 0.0) theta += TWO_PI;
+			theta /= TWO_PI;
+			
+			reducedDistance = 1.0 - sampleNearest(reducedDistanceMap, float2(0.0, inputSize.y * theta)).g;
+			
+			dist = distance(pos, lightPos1);
+			occluderDist = lightRadius1 * reducedDistance;
+			lightPixel = pixel4(0.0, 0.0, 0.0, 1.0);
+			distFactor = dist/lightRadius1;
+			attenuation = fallOff1.x + fallOff1.y * distFactor;
+			lightMax = 1.0;
+			if (fallOff1.z > 0.0) lightMax /= fallOff1.z * distFactor * distFactor;
+			lightValue = lightMax - 1.0 * attenuation;
+			if (dist < occluderDist + .5) lightPixel.rgb = pixel3(lightValue);
+			else if (dist < occluderDist + .5 + penetration1 * lightRadius1) lightPixel.rgb = penetration1 * pixel3(lightValue);
+			if (transparent1 != 0 && dist > occluderDist + .5) lightPixel.a = lightPixel.r;
+
+			dst += lightPixel;
+		}
+
+		if (isActive.b != 0) {
+			delta = pos - lightPos2;
+			theta = atan(delta.y, delta.x);
+			if (theta < 0.0) theta += TWO_PI;
+			theta /= TWO_PI;
+			
+			reducedDistance = 1.0 - sampleNearest(reducedDistanceMap, float2(0.0, inputSize.y * theta)).b;
+			
+			dist = distance(pos, lightPos2);
+			occluderDist = lightRadius2 * reducedDistance;
+			lightPixel = pixel4(0.0, 0.0, 0.0, 1.0);
+			distFactor = dist/lightRadius2;
+			attenuation = fallOff2.x + fallOff2.y * distFactor;
+			lightMax = 1.0;
+			if (fallOff2.z > 0.0) lightMax /= fallOff2.z * distFactor * distFactor;
+			lightValue = lightMax - 1.0 * attenuation;
+			if (dist < occluderDist + .5) lightPixel.rgb = pixel3(lightValue);
+			else if (dist < occluderDist + .5 + penetration2 * lightRadius2) lightPixel.rgb = penetration2 * pixel3(lightValue);
+			if (transparent2 != 0 && dist > occluderDist + .5) lightPixel.a = lightPixel.r;
+
+			dst += lightPixel;
+		}
+	}
+}
