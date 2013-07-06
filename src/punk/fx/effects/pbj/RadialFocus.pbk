@@ -1,0 +1,86 @@
+<languageVersion : 1.0;>
+
+kernel RadialFocus <
+    
+    namespace   : "punk.fx";
+    vendor      : "azrafe7";
+    version     : 1;
+    description : "Expand image radially from center.";
+>
+{
+    input  image4 src;
+    output pixel4 dst;
+        
+    parameter float2 inputSize <
+    
+        minValue     : float2(1, 1);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(128, 128);
+		description  : "Size of input image.";
+    >;
+
+    parameter float2 center <
+    
+        minValue     : float2(0, 0);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(64, 64);
+		description  : "Center of the effect (in pixels).";
+    >;
+
+    parameter float scaleFactor <
+    
+       minValue      : float(0);
+       maxValue      : float(2.0);
+       defaultValue  : float(.1);
+	   description   : "Scale of the effect.";
+    >;
+
+    parameter float threshold <
+    
+       minValue      : float(0);
+       maxValue      : float(200);
+       defaultValue  : float(20);
+	   description   : "Distance threshold.";
+    >;
+
+    void evaluatePixel() {
+
+		// current position in our texture
+		float2 pos = outCoord();
+		
+        float2 size = inputSize - 1.0;
+        float2 zero = float2(0.0);
+        float2 sampledCoords;
+        
+        float dist = scaleFactor * distance(pos, center) - threshold;
+        dist = (dist < 0.0 ? 0.0 : dist);
+        
+        float alpha = sampleNearest(src, pos).a;    // save original alpha
+        
+        dst = 4.0 * sampleNearest(src, pos);
+        
+        sampledCoords = clamp(float2(pos.x - dist / 2.0, pos.y - dist / 2.0), zero, size);
+        dst += 2.0 * sampleNearest(src, sampledCoords);
+        
+        sampledCoords = clamp(float2(pos.x + dist / 2.0, pos.y - dist / 2.0), zero, size);
+        dst += 2.0 * sampleNearest(src, sampledCoords);
+        
+        sampledCoords = clamp(float2(pos.x - dist / 2.0, pos.y + dist / 2.0), zero, size);
+        dst += 2.0 * sampleNearest(src, sampledCoords);
+        
+        sampledCoords = clamp(float2(pos.x - dist / 2.0, pos.y - dist / 2.0), zero, size);
+        dst += 2.0 * sampleNearest(src, sampledCoords);
+        
+        sampledCoords = clamp(float2(pos.x + dist, pos.y - dist), zero, size);
+        dst += sampleNearest(src, sampledCoords);
+        
+        sampledCoords = clamp(float2(pos.x + dist, pos.y + dist), zero, size);
+        dst += sampleNearest(src, sampledCoords);
+        
+        sampledCoords = clamp(float2(pos.x + dist, pos.y - dist), zero, size);
+        dst += sampleNearest(src, sampledCoords);
+        
+		dst /= 16.0;
+        dst.a = alpha;  // restore alpha
+    }
+}
