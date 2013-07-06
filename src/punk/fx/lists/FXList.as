@@ -13,6 +13,18 @@ package punk.fx.lists
 	{
 
 		/**
+		 * Creates a new FXList.
+		 * 
+		 * @param	items			a single effect or a Vector/Array of effects to be added to the list.
+		 * @param	uniqueness		set this to true if you want to ensure that no duplicated effects are added to the list (defaults to true).
+		 */
+		public function FXList(items:* = null, uniqueness:Boolean = true)
+		{
+			super(items, uniqueness);
+		}
+
+			
+		/**
 		 * Used internally to convert an object to a valid FX.
 		 * 
 		 * @private
