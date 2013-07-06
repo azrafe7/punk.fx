@@ -1,0 +1,133 @@
+<languageVersion : 1.0;>
+
+kernel NLighting <
+    
+    namespace   : "punk.fx";
+    vendor      : "azrafe7";
+    version     : 1;
+    description : "Generates lighting using a normalmap.";
+>
+{
+    input  image4 src;
+    input  image4 normalMap;
+    output pixel4 dst;
+    
+    parameter float2 inputSize <
+    
+        minValue     : float2(1, 1);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(512, 512);
+		description  : "Size of input images.";
+    >;
+    
+    parameter pixel3 lightColor <
+    
+       minValue      : float3(0, 0, 0);
+       maxValue      : float3(1, 1, 1);
+       defaultValue  : float3(1, 1, 1);
+	   description   : "RGB values of light.";
+    >;
+
+    parameter float2 lightPos <
+    
+        minValue     : float2(0, 0);
+        maxValue     : float2(1000, 1000);
+        defaultValue : float2(256, 256);
+		description  : "Light position (in pixels).";
+    >;
+    
+	parameter float lightZ <
+	
+        minValue     : float(0);
+        maxValue     : float(1);
+        defaultValue : float(0.075);
+		description  : "Default z-value of light.";
+	>;
+	
+	parameter float lightIntensity <
+	
+        minValue     : float(0);
+        maxValue     : float(10);
+        defaultValue : float(1.85);
+		description  : "Light intensity.";
+	>;
+	
+    parameter int invertGreen <
+    
+		minValue     : 0;
+		maxValue     : 1;
+        defaultValue : 0;
+		description  : "Set this to 1 to invert the green value of normalmap.";
+    >;
+
+    parameter pixel3 ambientColor <
+    
+       minValue      : float3(0, 0, 0);
+       maxValue      : float3(1, 1, 1);
+       defaultValue  : float3(.8, .8, .8);
+	   description   : "RGB values of ambient light.";
+    >;
+
+	parameter float ambientIntensity <
+	
+        minValue     : float(0);
+        maxValue     : float(10);
+        defaultValue : float(0.3);
+		description  : "Ambient light intensity.";
+	>;
+	
+    parameter float3 fallOff <
+    
+       minValue      : float3(0, 0, 0);
+       maxValue      : float3(50, 50, 50);
+       defaultValue  : float3(.4, 3, 20);
+	   description   : "Light fall-off (based on distance).";
+    >;
+
+    void evaluatePixel() {
+
+		// current position in our texture
+		float2 pos = outCoord();
+		
+		// RGBA of the source
+        pixel4 diffuseColor = sampleNearest(src, pos);
+        
+		// RGB of the normalmap
+		float3 normal = sampleNearest(normalMap, pos).xyz;
+        
+		// invert y value of the normalmap if needed
+		float invNormalY = 1.0 - normal.y;
+        normal.y = (invertGreen > 0 ? invNormalY : normal.y);
+
+		// delta position of light
+        float3 lightDir = float3((lightPos.x - pos.x) / inputSize.x, (lightPos.y - pos.y) / inputSize.y, lightZ);
+        
+		// correct aspect ratio
+        lightDir.x *= inputSize.x / inputSize.y;
+        
+		// calc distance
+        float distance = length(lightDir);
+        
+		// normalize light direction vector
+		float3 light = normalize(lightDir);
+
+		// adjust and normalize normal vector
+        normal = normalize(normal * 2.0 - 1.0);
+        
+		// multiply light color with intensity and calc (N dot L) diffuse value
+        float3 diffuse = (lightColor * lightIntensity) * max(dot(normal, light), 0.0);
+        
+		// multiply ambient color with intensity
+        float3 ambient = ambientColor * ambientIntensity;
+        
+		// calc attenuation factor
+        float attenuation = 1.0 / (fallOff.x + (fallOff.y * distance) + (fallOff.z * distance * distance));
+        
+		// calc global intensity and final color
+        float3 intensity = ambient + diffuse * attenuation;
+        pixel3 finalColor = diffuseColor.rgb * intensity;
+        
+		// multiply diffuseColor with finalColor - keeping original alpha value
+        dst = diffuseColor * pixel4(finalColor.r, finalColor.g, finalColor.b, 1.0);
+    }
+}
