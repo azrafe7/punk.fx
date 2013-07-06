@@ -86,8 +86,6 @@ package punk.fx.lists
 		{
 			item = _validate(item);
 			if (!(_ensureUniqueness && contains(item))) _items[_items.length] = item;
-
-			sort();
 		}
 		
 		/**
@@ -105,6 +103,8 @@ package punk.fx.lists
 			else itemArray = [items];
 			
 			for each (item in itemArray) _add(item);
+			
+			sort();
 			
 			return this;
 		}
@@ -128,8 +128,6 @@ package punk.fx.lists
 		{
 			item = _validate(item);
 			if (!(_ensureUniqueness && contains(item))) _items.splice(at, 0, item);
-
-			sort();
 		}
 		
 		/**
@@ -149,6 +147,8 @@ package punk.fx.lists
 			else itemArray = [items];
 
 			for (var i:int = itemArray.length - 1; i >= 0; i--) _insert(itemArray[i], at);
+			
+			sort();
 			
 			return this;
 		}

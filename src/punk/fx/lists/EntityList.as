@@ -12,11 +12,11 @@ package punk.fx.lists
 		
 		
 		/** @inheritDoc */
-		public function EntityList(items:*=null, uniqueness:Boolean=true) 
+		public function EntityList(items:*=null, uniqueness:Boolean=true, sortByLayer:Boolean=false) 
 		{
 			super(items, uniqueness);
 			
-			compareFunction = compareByLayer;
+			if (sortByLayer) compareFunction = compareByLayer;
 		}
 		
 		/**
@@ -38,7 +38,8 @@ package punk.fx.lists
 		 */
 		public function compareByLayer(entityA:*, entityB:*):Number 
 		{
-			return entityB.layer - entityA.layer;
+			var diff:Number = entityB.layer - entityA.layer;
+			return diff < 0 ? -1 : (diff > 0 ? 1 : 0);
 		}
 		
 	}
