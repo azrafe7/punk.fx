@@ -20,7 +20,7 @@ package punk.fx.effects.dynalight
 	public class PBShadowMapFX extends PBBaseFX
 	{
 		/** Embedded Shader Class. */
-		[Embed(source = "../pbj/ShadowMap.pbj", mimeType = "application/octet-stream")]
+		[Embed(source = "../pbj/ShadowMap - multi opt.pbj", mimeType = "application/octet-stream")]
 		public static var SHADER_DATA:Class;		
 		
 		/** Vector containing the 3 lights used by the effect. */

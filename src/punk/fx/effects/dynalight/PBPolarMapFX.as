@@ -20,7 +20,7 @@ package punk.fx.effects.dynalight
 	public class PBPolarMapFX extends PBBaseFX
 	{
 		/** Embedded Shader Class. */
-		[Embed(source = "../pbj/PolarMap.pbj", mimeType = "application/octet-stream")]
+		[Embed(source = "../pbj/PolarMap - multi opt.pbj", mimeType = "application/octet-stream")]
 		public static var SHADER_DATA:Class;		
 		
 		/** Vector containing the 3 center points used by the effect. */

@@ -1,5 +1,6 @@
 package punk.fx.effects
 {
+	import flash.display.BlendMode;
 	import punk.fx.effects.dynalight.*;
 	import flash.display.BitmapData;
 	import flash.geom.Matrix;
@@ -12,7 +13,6 @@ package punk.fx.effects
 	 * Wraps functionality from multiple effects:
 	 * @see PBPolarMapFX
 	 * @see PBShadowmMapFX
-	 * @see PBRadialFocusFX
 	 * 
 	 * Inspired by code from:
 	 * @see http://www.catalinzima.com/2010/07/my-technique-for-the-shader-based-dynamic-2d-shadows/
@@ -35,9 +35,6 @@ package punk.fx.effects
 		/** @private shadowMap effect (used internally). */
 		protected var _shadowMapFX:PBShadowMapFX;
 		
-		/** @private radial focus effect (used internally). */
-		protected var _radialFX:PBRadialFocusFX;
-		
 		/** @private polarMap (used internally). */
 		public var _polarMapBMD:BitmapData;
 		
@@ -57,12 +54,6 @@ package punk.fx.effects
 				
 		/** Whether to smooth the image when scaling. */
 		public var smooth:Boolean = false;
-		
-		/** Radial blur scale (set this to zero to avoid applying the whole radial blur effect). */
-		public var radialBlurScale:Number = .17;
-		
-		/** Radial blur threshold distance. */
-		public var radialBlurThreshold:Number = 5.7;
 		
 		/** BitmapData representing occluders (must have a transparent background - any pixel with non-zero alpha is considered an occluder to light). */
 		public var occludersBMD:BitmapData;
@@ -86,25 +77,21 @@ package punk.fx.effects
 		 * @see #setProps()
 		 * 
 		 * @param	occludersBMD		BitmapData representing occluders (must have a atransparent background - any pixel with non-zero alpha is considered an occluder to light).
+		 * @param	scale				scale factor to be used by the effect (lower means lower precision but better performance - cannot be modified later).
 		 * @param	lightX				x position of the light source.
 		 * @param	lightY				y position of the light source.
 		 * @param	lightRadius			radius of the light source.
-		 * @param	scale				scale factor to be used by the effect (lower means lower precision but better performance - cannot be modified later).
 		 * @param	lightPenetration	penetration of the light inside occluders (in percent of lightRadius).
 		 * @param	transparent			whether to use alpha transparency in the darkness.
-		 * @param	radialBlurScale		scale of the radial blur to apply (set to 0 to avoid using it) - centered on 1st light.
-		 * @param	radialBlurThreshold	threshold distance for the radial blur.
 		 */
-		public function DynaLightFX(occludersBMD:BitmapData, lightX:Number = NaN, lightY:Number = NaN, lightRadius:Number = 256, 
-									scale:Number = .35, lightPenetration:Number = 0, transparent:Boolean = false, 
-									radialBlurScale:Number=0.15, radialBlurThreshold:Number=5.7) 
+		public function DynaLightFX(occludersBMD:BitmapData, scale:Number = .37, 
+									lightX:Number = NaN, lightY:Number = NaN, lightRadius:Number = 256, 
+									lightPenetration:Number = 0, transparent:Boolean = false)
 		{
 			super();
 			
 			this.occludersBMD = occludersBMD;
 			this._scale = scale;
-			this.radialBlurScale = radialBlurScale;
-			this.radialBlurThreshold = radialBlurThreshold;
 			
 			_scaleMatrix = new Matrix();
 			_scaleMatrix.scale(scale, scale);
@@ -117,8 +104,8 @@ package punk.fx.effects
 
 			lights = new Vector.<DynaLight>;
 			for (var i:int = 0; i < 3; ++i) {
-				lights.push(new DynaLight(this, _polarMapFX, _shadowMapFX, _radialFX, i));
-				lights[i].setProps({ x: lightX, y: lightY, radius: lightRadius, penetration: lightPenetration, transparent: transparent });
+				lights.push(new DynaLight(this, _polarMapFX, _shadowMapFX, i));
+				lights[i].setProps({ active: i == 0, x: lightX, y: lightY, radius: lightRadius, penetration: lightPenetration, transparent: transparent });
 			}
 			lights.fixed = true;
 		}
@@ -138,7 +125,7 @@ package punk.fx.effects
 			
 			var nLights:int = _shadowMapFX.activeLights;
 			
-			bitmapData.fillRect(clipRect, 0);												// clear
+			//bitmapData.fillRect(clipRect, 0);												// clear
 			
 			if (nLights > 0) {
 				// apply filters
@@ -155,21 +142,19 @@ package punk.fx.effects
 				_shadowMapBMD.fillRect(_shadowMapBMD.rect, 0);								// clear
 				_shadowMapFX.applyTo(_shadowMapBMD, _shadowMapBMD.rect);					// generate lights/shadows (using reduced map)
 				
-				if (radialBlurScale > 0) {													// if needed...
-					_radialFX.applyTo(_shadowMapBMD, _shadowMapBMD.rect);					// ...apply radial blur
-				}
-				
 				if (postEffects && postEffects.length > 0) {								// if any postEffects assigned...
+					var fx:FX;
 					for (var i:int = 0; i < postEffects.length; ++i) {						// ...apply them in order (iff active)
-						var fx:FX = postEffects.at(i);
+						fx = postEffects.at(i);
 						if (fx.active) fx.applyTo(_shadowMapBMD);
 					}
 				}
 				
+				var invScale:Number = 1 / _scale;
 				_scaleMatrix.identity();													// prepare matrix...
-				_scaleMatrix.scale(1 / _scale, 1 / _scale);									// ...to scale up
+				_scaleMatrix.scale(invScale, invScale);									// ...to scale up
 				//_scaleMatrix.translate(clipRect.x, clipRect.y);
-				bitmapData.draw(_shadowMapBMD, _scaleMatrix, null, null, null, smooth);		// draw scaled up version of lights/shadows to final bmd
+				bitmapData.draw(_shadowMapBMD, _scaleMatrix, null, BlendMode.ADD, null, smooth);		// draw scaled up version of lights/shadows to final bmd
 			}
 			
 			super.applyTo(bitmapData, clipRect);
@@ -181,14 +166,13 @@ package punk.fx.effects
 			if (!clipRect) clipRect = occludersBMD.rect;	// TODO: checkout if this clipRect is _always_ correct
 
 			_reducedMapBMD = new BitmapData(1, clipRect.height * scale, true, 0xff0000ff);
-			trace("new", clipRect);
+			//trace("new", clipRect);
 			
 			_polarMapBMD = new BitmapData(clipRect.width * _scale, clipRect.height * _scale, true, 0);
 			_shadowMapBMD = new BitmapData(_polarMapBMD.width, _polarMapBMD.height, true, 0);
 			
 			_polarMapFX = new PBPolarMapFX();
 			_shadowMapFX = new PBShadowMapFX(_reducedMapBMD);
-			_radialFX = new PBRadialFocusFX();
 		}
 		
 		/** Update filters' properties. */
@@ -200,11 +184,6 @@ package punk.fx.effects
 					lights[i].y = lights[i].trackedObj.y;
 				}
 			}
-
-			_radialFX.setProps({
-				scale: radialBlurScale,
-				threshold: radialBlurThreshold
-			});
 		}
 		
 		/** Scale factor to be used by the effect (read-only after initialization). */
@@ -220,7 +199,7 @@ package punk.fx.effects
 		 * Basically stores the normalized distance (from light source) to the occluders in the pixels of 
 		 * the first column of reducedMap.
 		 * 
-		 * @private couldn't find a suitable/efficient way to implement it as a shader.
+		 * @private couldn't find a fast suitable way to implement it as a shader.
 		 */
 		public static function reduceDistanceMap(polarMap:BitmapData, rect:Rectangle, reducedMap:BitmapData, channelsToScan:Number=1):void 
 		{

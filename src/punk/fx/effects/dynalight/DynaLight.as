@@ -17,7 +17,6 @@ package punk.fx.effects.dynalight
 		protected var _dynaLightFX:DynaLightFX;
 		protected var _centerPoint:CenterPoint;
 		protected var _light:Light;
-		protected var _radialFX:PBRadialFocusFX;
 		protected var _index:int;
 		protected var _scale:Number;
 		
@@ -34,7 +33,7 @@ package punk.fx.effects.dynalight
 		public var trackedObj:* = null;
 
 		
-		public function DynaLight(dynaLightFX:DynaLightFX, polarMapFX:PBPolarMapFX, shadowMapFX:PBShadowMapFX, radialFX:PBRadialFocusFX, index:int):void 
+		public function DynaLight(dynaLightFX:DynaLightFX, polarMapFX:PBPolarMapFX, shadowMapFX:PBShadowMapFX, index:int):void 
 		{
 			this._index = index;
 
@@ -42,7 +41,6 @@ package punk.fx.effects.dynalight
 			this._centerPoint = polarMapFX.centerPoints[index];
 			this._light = shadowMapFX.lights[index];
 			this._scale = dynaLightFX.scale;
-			this._radialFX = radialFX;
 		}
 		
 		/** Index of this light. */
@@ -76,7 +74,6 @@ package punk.fx.effects.dynalight
 			_x = value;
 			_centerPoint.x = _x * _scale;
 			_light.x = _centerPoint.x;
-			if (_index == 0) _radialFX.centerX = _light.x;
 		}
 		
 		/** Y position of the light (in pixels). */
@@ -91,7 +88,6 @@ package punk.fx.effects.dynalight
 			_y = value;
 			_centerPoint.y = _y * _scale;
 			_light.y = _centerPoint.y;
-			if (_index == 0) _radialFX.centerY = _light.y;
 		}
 
 		/** Radius of the light (in pixels). */
