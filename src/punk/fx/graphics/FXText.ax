@@ -1,0 +1,57 @@
+<#include "/fmpp_includes/FXGraphics.ftl">
+package punk.fx.graphics 
+{
+	<#assign prefix="FX">
+	<#assign superClass=pp.outputFileName?substring(prefix?length, pp.sourceFileName?last_index_of(".ax"))>
+	<#assign thisClass=prefix+superClass>
+	
+	<@commonImports/>
+	import net.flashpunk.graphics.${superClass};
+ 
+	
+	/**
+	 * An extended ${superClass} class to which FXs can be applied.
+	 * 
+	 * @author azrafe7
+	 */
+	public class ${thisClass} extends ${superClass} implements IFXGraphic 
+	{
+		
+		<@commonVars/>
+		
+		
+		/**
+		 * Creates a new ${thisClass} with the specified parameters, and assigns an id to it.
+		 * 
+		 * @param	text		text to display.
+		 * @param	x			X offset.
+		 * @param	y			Y offset.
+		 * @param	options		An object containing key/value pairs of the following optional parameters:
+		 * 						font		Font family.
+		 * 						size		Font size.
+		 * 						align		Alignment ("left", "center" or "right").
+		 * 						wordWrap	Automatic word wrapping.
+		 * 						resizable	If the text field can automatically resize if its contents grow.
+		 * 						width		Initial buffer width.
+		 * 						height		Initial buffer height.
+		 * 						color		Text color.
+		 * 						alpha		Text alpha.
+		 * 						angle		Rotation angle (see Image.angle).
+		 * 						blend		Blend mode (see Image.blend).
+		 * 						visible		Visibility (see Graphic.visible).
+		 * 						scrollX		See Graphic.scrollX.
+		 * 						scrollY		See Graphic.scrollY.
+		 * 						relative	See Graphic.relative.
+		 *						For backwards compatibility, if options is a Number, it will determine the initial buffer width.
+		 * @param	h			Deprecated. For backwards compatibility: if set and there is no options.height parameter set, will determine the initial buffer height.
+		 */
+		public function ${thisClass}(text:String, x:Number = 0, y:Number = 0, options:Object = null, h:Number = 0)
+		{
+			super(text, x, y, options, h);
+			
+			<@commonConstructorBody/>
+		}
+		
+		<@commonMethods/>
+	}
+}

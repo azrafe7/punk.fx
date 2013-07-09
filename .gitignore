@@ -1,14 +1,11 @@
 # Excluded Folders
 obj/
 bin/
-src/fmpp*
 
 # Excluded Files
 *.log
-*.ax
-*.ftl
-*.fmpp
 *.tdd
+*.orig
 *.inc
 build.xml
 *PadPreview*.*

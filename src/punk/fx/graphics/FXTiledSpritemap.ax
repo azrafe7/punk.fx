@@ -1,0 +1,42 @@
+<#include "/fmpp_includes/FXGraphics.ftl">
+package punk.fx.graphics 
+{
+	<#assign prefix="FX">
+	<#assign superClass=pp.outputFileName?substring(prefix?length, pp.sourceFileName?last_index_of(".ax"))>
+	<#assign thisClass=prefix+superClass>
+	
+	<@commonImports/>
+	import net.flashpunk.graphics.${superClass};
+ 
+	
+	/**
+	 * An extended ${superClass} class to which FXs can be applied.
+	 * 
+	 * @author azrafe7
+	 */
+	public class ${thisClass} extends ${superClass} implements IFXGraphic 
+	{
+		
+		<@commonVars/>
+		
+		
+		/**
+		 * Creates a new ${thisClass} with the specified parameters, and assigns an id to it.
+		 * 
+		 * @param	source			Source image.
+		 * @param	frameWidth		Frame width.
+		 * @param	frameHeight		Frame height.	
+		 * @param	width			Width of the block to render.
+		 * @param	height			Height of the block to render.
+		 * @param	callback		Optional callback function for animation end.
+		 */
+		public function ${thisClass}(source:*, frameWidth:uint = 0, frameHeight:uint = 0, width:uint = 0, height:uint = 0, callback:Function = null) 
+		{
+			super(source, frameWidth, frameHeight, width, height, callback);
+			
+			<@commonConstructorBody/>
+		}
+		
+		<@commonMethods/>
+	}
+}

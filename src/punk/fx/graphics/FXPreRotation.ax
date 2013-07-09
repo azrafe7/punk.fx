@@ -1,0 +1,39 @@
+<#include "/fmpp_includes/FXGraphics.ftl">
+package punk.fx.graphics 
+{
+	<#assign prefix="FX">
+	<#assign superClass=pp.outputFileName?substring(prefix?length, pp.sourceFileName?last_index_of(".ax"))>
+	<#assign thisClass=prefix+superClass>
+	
+	<@commonImports/>
+	import net.flashpunk.graphics.${superClass};
+ 
+	
+	/**
+	 * An extended ${superClass} class to which FXs can be applied.
+	 * 
+	 * @author azrafe7
+	 */
+	public class ${thisClass} extends ${superClass} implements IFXGraphic 
+	{
+		
+		<@commonVars/>
+		
+		
+		/**
+		 * Creates a new ${thisClass} with the specified parameters, and assigns an id to it.
+		 * 
+		 * @param	source			The source image to be rotated.
+		 * @param	frameCount		How many frames to use. More frames result in smoother rotations.
+		 * @param	smooth			Make the rotated graphic appear less pixelly.
+		 */
+		public function ${thisClass}(source:Class, frameCount:uint = 36, smooth:Boolean = false) 
+		{
+			super(source, frameCount, smooth);
+			
+			<@commonConstructorBody/>
+		}
+		
+		<@commonMethods/>
+	}
+}

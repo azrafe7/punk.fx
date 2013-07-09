@@ -1,0 +1,211 @@
+<#include "/fmpp_includes/FXGraphics.ftl">
+package punk.fx.graphics 
+{
+	<#assign prefix="FX">
+	<#assign superClass=pp.outputFileName?substring(prefix?length, pp.sourceFileName?last_index_of(".ax"))>
+	<#assign thisClass=prefix+superClass>
+	
+	<@commonImports/>
+	import net.flashpunk.graphics.${superClass};
+	import flash.display.Bitmap;
+	import flash.geom.Matrix;
+ 
+	
+	/**
+	 * An extended ${superClass} class to which FXs can be applied.
+	 * 
+	 * @author azrafe7
+	 */
+	public class ${thisClass} extends ${superClass} implements IFXGraphic 
+	{
+		
+		/** @private Whether the source is the entire screen. @see #getSource() */
+		protected var _sourceIsScreen:Boolean;
+		
+		<@commonVars/>
+		
+		/** 
+		 * Sync the graphics with this object (can be any of the classes supported by cloneGraphicsFrom). 
+		 * Auto-updates every frame. 
+		 * @see #cloneGraphicsFrom()
+		 */
+		public var syncWith:* = null;
+		
+
+		/**
+		 * Creates a new ${thisClass} with the specified parameters, and assigns an id to it.
+		 * 
+		 * @param	source			the source to be used for the FXImage (can be a BitmapData, a Class or null if you want to use the whole screen).
+		 * @param	clipRect		a Rectangle representing the area of the source that you want to use (defaults to the whole source rect).
+		 */
+		public function ${thisClass}(source:Object = null, clipRect:Rectangle = null) 
+		{
+			super(new BitmapData(10, 10));		// dummy call to super constructor
+			setSource(source, clipRect);
+			
+			<@commonConstructorBody/>
+		}
+		
+		<@commonMethods/>
+
+		/**
+		 * Returns the whole BitmapData used as source (recapturing the screen if it's the case).
+		 *
+		 * @return the whole BitmapData used as source.
+		 */
+		public function getSource():BitmapData 
+		{
+			return _source = _sourceIsScreen ? FP.buffer : _source;
+		}
+		
+		/**
+		 * Sets the source for the image (can be Class or BitmapData; defaults to the entire screen) and its clip rectangle. 
+		 * NB: Doesn't reset image properties (like origin, alpha, etc.).
+		 * 
+		 * @param	source			Class or BitmapData to use as source (null means FP.buffer... so the whole screen).
+		 * @param	clipRect		Rectangle representing the area of the source to be used (defaults to the whole source rect).
+		 */
+		public function setSource(source:Object = null, clipRect:Rectangle = null):void 
+		{
+			// assign the source and check if it is the whole screen
+			_source = (source != null ? getBitmapData(source) : FP.buffer);
+			_sourceIsScreen = (_source == FP.buffer);
+			_sourceRect = _source.rect;
+			
+			// set the clip rectangle
+			if (clipRect)
+			{
+				if (!clipRect.width) clipRect.width = _sourceRect.width;
+				if (!clipRect.height) clipRect.height = _sourceRect.height;
+				_sourceRect = clipRect;
+			} else (clipRect = _sourceRect);
+			
+			// recreate the buffer if needed
+			if (!_buffer || (_buffer.width != clipRect.width && _buffer.height != clipRect.height)) {
+				createBuffer();
+				//trace("FXImage: createbuf", clipRect);
+			}
+			
+			updateBuffer();			
+		}
+		
+		/** Clone graphics from targetObj's graphics.
+		 *
+		 * @param targetObj		subclass of Image or one of the classes supported by setSource().
+		 */
+		public function cloneGraphicsFrom(targetObj:*):void 
+		{
+			if (targetObj is Image) {
+				var targetImage:Image = targetObj as Image;
+				var maxSize:Number = Math.ceil(Math.sqrt(targetImage.scaledWidth * targetImage.scaledWidth + targetImage.scaledHeight * targetImage.scaledHeight));
+				
+				var bmd:BitmapData;
+				
+				if (_bufferRect.width != maxSize || _bufferRect.height != maxSize) {
+					trace(_bufferRect.width, maxSize);
+					bmd = new BitmapData(maxSize, maxSize, true, 0);
+					setSource(bmd);
+				} else {
+					bmd = getSource();
+					bmd.fillRect(bmd.rect, 0);
+				}
+				
+				// set up transformation matrix
+				var m:Matrix = new Matrix();
+				m.translate(-targetImage.originX, -targetImage.originY);
+				m.rotate(targetImage.angle * FP.RAD);
+				m.translate(targetImage.originX, targetImage.originY);
+				m.scale(targetImage.scaleX * targetImage.scale, targetImage.scaleY * targetImage.scale);
+
+				// four corners of the bounding box after transformation
+				var topLeft:Point = m.transformPoint(new Point(0, 0));
+				var topRight:Point = m.transformPoint(new Point(targetImage.width, 0));
+				var bottomLeft:Point = m.transformPoint(new Point(0, targetImage.height));
+				var bottomRight:Point = m.transformPoint(new Point(targetImage.width, targetImage.height));
+				
+				// origin point after transformation
+				var origin:Point = m.transformPoint(new Point(targetImage.originX, targetImage.originY));
+
+				// bounding box distances
+				var top:Number = Math.min(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y);
+				var bottom:Number = Math.max(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y);
+				var left:Number = Math.min(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x);
+				var right:Number = Math.max(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x);
+
+				// size of the new BitmapData
+				var height:Number = bottom - top;
+				var width:Number = right - left;
+								
+				targetImage.render(bmd, new Point(origin.x - left, origin.y - top), FP.zero);
+								
+				// align with target image position
+				this.x = this.originX - origin.x + left;
+				this.y = this.originY - origin.y + top;
+								
+				setSource(bmd, bmd.rect);
+			} else {
+				setSource(FXImage.getBitmapData(targetObj));
+			}
+		}
+		
+		/**
+		 * Creates a new rectangle FXImage.
+		 * 
+		 * @param	width		width of the rectangle.
+		 * @param	height		height of the rectangle.
+		 * @param	color		color of the rectangle.
+		 * 
+		 * @return	a new FXImage object.
+		 */
+		public static function createRect(width:uint, height:uint, color:uint = 0xFFFFFF, alpha:Number = 1):FXImage
+		{
+			var source:BitmapData = new BitmapData(width, height, true, 0xFFFFFFFF);
+			
+			var image:FXImage = new FXImage(source);
+			
+			image.color = color;
+			image.alpha = alpha;
+			
+			return image;
+		}
+		
+		/**
+		 * Creates a new circle FXImage.
+		 * 
+		 * @param	radius		radius of the circle.
+		 * @param	color		color of the circle.
+		 * @param	alpha		alpha of the circle.
+		 * 
+		 * @return	a new FXImage object.
+		 */
+		public static function createCircle(radius:uint, color:uint = 0xFFFFFF, alpha:Number = 1):FXImage
+		{
+			FP.sprite.graphics.clear();
+			FP.sprite.graphics.beginFill(0xFFFFFF);
+			FP.sprite.graphics.drawCircle(radius, radius, radius);
+			var data:BitmapData = new BitmapData(radius * 2, radius * 2, true, 0);
+			data.draw(FP.sprite);
+			
+			var image:FXImage = new FXImage(data);
+			
+			image.color = color;
+			image.alpha = alpha;
+			
+			return image;
+		}
+	
+		/** Returns a BitmapData object from sourceObj. 
+		 * 
+		 * @param sourceObj		can be a Class holding a Bitmap, a Bitmap or a BitmapData object. */
+		public static function getBitmapData(sourceObj:Object):BitmapData 
+		{
+			var res:BitmapData = null;
+			if (sourceObj is Class) res = FP.getBitmap(sourceObj as Class);
+			else if (sourceObj is Bitmap) res = Bitmap(sourceObj).bitmapData;
+			else if (sourceObj is BitmapData) res = sourceObj as BitmapData;
+			if (!res) throw new Error("Invalid source image.");
+			return res;
+		}
+		
+	}
+}

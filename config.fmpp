@@ -1,0 +1,11 @@
+sourceRoot: src
+outputRoot: src
+
+modes: [
+	execute(**/*.ax)
+	ignore(**/*)
+]
+
+replaceExtensions: [ax, as]
+skipUnchanged: static
+expert: true
