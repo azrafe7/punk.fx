@@ -24,6 +24,7 @@ package punk.fx.lists
 		{
 			super(items, uniqueness);
 			
+			this.changeVisibility = changeVisibility;
 			if (sortByLayer) compareFunction = compareByLayer;
 		}
 		
