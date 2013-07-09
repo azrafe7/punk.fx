@@ -25,7 +25,7 @@ package punk.fx.graphics
 		public var autoClearSource:Boolean;
 		
 		/** Entity list to which effects will be applied */
-		public var entities:EntityList = new EntityList();
+		public var entities:EntityList = new EntityList(null, true, false, true);
 		
 		
 		/**
