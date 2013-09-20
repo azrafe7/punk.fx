@@ -15,6 +15,8 @@ full package [documentation](http://azrafe7.github.com/punk.fx/docs) to better u
 You can also take a look at this [demo](http://dl.dropbox.com/u/32864004/dev/FPDemo/PunkFX%20latest%20demo.swf) to 
 get an idea of what this all is about. 
 
+For a real world example of what you can do with a wise use of this library you can check out [Separation Anxiety](http://tasteofmoonlight.com/games/separation-anxiety), a game by Jonathan Stoler, and this [blog post](http://tasteofmoonlight.com/blog/posts/all-glitched-out) where he explains how he managed to put it together. 
+
 
 Dependencies & Other Useful Resources
 ---------------------------------------
