@@ -1,3 +1,6 @@
+**WARNING**: Adobe has recently (july/august 2013) pulled hardware/JIT support from their Pixel Bender library, causing _extreme lag_ to all apps using it.
+If you'd like to share your thoughts about Adobe's choice to severely degrade the performance of a crucial library without any advance warning, here's the bug report on Adobe's website: [https://bugbase.adobe.com/index.cfm?event=bug&id=3591185](https://bugbase.adobe.com/index.cfm?event=bug&id=3591185).
+
 punk.fx
 =======
 
